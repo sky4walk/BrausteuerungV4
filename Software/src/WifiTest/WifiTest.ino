@@ -3,36 +3,36 @@
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
 
+#define SSID_ADDR	0
+#define SSID_SIZE	32
+#define PASS_ADDR	SSID_ADDR + SSID_SIZE
+#deinfe PASS_SIZE	64
+
 ESP8266WebServer server(80);
 
 const char* APssid = "mikroSikaru.de";
 boolean _debug = true;
 
 void setUpWifi() {
-
   int n = WiFi.scanNetworks();
 
   String webpage = "";
   webpage =  "<html><head><title>Wifi Setup</title></head>";
-  webpage += "<body>";
-  webpage += "<h1><br>Access points</h1>";
+  webpage += "<body><h1><br>Access points</h1>";
   for (int i = 0; i < n; ++i)
   {
-    webpage += WiFi.SSID(i);
-    webpage += " (";
-    webpage += WiFi.RSSI(i);
-    webpage += ")";
+    webpage += WiFi.SSID(i) + " (";
+    webpage += WiFi.RSSI(i) + ")";
     webpage += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
     webpage += "<BR>";
   }
   webpage += "<form action='http://" + WiFi.localIP().toString() + "' method='POST'>";
   webpage += "SSID<input type='text' name='ssis_input'><BR>";
   webpage += "Password:<input type='text' name='password_input'>&nbsp;<input type='submit' value='Set'>";
-  webpage += "</form>";
-  webpage += "</body>";
-  webpage += "</html>";
+  webpage += "</form></body></html>";
 
   server.send(200, "text/html", webpage);
+
   if (server.args() > 0 ) { 
     for ( uint8_t i = 0; i < server.args(); i++ ) {
       Serial.print(server.argName(i)); // Display the argument
@@ -53,10 +53,10 @@ void setUpWifi() {
   boolean testWifi() {
     String esid = "";
     String epass = "";
-    for (int i = 0; i < 32; ++i) {
+    for (int i = SSID_ADDR; i < SSID_SIZE; ++i) {
       esid += char(EEPROM.read(i));
     }
-    for (int i = 32; i < 96; ++i) {
+    for (int i = PASS_ADDR; i < PASS_SIZE; ++i) {
       epass += char(EEPROM.read(i));
     }
     if ( esid.length() > 1 ) {
@@ -74,8 +74,7 @@ void setUpWifi() {
 
   void setupAP() {
     //WiFi.disconnect();
-
-    IPAddress myIP(10, 0, 0, 1);
+    IPAddress myIP(10, 1, 1, 10);
     IPAddress subnet(255, 255, 255, 0);
     WiFi.mode(WIFI_AP_STA);
     WiFi.config(myIP, myIP, subnet);
