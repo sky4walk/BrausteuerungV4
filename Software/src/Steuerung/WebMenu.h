@@ -4,25 +4,36 @@
 #include <ESP8266WebServer.h>
 #include "settings.h"
 
+
 class WebMenu {
   public:
     WebMenu(Settings& data)
       :	mServer(80), mData(data) {
     }
     void init() {
+      mServer.on("/", std::bind(&WebMenu::startMenu, this));
+      mServer.on("/sw", std::bind(&WebMenu::setUpWifi, this));
+      mServer.on("/ss", std::bind(&WebMenu::setUpWifi, this));
+      mServer.on("/re", std::bind(&WebMenu::setUpWifi, this));
+      mServer.on("/br", std::bind(&WebMenu::setUpWifi, this));
+      mServer.on("/fu", std::bind(&WebMenu::setUpWifi, this));
+      mServer.onNotFound([this](){
+        mServer.send(404, "text/plain", "404: Not found");
+      });
       mServer.begin();
-      mServer.on("/", std::bind(&WebMenu::setUpWifi, this));
     }
     void polling() {
       mServer.handleClient();
     }
+private:    
     void setUpWifi() {
+      DebugOut::debug_out("setUpWifi");
       int n = WiFi.scanNetworks();
 
       String webpage = "";
       webpage =  "<html><head><title>Wifi Setup</title></head>";
       webpage += "<body>";
-      webpage += "<h1><br>Access points</h1>";
+      webpage += "<h1>Access points</h1>";
       for (int i = 0; i < n; ++i)
       {
         webpage += WiFi.SSID(i);
@@ -32,12 +43,12 @@ class WebMenu {
         webpage += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
         webpage += "<BR>";
       }
-      webpage += "</p><form method='get' action='setting'><label>SSID: </label><input name='ssid' length=32>";
-      webpage += "<input name='pass' length=64><input type='submit'></form>";
-      //webpage += "<form action='http://" + WiFi.localIP().toString() + "' method='POST'>";
-      //webpage += "SSID<input type='text' name='ssis_input'><BR>";
-      //webpage += "Password:<input type='text' name='password_input'>&nbsp;<input type='submit' value='Set'>";
-      //webpage += "</form>";
+      webpage += "</p><form method='get' action='setting'>";
+      webpage += "<label>SSID: </label>";
+      webpage += "<input name='ssid' length=32>";
+      webpage += "<label>PassWord: </label>";
+      webpage += "<input name='pass' length=64>";
+      webpage += "<input type='submit'></form>";
       webpage += "</body>";
       webpage += "</html>";
 
@@ -45,10 +56,38 @@ class WebMenu {
       
       String ssid = mServer.arg("ssid");
       String pass = mServer.arg("pass");
+      DebugOut::debug_out("setUpWifi " + ssid + " " + pass);
       mData.setWifi(ssid,pass);
-      webpage = "{\"Success\":\"saved to new wifi data\"}";
+      startMenu();
     }
+    
+    void startMenu() {
+      DebugOut::debug_out("startMenu");
+      String webpage = "";
+      webpage =  "<html><head><title>Wifi Setup</title></head>";
+      webpage += "<h1>Main Menu</h1>";
+      webpage += "<body>";
+      webpage += "<form action='http://" + WiFi.localIP().toString() + "/sw' method='POST'>";
+      webpage += "<button>Setup Wifi</button></form><br>";
+      webpage += "<form action='http://" + WiFi.localIP().toString() + "/ss' method='POST'>";
+      webpage += "<button>Setup Switch</button></form><br>";
+      webpage += "<form action='http://" + WiFi.localIP().toString() + "/re' method='POST'>";
+      webpage += "<button>Recipe</button></form><br>";
+      webpage += "<form action='http://" + WiFi.localIP().toString() + "/br' method='POST'>";
+      webpage += "<button>Brew</button></form><br>";
+      webpage += "<form action='http://" + WiFi.localIP().toString() + "/fu' method='POST'>";
+      webpage += "<button>FW update</button></form><br>";
+      webpage += "<form action='http://";
+      webpage +=  WEBNAME;
+      webpage += "' method='POST'>";
+      webpage += "<button>Manual</button></form><br>";
+      webpage += "</form>";
+      webpage += "</body>";
+      mServer.send(200, "text/html", webpage);     
+    }
+    
   private:
+   
     ESP8266WebServer mServer;
     Settings& mData;
 };

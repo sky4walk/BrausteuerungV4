@@ -1,9 +1,9 @@
 #ifndef __WIFICONNECT__
 #define __WIFICONNECT__
 
-#include "settings.h"
-
-#define MY_SSID "mikroSikaru.de"
+#include <ESP8266mDNS.h>
+#include "DebugOut.h"
+#include "Settings.h"
 
 class WifiConnect {
 public:	
@@ -21,8 +21,14 @@ public:
 			WiFi.begin(ssid.c_str(), pass.c_str());
 			while ( c < 20 ) {
 				delay(500);
-				if (WiFi.status() == WL_CONNECTED)
+				if (WiFi.status() == WL_CONNECTED) {
+          DebugOut::debug_out("Connected");
+          DebugOut::debug_out(WiFi.localIP());
+          if ( MDNS.begin(WEBNAME) ) {
+            DebugOut::debug_out("DNS");            
+          }
 					return true;
+				}
 				c++;
 			}
 		}
@@ -31,12 +37,14 @@ public:
 	
 	void setupAP() {
 		//WiFi.disconnect();
-		IPAddress myIP(10, 0, 0, 1);
+		IPAddress myIP(192, 168, 4, 1);
 		IPAddress subnet(255, 255, 255, 0);
 		WiFi.mode(WIFI_AP_STA);
 		WiFi.config(myIP, myIP, subnet);
-		WiFi.softAP(MY_SSID);
+		WiFi.softAP(WEBNAME);
 		delay(2000);
+    DebugOut::debug_out("AccessPoint");
+    DebugOut::debug_out(WiFi.localIP());
 	}
 private:	
 	Settings& mData;
