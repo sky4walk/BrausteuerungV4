@@ -6,7 +6,13 @@
 #define PASS_ADDR	SSID_ADDR + SSID_SIZE
 #define PASS_SIZE	64
 
-class settings {
+class Settings {
+	Settings() {
+		
+	}
+	void init() {
+		EEPROM.begin(512);
+	}
 	String getSSID() {
 		String esid = "";
 		for (int i = SSID_ADDR; i < SSID_SIZE; ++i) {
@@ -35,9 +41,8 @@ class settings {
 			for (int i = PASS_ADDR; i < pass.length() && i < PASS_SIZE; ++i) {
 				EEPROM.write(i, pass[i]);
 			}
+			EEPROM.commit();
 		}
-    }
-EEPROM.commit();
 	}
 };
 #endif
