@@ -7,6 +7,7 @@
 #define PASS_SIZE	64
 
 class Settings {
+public:	
 	Settings() {
 		
 	}
