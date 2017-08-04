@@ -3,9 +3,8 @@
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
 
-#define DEBUG_OUT
-const char* WEBNAME = "mikroSikaru.de";
 
+#include "Constants.h"
 #include "DebugOut.h"
 #include "Settings.h"
 #include "WifiConnect.h"
