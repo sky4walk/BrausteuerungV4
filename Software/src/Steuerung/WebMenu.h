@@ -59,11 +59,13 @@ class WebMenu {
         webpage += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
         webpage += "<BR>";
       }
-      webpage += "</p><form method='get' action='setting'>";
+      webpage += "</p><form method='get' action='/sw'>";
       webpage += "<label>SSID: </label>";
-      webpage += "<input name='ssid' length=32>";
+      webpage += "<input name='ssid' length=32 value='";
+      webpage += mData.getSSID() + "' >";
       webpage += "<label>PassWord: </label>";
-      webpage += "<input name='pass' length=64>";
+      webpage += "<input name='pass' length=64 value='";
+      webpage += mData.getSSID() + "' >";
       webpage += "<input type='submit'></form>";
       webpage += "</body>";
       webpage += "</html>";
@@ -74,7 +76,6 @@ class WebMenu {
       String pass = mServer.arg("pass");
       DebugOut::debug_out("setUpWifi " + ssid + " " + pass);
       mData.setWifi(ssid, pass);
-      startMenu();
     }
 
     void startMenu() {

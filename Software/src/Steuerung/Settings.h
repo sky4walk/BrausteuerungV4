@@ -30,17 +30,17 @@ public:
 	}
 	void setWifi(String& ssid, String& pass) {
 		if (ssid.length() > 0 && pass.length() > 0) {
-			for (int i = SSID_ADDR; i < SSID_SIZE; ++i) {
-				EEPROM.write(i, 0);
+			for (int i = 0; i < SSID_SIZE; ++i) {
+				EEPROM.write(SSID_ADDR+i, 0);
 			}
-			for (int i = PASS_ADDR; i < PASS_SIZE; ++i) {
-				EEPROM.write(i, 0);
+			for (int i = 0; i < PASS_SIZE; ++i) {
+				EEPROM.write(PASS_ADDR+i, 0);
 			}
-			for (int i = SSID_ADDR; i < ssid.length() && i < SSID_SIZE; ++i) {
-				EEPROM.write(i, ssid[i]);
+			for (int i = 0; i < ssid.length() && i < SSID_SIZE; ++i) {
+				EEPROM.write(SSID_ADDR+i, ssid[i]);
 			}
-			for (int i = PASS_ADDR; i < pass.length() && i < PASS_SIZE; ++i) {
-				EEPROM.write(i, pass[i]);
+			for (int i = 0; i < pass.length() && i < PASS_SIZE; ++i) {
+				EEPROM.write(PASS_ADDR+i, pass[i]);
 			}
 			EEPROM.commit();
 		}
