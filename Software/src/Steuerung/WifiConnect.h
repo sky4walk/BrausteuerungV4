@@ -46,9 +46,9 @@ class WifiConnect {
       if (WiFi.waitForConnectResult() == WL_CONNECTED) {
         MDNS.begin(WEBNAME);
         MDNS.addService("http", "tcp", 80);
-        DebugOut::debug_out("AccessPoint");
-        DebugOut::debug_out(WiFi.localIP());
       }
+      DebugOut::debug_out("AccessPoint");
+      DebugOut::debug_out(WiFi.localIP());
     }
   private:
     Settings& mData;

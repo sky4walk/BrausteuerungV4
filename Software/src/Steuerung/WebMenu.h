@@ -16,13 +16,23 @@ class WebMenu {
       mServer.on("/ss", std::bind(&WebMenu::setUpWifi, this));
       mServer.on("/re", std::bind(&WebMenu::setUpWifi, this));
       mServer.on("/br", std::bind(&WebMenu::setUpWifi, this));
-      mServer.on("/fu", std::bind(&WebMenu::setUpWifi, this));
-      mServer.on("/fu", HTTP_POST, [this]() {
-          mServer.sendHeader("Connection", "close");
-          mServer.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
-          ESP.restart();
-        }, std::bind(&WebMenu::FWUpdate, this)
-      );
+      mServer.on("/fu", [this]() {
+        DebugOut::debug_out("setUpWifi");
+        String webpage = "<form method='POST' action='/fud' enctype='multipart/form-data'>";
+        webpage +="Firmware Version: ";
+        webpage += String(FW_VERSION) + "<br>";
+        webpage += "<input type='file' name='update'>";
+        webpage += "<input type='submit' value='Update'></form>";
+        mServer.send(200, "text/html", webpage );
+      });
+
+      mServer.on("/fud", HTTP_POST, [this]() {
+        DebugOut::debug_out("download");
+        mServer.sendHeader("Connection", "close");
+        mServer.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+        ESP.restart();
+      }, std::bind(&WebMenu::FWUpdate, this) );
+
       mServer.onNotFound([this]() {
         mServer.send(404, "text/plain", "404: Not found");
       });
@@ -73,15 +83,15 @@ class WebMenu {
       webpage =  "<html><head><title>Wifi Setup</title></head>";
       webpage += "<h1>Main Menu</h1>";
       webpage += "<body>";
-      webpage += "<form action='http://" + WiFi.localIP().toString() + "/sw' method='POST'>";
+      webpage += "<form action='/sw' method='POST'>";
       webpage += "<button>Setup Wifi</button></form><br>";
-      webpage += "<form action='http://" + WiFi.localIP().toString() + "/ss' method='POST'>";
+      webpage += "<form action='/ss' method='POST'>";
       webpage += "<button>Setup Switch</button></form><br>";
-      webpage += "<form action='http://" + WiFi.localIP().toString() + "/re' method='POST'>";
+      webpage += "<form action='/re' method='POST'>";
       webpage += "<button>Recipe</button></form><br>";
-      webpage += "<form action='http://" + WiFi.localIP().toString() + "/br' method='POST'>";
+      webpage += "<form action='/br' method='POST'>";
       webpage += "<button>Brew</button></form><br>";
-      webpage += "<form action='http://" + WiFi.localIP().toString() + "/fu' method='POST'>";
+      webpage += "<form action='/fu' method='POST'>";
       webpage += "<button>FW update</button></form><br>";
       webpage += "<form action='http://";
       webpage +=  WEBNAME;
@@ -92,21 +102,23 @@ class WebMenu {
       mServer.send(200, "text/html", webpage);
     }
 
-    void FWUpdate() {      
+    void FWUpdate() {
       HTTPUpload& upload = mServer.upload();
       if (upload.status == UPLOAD_FILE_START) {
+        DebugOut::debug_out("Update:" + upload.filename);
         Serial.setDebugOutput(true);
         WiFiUDP::stopAll();
-        DebugOut::debug_out("Update:" + upload.filename);
         uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
         if (!Update.begin(maxSketchSpace)) {
           Update.printError(Serial);
         }
       } else if (upload.status == UPLOAD_FILE_WRITE) {
+        DebugOut::debug_out("UW");
         if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
           Update.printError(Serial);
         }
       } else if (upload.status == UPLOAD_FILE_END) {
+        DebugOut::debug_out("UE");
         if (Update.end(true)) {
           DebugOut::debug_out("Update success: " + upload.totalSize);
         } else {
@@ -114,7 +126,7 @@ class WebMenu {
         }
         Serial.setDebugOutput(false);
       }
-      yield();     
+      yield();
     }
   private:
     ESP8266WebServer mServer;
