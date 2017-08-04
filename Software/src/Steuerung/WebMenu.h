@@ -11,13 +11,19 @@ class WebMenu {
       :	mServer(80), mData(data) {
     }
     void init() {
-      mServer.on("/", std::bind(&WebMenu::startMenu, this));
+      mServer.on("/",   std::bind(&WebMenu::startMenu, this));
       mServer.on("/sw", std::bind(&WebMenu::setUpWifi, this));
       mServer.on("/ss", std::bind(&WebMenu::setUpWifi, this));
       mServer.on("/re", std::bind(&WebMenu::setUpWifi, this));
       mServer.on("/br", std::bind(&WebMenu::setUpWifi, this));
       mServer.on("/fu", std::bind(&WebMenu::setUpWifi, this));
-      mServer.onNotFound([this](){
+      mServer.on("/fu", HTTP_POST, [this]() {
+          mServer.sendHeader("Connection", "close");
+          mServer.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+          ESP.restart();
+        }, std::bind(&WebMenu::FWUpdate, this)
+      );
+      mServer.onNotFound([this]() {
         mServer.send(404, "text/plain", "404: Not found");
       });
       mServer.begin();
@@ -25,7 +31,7 @@ class WebMenu {
     void polling() {
       mServer.handleClient();
     }
-private:    
+  private:
     void setUpWifi() {
       DebugOut::debug_out("setUpWifi");
       int n = WiFi.scanNetworks();
@@ -53,14 +59,14 @@ private:
       webpage += "</html>";
 
       mServer.send(200, "text/html", webpage);
-      
+
       String ssid = mServer.arg("ssid");
       String pass = mServer.arg("pass");
       DebugOut::debug_out("setUpWifi " + ssid + " " + pass);
-      mData.setWifi(ssid,pass);
+      mData.setWifi(ssid, pass);
       startMenu();
     }
-    
+
     void startMenu() {
       DebugOut::debug_out("startMenu");
       String webpage = "";
@@ -83,11 +89,34 @@ private:
       webpage += "<button>Manual</button></form><br>";
       webpage += "</form>";
       webpage += "</body>";
-      mServer.send(200, "text/html", webpage);     
+      mServer.send(200, "text/html", webpage);
     }
-    
+
+    void FWUpdate() {      
+      HTTPUpload& upload = mServer.upload();
+      if (upload.status == UPLOAD_FILE_START) {
+        Serial.setDebugOutput(true);
+        WiFiUDP::stopAll();
+        DebugOut::debug_out("Update:" + upload.filename);
+        uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+        if (!Update.begin(maxSketchSpace)) {
+          Update.printError(Serial);
+        }
+      } else if (upload.status == UPLOAD_FILE_WRITE) {
+        if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+          Update.printError(Serial);
+        }
+      } else if (upload.status == UPLOAD_FILE_END) {
+        if (Update.end(true)) {
+          DebugOut::debug_out("Update success: " + upload.totalSize);
+        } else {
+          Update.printError(Serial);
+        }
+        Serial.setDebugOutput(false);
+      }
+      yield();     
+    }
   private:
-   
     ESP8266WebServer mServer;
     Settings& mData;
 };

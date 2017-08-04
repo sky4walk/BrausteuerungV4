@@ -4,7 +4,7 @@
 #include <EEPROM.h>
 
 #define DEBUG_OUT
-#define WEBNAME "mikroSikaru.de"
+const char* WEBNAME = "mikroSikaru.de";
 
 #include "DebugOut.h"
 #include "Settings.h"
