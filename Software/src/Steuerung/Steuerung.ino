@@ -17,6 +17,7 @@ WebMenu menu(data);
 void setup() {
 	data.init();
   netzwerk.init();
+  menu.init();
   
   Serial.begin(115200);
 
@@ -25,7 +26,7 @@ void setup() {
     netzwerk.setupAP();
   }
 
-  menu.init();
+  menu.startServer();
   
 }
 

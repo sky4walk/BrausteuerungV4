@@ -1,9 +1,12 @@
 #ifndef __WEBMENU__
 #define __WEBMENU__
 
+#include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <FS.h>
 #include "settings.h"
 
+const char* BODY_STYLE = "<style>body { background-color: #E6E6FA; font-family: Arial, Helvetica, Sans-Serif; Color: blue;}</style>";
 
 class WebMenu {
   public:
@@ -11,31 +14,41 @@ class WebMenu {
       :	mServer(80), mData(data) {
     }
     void init() {
-      mServer.on("/",   std::bind(&WebMenu::startMenu, this));
-      mServer.on("/sw", std::bind(&WebMenu::setUpWifi, this));
-      mServer.on("/ss", std::bind(&WebMenu::setUpWifi, this));
-      mServer.on("/re", std::bind(&WebMenu::setUpWifi, this));
-      mServer.on("/br", std::bind(&WebMenu::setUpWifi, this));
-      mServer.on("/fu", [this]() {
-        DebugOut::debug_out("setUpWifi");
-        String webpage = "<form method='POST' action='/fud' enctype='multipart/form-data'>";
-        webpage +="Firmware Version: ";
-        webpage += String(FW_VERSION) + "<br>";
-        webpage += "<input type='file' name='update'>";
-        webpage += "<input type='submit' value='Update'></form>";
-        mServer.send(200, "text/html", webpage );
-      });
+      mServer.on("/",    std::bind(&WebMenu::startMenu, this));
+      mServer.on("/sw",  std::bind(&WebMenu::setUpWifi, this));
+      /*
+            mServer.on("/ss",     HTTP_GET,  std::bind(&WebMenu::setUpWifiGet, this));
+            mServer.on("/re",     HTTP_GET,  std::bind(&WebMenu::setUpWifiGet, this));
+            mServer.on("/br",     HTTP_GET,  std::bind(&WebMenu::setUpWifiGet, this));
+            mServer.on("/fu", [this]() {
+              DebugOut::debug_out("setUpWifi");
+              String webpage = "<form method='POST' action='/fud' enctype='multipart/form-data'>";
+              webpage += "Firmware Version: ";
+              webpage += String(FW_VERSION) + "<br>";
+              webpage += "<input type='file' name='update'>";
+              webpage += "<input type='submit' value='Update'></form>";
+              mServer.send(200, "text/html", webpage );
+            });
 
-      mServer.on("/fud", HTTP_POST, [this]() {
-        DebugOut::debug_out("download");
-        mServer.sendHeader("Connection", "close");
-        mServer.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
-        ESP.restart();
-      }, std::bind(&WebMenu::FWUpdate, this) );
-
+            mServer.on("/fud", HTTP_POST, [this]() {
+              DebugOut::debug_out("download");
+              mServer.sendHeader("Connection", "close");
+              mServer.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+              ESP.restart();
+            }, std::bind(&WebMenu::FWUpdate, this) );
+      */
       mServer.onNotFound([this]() {
         mServer.send(404, "text/plain", "404: Not found");
       });
+
+    }
+    void startServer() {
+      if ( MDNS.begin(DNSNAME) ) {
+        MDNS.addService("http", "tcp", 80);
+        DebugOut::debug_out(DNSNAME);
+      } else {
+        DebugOut::debug_out("No DNS");
+      }
       mServer.begin();
     }
     void polling() {
@@ -47,55 +60,59 @@ class WebMenu {
       int n = WiFi.scanNetworks();
 
       String webpage = "";
-      webpage =  "<html><head><title>Wifi Setup</title></head>";
-      webpage += "<body>";
+      webpage =  "<html><head><title>Wifi Setup</title>";
+      webpage += BODY_STYLE;
+      webpage += "</head><body>";
       webpage += "<h1>Access points</h1>";
       for (int i = 0; i < n; ++i)
       {
+        webpage += "<form action=\"/stpwifi\" method=\"GET\"> <button>";
         webpage += WiFi.SSID(i);
         webpage += " (";
         webpage += WiFi.RSSI(i);
         webpage += ")";
         webpage += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
-        webpage += "<BR>";
+        webpage += "</button></form>";
       }
-      webpage += "</p><form method='get' action='/sw'>";
-      webpage += "<label>SSID: </label>";
-      webpage += "<input name='ssid' length=32 value='";
-      webpage += mData.getSSID() + "' >";
-      webpage += "<label>PassWord: </label>";
-      webpage += "<input name='pass' length=64 value='";
-      webpage += mData.getSSID() + "' >";
-      webpage += "<input type='submit'></form>";
-      webpage += "</body>";
-      webpage += "</html>";
+      webpage += "</body></html>";
 
       mServer.send(200, "text/html", webpage);
-
-      String ssid = mServer.arg("ssid");
-      String pass = mServer.arg("pass");
-      DebugOut::debug_out("setUpWifi " + ssid + " " + pass);
-      mData.setWifi(ssid, pass);
+      if (mServer.args() > 0 ) {
+        for ( uint8_t i = 0; i < mServer.args(); i++ ) {
+          DebugOut::debug_out(mServer.argName(i));
+        }
+      }
     }
-
+    void setUpWifiPost() {
+      DebugOut::debug_out("setUpWifiPost");
+      if ( ! mServer.hasArg("ssid") || ! mServer.hasArg("password")
+           || mServer.arg("username") == NULL || mServer.arg("password") == NULL) {
+        mServer.send(400, "text/plain", "400: Invalid Request");
+      } else {
+        String ssid = mServer.arg("ssid");
+        String pass = mServer.arg("pass");
+        DebugOut::debug_out("setUpWifi " + ssid + " " + pass);
+        mData.setWifi(ssid, pass);
+      }
+    }
     void startMenu() {
       DebugOut::debug_out("startMenu");
       String webpage = "";
-      webpage =  "<html><head><title>Wifi Setup</title></head>";
-      webpage += "<h1>Main Menu</h1>";
-      webpage += "<body>";
-      webpage += "<form action='/sw' method='POST'>";
+      webpage =  "<html><head><title>Wifi Setup</title>";
+      webpage += BODY_STYLE;
+      webpage += "</head><body><h1>Main Menu</h1>";
+      webpage += "<form action='/sw' method='GET'>";
       webpage += "<button>Setup Wifi</button></form><br>";
-      webpage += "<form action='/ss' method='POST'>";
+      webpage += "<form action='/ss' method='GET'>";
       webpage += "<button>Setup Switch</button></form><br>";
-      webpage += "<form action='/re' method='POST'>";
+      webpage += "<form action='/re' method='GET'>";
       webpage += "<button>Recipe</button></form><br>";
-      webpage += "<form action='/br' method='POST'>";
+      webpage += "<form action='/br' method='GET'>";
       webpage += "<button>Brew</button></form><br>";
-      webpage += "<form action='/fu' method='POST'>";
+      webpage += "<form action='/fu' method='GET'>";
       webpage += "<button>FW update</button></form><br>";
       webpage += "<form action='http://";
-      webpage +=  WEBNAME;
+      webpage +=  DNSNAME;
       webpage += "' method='POST'>";
       webpage += "<button>Manual</button></form><br>";
       webpage += "</form>";
