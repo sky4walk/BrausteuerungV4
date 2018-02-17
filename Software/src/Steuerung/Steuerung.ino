@@ -21,7 +21,6 @@ void setup() {
   
   Serial.begin(115200);
 
-  data.deleteAll();
   if ( !netzwerk.testWifi() )
   {
     netzwerk.setupAP();

@@ -10,9 +10,12 @@ const char* BODY_STYLE = "<style>body { background-color: #E6E6FA; font-family: 
 
 class WebMenu {
   public:
+/*----------------------------------------------------------------------------------*/    
+  
     WebMenu(Settings& data)
       :	mServer(80), mData(data) {
     }
+/*----------------------------------------------------------------------------------*/    
     void init() {
       mServer.on("/",    std::bind(&WebMenu::startMenu, this));
       mServer.on("/sw",  std::bind(&WebMenu::setUpWifi, this));
@@ -40,8 +43,8 @@ class WebMenu {
       mServer.onNotFound([this]() {
         mServer.send(404, "text/plain", "404: Not found");
       });
-
     }
+/*----------------------------------------------------------------------------------*/    
     void startServer() {
       if ( MDNS.begin(DNSNAME) ) {
         MDNS.addService("http", "tcp", 80);
@@ -54,7 +57,34 @@ class WebMenu {
     void polling() {
       mServer.handleClient();
     }
+/*----------------------------------------------------------------------------------*/    
   private:
+/*----------------------------------------------------------------------------------*/    
+     void startMenu() {
+      DebugOut::debug_out("startMenu");
+      String webpage = "";
+      webpage =  "<html><head><title>mikroSikaru.de Brausteuerung V4</title>";
+      webpage += BODY_STYLE;
+      webpage += "</head><body><h1>Main Menu</h1>";
+      webpage += "<form action='/sw' method='GET'>";
+      webpage += "<button>Setup Wifi</button></form><br>";
+      webpage += "<form action='/ss' method='GET'>";
+      webpage += "<button>Setup Switch</button></form><br>";
+      webpage += "<form action='/re' method='GET'>";
+      webpage += "<button>Recipe</button></form><br>";
+      webpage += "<form action='/br' method='GET'>";
+      webpage += "<button>Brew</button></form><br>";
+      webpage += "<form action='/fu' method='GET'>";
+      webpage += "<button>FW update</button></form><br>";
+      webpage += "<form action='http://";
+      webpage +=  DNSNAME;
+      webpage += "' method='POST'>";
+      webpage += "<button>Manual</button></form><br>";
+      webpage += "</form>";
+      webpage += "</body>";
+      mServer.send(200, "text/html", webpage);
+    }
+/*----------------------------------------------------------------------------------*/    
     void setUpWifi() {
       DebugOut::debug_out("setUpWifi");
       int n = WiFi.scanNetworks();
@@ -64,16 +94,21 @@ class WebMenu {
       webpage += BODY_STYLE;
       webpage += "</head><body>";
       webpage += "<h1>Access points</h1>";
+
+      webpage += "<form action=\"/sw\" method=\"POST\">";              
       for (int i = 0; i < n; ++i)
       {
-        webpage += "<form action=\"/sw\" method=\"GET\"> <button>";
+        webpage += "<button type=\"submit\" name=\"ssid_in\" value=\"";
+        webpage += WiFi.SSID(i) + "\">";
         webpage += WiFi.SSID(i);
         webpage += " (";
         webpage += WiFi.RSSI(i);
         webpage += ")";
         webpage += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
-        webpage += "</button></form>";
+        webpage += "</button><br>";
       }
+      webpage += "</form>";
+      
       webpage += "<form action=\"/sw\" method=\"POST\">";
       webpage += "SSID:<input type='text' name=\"ssid_in\" ";
       webpage += "value=\"" +mData.getSSID()+"\"><br>";
@@ -102,31 +137,7 @@ class WebMenu {
         }
       }
     }
-    void startMenu() {
-      DebugOut::debug_out("startMenu");
-      String webpage = "";
-      webpage =  "<html><head><title>mikroSikaru.de Brausteuerung V4</title>";
-      webpage += BODY_STYLE;
-      webpage += "</head><body><h1>Main Menu</h1>";
-      webpage += "<form action='/sw' method='GET'>";
-      webpage += "<button>Setup Wifi</button></form><br>";
-      webpage += "<form action='/ss' method='GET'>";
-      webpage += "<button>Setup Switch</button></form><br>";
-      webpage += "<form action='/re' method='GET'>";
-      webpage += "<button>Recipe</button></form><br>";
-      webpage += "<form action='/br' method='GET'>";
-      webpage += "<button>Brew</button></form><br>";
-      webpage += "<form action='/fu' method='GET'>";
-      webpage += "<button>FW update</button></form><br>";
-      webpage += "<form action='http://";
-      webpage +=  DNSNAME;
-      webpage += "' method='POST'>";
-      webpage += "<button>Manual</button></form><br>";
-      webpage += "</form>";
-      webpage += "</body>";
-      mServer.send(200, "text/html", webpage);
-    }
-
+/*----------------------------------------------------------------------------------*/    
     void FWUpdate() {
       HTTPUpload& upload = mServer.upload();
       if (upload.status == UPLOAD_FILE_START) {
@@ -153,6 +164,7 @@ class WebMenu {
       }
       yield();
     }
+/*----------------------------------------------------------------------------------*/        
   private:
     ESP8266WebServer mServer;
     Settings& mData;

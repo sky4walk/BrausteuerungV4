@@ -14,7 +14,6 @@ class WifiConnect {
     }
 
     bool testWifi() {
-      /*
       String ssid = mData.getSSID();
       String pass = mData.getPASS();
       if ( ssid.length() > 1 ) {
@@ -22,17 +21,15 @@ class WifiConnect {
         WiFi.begin(ssid.c_str(), pass.c_str());
         DebugOut::debug_out(ssid+" "+pass);
         while ( c < 20 ) {
-          DebugOut::debug_out(".")
+          DebugOut::debug_out(".");
           delay(500);
           if (WiFi.status() == WL_CONNECTED) {
-            DebugOut::debug_out("Connected");
-            DebugOut::debug_out(WiFi.localIP());
+            DebugOut::debug_out("Connected:"+WiFi.localIP());
             return true;
           }
           c++;
         }
       }
-      */
       return false;
     }
 
@@ -42,13 +39,11 @@ class WifiConnect {
       WiFi.disconnect();
       WiFi.mode(WIFI_OFF); 
       WiFi.mode(WIFI_AP);
-      //WiFi.mode(WIFI_AP_STA);
       WiFi.softAPConfig(myIP, myIP, subnet);
       WiFi.softAP(APSSID);       
       delay(1000);      
       IPAddress myIPget = WiFi.softAPIP(); 
-      DebugOut::debug_out("AccessPoint");
-      DebugOut::debug_out(myIPget);   
+      DebugOut::debug_out("AP:"+myIPget);
     }
   private:
     Settings& mData;
