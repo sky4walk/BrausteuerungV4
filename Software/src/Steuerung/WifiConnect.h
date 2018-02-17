@@ -20,7 +20,9 @@ class WifiConnect {
       if ( ssid.length() > 1 ) {
         int c = 0;
         WiFi.begin(ssid.c_str(), pass.c_str());
+        DebugOut::debug_out(ssid+" "+pass);
         while ( c < 20 ) {
+          DebugOut::debug_out(".")
           delay(500);
           if (WiFi.status() == WL_CONNECTED) {
             DebugOut::debug_out("Connected");

@@ -66,7 +66,7 @@ class WebMenu {
       webpage += "<h1>Access points</h1>";
       for (int i = 0; i < n; ++i)
       {
-        webpage += "<form action=\"/stpwifi\" method=\"GET\"> <button>";
+        webpage += "<form action=\"/sw\" method=\"GET\"> <button>";
         webpage += WiFi.SSID(i);
         webpage += " (";
         webpage += WiFi.RSSI(i);
@@ -74,31 +74,38 @@ class WebMenu {
         webpage += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
         webpage += "</button></form>";
       }
-      webpage += "</body></html>";
-
+      webpage += "<form action=\"/sw\" method=\"POST\">";
+      webpage += "SSID:<input type='text' name=\"ssid_in\" ";
+      webpage += "value=\"" +mData.getSSID()+"\"><br>";
+      webpage += "PW:<input type='text' name=\"pw_in\" ";
+      webpage += "value=\"" +mData.getPASS()+"\"><br>";
+      webpage += "<input type=\"submit\" value=\"Enter\"><br>"; 
+      webpage += "</form>";
+      
+      webpage += "<form action=\"/\" method=\"POST\">";
+      webpage += "<input type=\"submit\" value=\"Back\">";
+      webpage += "</form></body></html>";
+      
       mServer.send(200, "text/html", webpage);
       if (mServer.args() > 0 ) {
         for ( uint8_t i = 0; i < mServer.args(); i++ ) {
-          DebugOut::debug_out(mServer.argName(i));
+          String srvArgName = mServer.argName(i);
+          String srvArg = mServer.arg(i);
+          DebugOut::debug_out(srvArgName);
+          DebugOut::debug_out(srvArg);
+          if (srvArgName == "ssid_in") {          
+             mData.setSSID(srvArg);
+          }
+          if (srvArgName == "pw_in") {
+             mData.setPASS(srvArg);             
+          }
         }
-      }
-    }
-    void setUpWifiPost() {
-      DebugOut::debug_out("setUpWifiPost");
-      if ( ! mServer.hasArg("ssid") || ! mServer.hasArg("password")
-           || mServer.arg("username") == NULL || mServer.arg("password") == NULL) {
-        mServer.send(400, "text/plain", "400: Invalid Request");
-      } else {
-        String ssid = mServer.arg("ssid");
-        String pass = mServer.arg("pass");
-        DebugOut::debug_out("setUpWifi " + ssid + " " + pass);
-        mData.setWifi(ssid, pass);
       }
     }
     void startMenu() {
       DebugOut::debug_out("startMenu");
       String webpage = "";
-      webpage =  "<html><head><title>Wifi Setup</title>";
+      webpage =  "<html><head><title>mikroSikaru.de Brausteuerung V4</title>";
       webpage += BODY_STYLE;
       webpage += "</head><body><h1>Main Menu</h1>";
       webpage += "<form action='/sw' method='GET'>";
