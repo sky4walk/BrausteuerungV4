@@ -20,7 +20,9 @@ void setup() {
   menu.init();
   
   Serial.begin(115200);
-
+  
+  delay(10);
+  
   if ( !netzwerk.testWifi() )
   {
     netzwerk.setupAP();

@@ -3,6 +3,7 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPUpdateServer.h>
 #include <FS.h>
 #include "settings.h"
 
@@ -19,27 +20,7 @@ class WebMenu {
     void init() {
       mServer.on("/",    std::bind(&WebMenu::startMenu, this));
       mServer.on("/sw",  std::bind(&WebMenu::setUpWifi, this));
-      /*
-            mServer.on("/ss",     HTTP_GET,  std::bind(&WebMenu::setUpWifiGet, this));
-            mServer.on("/re",     HTTP_GET,  std::bind(&WebMenu::setUpWifiGet, this));
-            mServer.on("/br",     HTTP_GET,  std::bind(&WebMenu::setUpWifiGet, this));
-            mServer.on("/fu", [this]() {
-              DebugOut::debug_out("setUpWifi");
-              String webpage = "<form method='POST' action='/fud' enctype='multipart/form-data'>";
-              webpage += "Firmware Version: ";
-              webpage += String(FW_VERSION) + "<br>";
-              webpage += "<input type='file' name='update'>";
-              webpage += "<input type='submit' value='Update'></form>";
-              mServer.send(200, "text/html", webpage );
-            });
-
-            mServer.on("/fud", HTTP_POST, [this]() {
-              DebugOut::debug_out("download");
-              mServer.sendHeader("Connection", "close");
-              mServer.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
-              ESP.restart();
-            }, std::bind(&WebMenu::FWUpdate, this) );
-      */
+     
       mServer.onNotFound([this]() {
         mServer.send(404, "text/plain", "404: Not found");
       });
@@ -47,12 +28,15 @@ class WebMenu {
 /*----------------------------------------------------------------------------------*/    
     void startServer() {
       if ( MDNS.begin(DNSNAME) ) {
+        mHttpUpdater.setup(&mServer);
+        mServer.begin();
         MDNS.addService("http", "tcp", 80);
         DebugOut::debug_out(DNSNAME);
       } else {
+        mHttpUpdater.setup(&mServer);
+        mServer.begin();
         DebugOut::debug_out("No DNS");
       }
-      mServer.begin();
     }
     void polling() {
       mServer.handleClient();
@@ -74,7 +58,7 @@ class WebMenu {
       webpage += "<button>Recipe</button></form><br>";
       webpage += "<form action='/br' method='GET'>";
       webpage += "<button>Brew</button></form><br>";
-      webpage += "<form action='/fu' method='GET'>";
+      webpage += "<form action='/update' method='GET'>";
       webpage += "<button>FW update</button></form><br>";
       webpage += "<form action='http://";
       webpage +=  DNSNAME;
@@ -137,36 +121,10 @@ class WebMenu {
         }
       }
     }
-/*----------------------------------------------------------------------------------*/    
-    void FWUpdate() {
-      HTTPUpload& upload = mServer.upload();
-      if (upload.status == UPLOAD_FILE_START) {
-        DebugOut::debug_out("Update:" + upload.filename);
-        Serial.setDebugOutput(true);
-        WiFiUDP::stopAll();
-        uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
-        if (!Update.begin(maxSketchSpace)) {
-          Update.printError(Serial);
-        }
-      } else if (upload.status == UPLOAD_FILE_WRITE) {
-        DebugOut::debug_out("UW");
-        if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
-          Update.printError(Serial);
-        }
-      } else if (upload.status == UPLOAD_FILE_END) {
-        DebugOut::debug_out("UE");
-        if (Update.end(true)) {
-          DebugOut::debug_out("Update success: " + upload.totalSize);
-        } else {
-          Update.printError(Serial);
-        }
-        Serial.setDebugOutput(false);
-      }
-      yield();
-    }
 /*----------------------------------------------------------------------------------*/        
   private:
     ESP8266WebServer mServer;
+    ESP8266HTTPUpdateServer mHttpUpdater;
     Settings& mData;
 };
 

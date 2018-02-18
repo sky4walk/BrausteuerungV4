@@ -18,13 +18,18 @@ class WifiConnect {
       String pass = mData.getPASS();
       if ( ssid.length() > 1 ) {
         int c = 0;
+        //WiFi.disconnect();
+        //WiFi.mode(WIFI_STA);
+        WiFi.mode(WIFI_AP_STA);
         WiFi.begin(ssid.c_str(), pass.c_str());
         DebugOut::debug_out(ssid+" "+pass);
-        while ( c < 20 ) {
-          DebugOut::debug_out(".");
+        while ( c < 20 ) {          
+          DebugOut::debug_out(c);
           delay(500);
+          ESP.wdtFeed();
+          yield();
           if (WiFi.status() == WL_CONNECTED) {
-            DebugOut::debug_out("Connected:"+WiFi.localIP());
+            DebugOut::debug_out(WiFi.localIP());
             return true;
           }
           c++;
@@ -43,7 +48,7 @@ class WifiConnect {
       WiFi.softAP(APSSID);       
       delay(1000);      
       IPAddress myIPget = WiFi.softAPIP(); 
-      DebugOut::debug_out("AP:"+myIPget);
+      DebugOut::debug_out(myIPget);
     }
   private:
     Settings& mData;
