@@ -1,0 +1,24 @@
+Drill report for BrausteuerungV4_Prototypplatine.kicad_pcb
+Created on 26.09.2023 18:35:59
+
+Copper Layer Stackup:
+    =============================================================
+    L1 :  F.Cu                      front
+    L2 :  B.Cu                      back
+
+
+Drill file 'BrausteuerungV4_Prototypplatine-PTH.drl' contains
+    plated through holes:
+    =============================================================
+    T1  0,800mm  0,0315"  (4 holes)
+    T2  1,016mm  0,0400"  (19 holes)
+    T3  1,200mm  0,0472"  (5 holes)
+
+    Total plated holes count 28
+
+
+Drill file 'BrausteuerungV4_Prototypplatine-NPTH.drl' contains
+    unplated through holes:
+    =============================================================
+
+    Total unplated holes count 0
