@@ -1,20 +1,21 @@
 
 itemsShown="both"; // [both,box,lid]
-boxLength=80;
-boxWidth=40;
-boxHeight=40;
-cornerRadius=5;
 wallThickness=2;
 bottomThickness=2;
+boxLength=35+2*wallThickness;
+boxWidth=27+2*wallThickness;
+boxHeight=37+bottomThickness;
+cornerRadius=5;
 lidThickness=2;
 lidClearance=0.2;
 lidEdgeThickness=0.5;
-dLoch = 8;
-dLochStrom = 9;
-dLochKabel = 4;
-dLochPoti  = 9;
-switchL = 20;
-switchH = 14;
+// openings
+openUSBPos = 0;
+openUSBh = 5;
+openUSBb = 9;
+openTempPos = 15;
+openTemph = 7;
+openTempb = 15;
 // Notch in the lid
 withNotch=true;
 $fn = 128;
@@ -26,19 +27,10 @@ module showBoxAll() {
     difference() 
     {
         showBox();
-        rotate([90,0,90]){
-
-            translate([boxWidth/4,boxHeight/1.3,-0.5])
-                cylinder(10+1,dLoch/2,dLoch/2);
-
-            translate([boxWidth/2,12,boxLength-0.5-wallThickness])
-                cylinder(10+1,dLochStrom/2,dLochStrom/2);
-            
-        }
-        //seite
-        rotate([90,0,0])
-            translate([(boxLength-switchL)/2,boxHeight-1.5*switchH,-.5-wallThickness])
-                cube([switchL,switchH,wallThickness+1]);
+        translate ([-0.1, boxWidth/2-openUSBb/2,bottomThickness])
+            cube([openUSBh,openUSBb,wallThickness*2]);
+        translate ([boxLength-wallThickness-.1, boxWidth/2-openTempb/2,bottomThickness+openTempPos])
+            cube([openTemph,openTempb,wallThickness*2]);            
     }
 }
 module showLid(){
