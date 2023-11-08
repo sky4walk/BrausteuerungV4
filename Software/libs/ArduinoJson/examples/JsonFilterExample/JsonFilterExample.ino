@@ -1,8 +1,8 @@
 // ArduinoJson - https://arduinojson.org
-// Copyright Benoit Blanchon 2014-2021
+// Copyright © 2014-2023, Benoit BLANCHON
 // MIT License
 //
-// This example shows how to use DeserializationOpion::Filter
+// This example shows how to use DeserializationOption::Filter
 //
 // https://arduinojson.org/v6/example/filter/
 
