@@ -192,7 +192,7 @@ class Settings
     void setHeatState(bool heatState)
     {
       params.heatState = heatState;
-    }
+    }   
     bool getTempReached()
     {
       return params.tempReached;
