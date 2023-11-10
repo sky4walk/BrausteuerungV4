@@ -29,6 +29,7 @@ void setup() {
 
   delay(200);
 
+  CONSOLELN(F("Start"));
   CONSOLELN(ESP.getSdkVersion());
   pinMode(LED_BUILTIN, OUTPUT);
   
