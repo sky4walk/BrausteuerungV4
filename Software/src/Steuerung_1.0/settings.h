@@ -2,11 +2,14 @@
 #ifndef __SETTINGS__
 #define __SETTINGS__
 
+#include "DbgConsole.h"
+
 #define MAXRAST             16
 #define TEMPRESOLUTION      12
 #define PIDOWINTERVAL       (1000 / (1 << (12 - TEMPRESOLUTION)))
 #define PIDWINDOWSIZE       (PIDOWINTERVAL * 6)
 #define PIDMINWINDOW        500
+
 ///////////////////////////////////////////////////////////////////////////////
 // settings
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,7 +35,9 @@ class Settings
       params.actRast            = 0;
       params.started            = false;
       params.heatState          = false;
-      params.UseDefault         = true;      
+      params.heatStateChanged   = false;
+      params.UseDefault         = true;
+      params.configMode         = true;      
       params.tempReached        = false;
       params.shouldSave         = false;
       params.restartEsp         = false;
@@ -110,7 +115,12 @@ class Settings
     {
       params.PidMinWindow = PidMinWindow;
     }
-        
+    double getPidOutput() {
+      return params.pidOutput;
+    }
+    void setPidOutput(double pidOutput) {
+      params.pidOutput = pidOutput;
+    }
     void setWebPassWd(String webPassWd) {
       params.webPassWd = webPassWd;
     }
@@ -177,6 +187,12 @@ class Settings
     void setActRast(int actRast) {
       params.actRast = actRast;
     }
+    int getActState() {
+      return params.actState;
+    }
+    void setActState(int actState) {
+      params.actState = actState;
+    }
     bool getStarted()
     {
       return params.started;
@@ -192,6 +208,14 @@ class Settings
     void setHeatState(bool heatState)
     {
       params.heatState = heatState;
+    }
+    bool getHeatStateChanged()
+    {
+      return params.heatStateChanged;
+    }
+    void setHeatStateChanged(bool heatStateChanged)
+    {
+      params.heatStateChanged = heatStateChanged;
     }   
     bool getTempReached()
     {
@@ -208,6 +232,12 @@ class Settings
     void setUseDefault(bool UseDefault)
     {
       params.UseDefault = UseDefault;
+    }
+    bool getConfigMode() {
+      return params.configMode;
+    }
+    void setConfigMode(bool configMode) {
+      params.configMode = configMode;
     }
     bool getRestartEsp() {
       return params.restartEsp;
@@ -299,6 +329,7 @@ class Settings
       unsigned long PidOWinterval;
       unsigned long PidWindowSize;
       unsigned long PidMinWindow;
+      double pidOutput;
       int switchProtocol;
       int switchPulseLength;
       int switchRepeat;
@@ -306,12 +337,15 @@ class Settings
       unsigned long switchOn;
       unsigned long switchOff;
       int actRast;
+      int actState;
       float actTemp;
       bool started;
       bool heatState;
+      bool heatStateChanged;
       bool tempReached;
       bool UseDefault;
       bool shouldSave;
+      bool configMode;
       bool restartEsp;
       String webPassWd;
       String passWd;      

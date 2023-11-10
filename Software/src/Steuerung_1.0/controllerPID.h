@@ -15,16 +15,17 @@ class ControllerPID
 {
   public:
     ControllerPID(Settings& set) :
-      mSettings(set),
-      myPid(
+      mSettings(set)
+      
+      {
+        myPid = PID(
             &actTmp, 
             &pidOutput, 
             &sollTmp, 
             mSettings.getPidKp(), 
             mSettings.getPidKi(), 
             mSettings.getPidKd(), 
-            DIRECT)
-      {
+            DIRECT);
         timerPidCompute.setTime(mSettings.getPidWindowSize());
       }
     void begin() 
@@ -62,6 +63,7 @@ class ControllerPID
     void loop() {
       setActTmp(mSettings.getActTemp());
       myPid.Compute();
+      mSettings.setPidOutput(pidOutput);
       CONSOLE(F("PIDcomp:"));
       CONSOLELN(pidOutput);
     }

@@ -44,15 +44,18 @@ class TemperaturSensorDS18B20
     }
     float getTemperatur()
     {
+      sensorConnected = true;
       float val = mSensor.getTempCByIndex(0);
       mSensor.requestTemperatures();
-      if ( -126 > val ) {
-        setup();
-      }      
+      if ( DEVICE_DISCONNECTED_C == val)
+      {
+        sensorConnected = false;
+      }
       return val * mSettings.getKalM() + mSettings.getKalT();
     }
   private:
     uint8_t mPin;
+    bool sensorConnected;
     OneWire mOneWire;
     DallasTemperature mSensor;
     Settings& mSettings;

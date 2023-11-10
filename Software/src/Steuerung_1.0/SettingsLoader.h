@@ -83,6 +83,8 @@ class SettingsLoader {
         mSettings.setTempReached( doc["tempReached"] );
       if ( doc.containsKey("UseDefault") )
         mSettings.setUseDefault( doc["UseDefault"] );
+      if ( doc.containsKey("ConfigMode") )
+        mSettings.setConfigMode( doc["ConfigMode"] );
       if ( doc.containsKey("shouldSave") )
         mSettings.setShouldSave( doc["shouldSave"] );
       if ( doc.containsKey("restartEsp") )
@@ -153,6 +155,7 @@ class SettingsLoader {
       doc["heatState"]          = mSettings.getHeatState();
       doc["tempReached"]        = mSettings.getTempReached();
       doc["UseDefault"]         = mSettings.getUseDefault();
+      doc["ConfigMode"]         = mSettings.getConfigMode();
       doc["shouldSave"]         = mSettings.getShouldSave();
       doc["restartEsp"]         = mSettings.getRestartEsp();
       doc["setPassWd"]          = mSettings.getWebPassWd();
