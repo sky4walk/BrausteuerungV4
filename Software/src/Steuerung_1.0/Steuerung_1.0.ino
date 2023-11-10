@@ -189,10 +189,10 @@ void setup() {
   wifiManager.setAPStaticIPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
   wifiManager.autoConnect("Brausteuerung"); 
 
-  //ArduinoOTA.begin();
-
   WiFi.hostname("Brausteuerung");
   CONSOLELN(WiFi.localIP());
+  
+  ArduinoOTA.begin();
   
   mySwitch.enableTransmit(GPIO15_D8);
   mySwitch.setProtocol(datas.getSwitchProtocol());
@@ -214,6 +214,7 @@ void setup() {
 // main loop
 ///////////////////////////////////////////////////////////////////////////////
 void loop() {
+  ArduinoOTA.handle();
   TempLoop();
   switch(datas.getActState()) {
     case STATE_BEGIN:
@@ -226,7 +227,6 @@ void loop() {
     default:
     break;
   }
-  //ArduinoOTA.handle();
   RelaisLoop();
   drd.loop();
   if ( datas.getRestartEsp() ) {
