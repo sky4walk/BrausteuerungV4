@@ -2,20 +2,23 @@
 itemsShown="both"; // [both,box,lid]
 wallThickness=2;
 bottomThickness=2;
-boxLength=39+2*wallThickness;
+boxLength=41+2*wallThickness;
 boxWidth=28+2*wallThickness;
-boxHeight=35+2*bottomThickness;
+boxHeight=37+2*bottomThickness;
 cornerRadius=5;
 lidThickness=2;
 lidClearance=0.2;
 lidEdgeThickness=0.5;
 // openings
 openUSBPos = 0;
-openUSBh = 3.5;
-openUSBb = 9;
-openTempPos = 17;
+openUSBh = 6;
+openUSBb = 10;
+openTempPos = 16;
 openTemph = 6.5;
 openTempb = 13;
+openSwitchPos = 0;
+openSwitchh = 2;
+openSwitchb = 2;
 // Notch in the lid
 withNotch=true;
 $fn = 128;
@@ -31,6 +34,9 @@ module showBoxAll() {
             cube([wallThickness*2,openUSBb,openUSBh]);
         translate ([boxLength-wallThickness-.1, boxWidth/2-openTempb/2,bottomThickness+openTempPos])
             cube([wallThickness*2,openTempb,openTemph]);            
+    
+        translate ([wallThickness*2, boxWidth-wallThickness*2,bottomThickness])
+            cube([openSwitchb,wallThickness*2,openSwitchh]);            
     }
 }
 module showLid(){
