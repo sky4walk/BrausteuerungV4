@@ -1,7 +1,7 @@
 // brausteuerung@AndreBetz.de
 //#include <Update.h>
-#include "ESP8266WiFi.h"
-#include "ESPAsyncTCP.h"
+//#include "ESP8266WiFi.h"
+//#include "ESPAsyncTCP.h"
 #include "TempWebServer.h"
 #include "DbgConsole.h"
 
@@ -165,22 +165,22 @@ String processorSetup(const String& var){
   return String();
 }
 
-void notFound(AsyncWebServerRequest *request) {
+void notFound(ESP8266WebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
 }
 
-void rootLevel(AsyncWebServerRequest *request) {
+void rootLevel(ESP8266WebServerRequest *request) {
   request->send_P(200, "text/html", temperatur_html, processorTemp);
 }
 
-void setLevel(AsyncWebServerRequest *request) {
+void setLevel(ESP8266WebServerRequest *request) {
   request->send_P(200, "text/html", setup_html, processorSetup);
 }
 
-void readTemp(AsyncWebServerRequest *request) {
+void readTemp(ESP8266WebServerRequest *request) {
   request->send_P(200, "text/html", String(TempWebServer::mSettings->getActTemp()).c_str());
 }
-void readState(AsyncWebServerRequest *request) {
+void readState(ESP8266WebServerRequest *request) {
   if ( TempWebServer::mSettings->getHeatState() ) {
     request->send_P(200, "text/html", String("On").c_str() );
   } else {
@@ -188,7 +188,7 @@ void readState(AsyncWebServerRequest *request) {
   }
 }
 
-void setLevelGet(AsyncWebServerRequest *request) {
+void setLevelGet(ESP8266WebServerRequest *request) {
   String inputMessage;
   if (request->hasParam(PARAM_ON_INPUT)) {
       inputMessage = request->getParam(PARAM_ON_INPUT)->value();
@@ -244,11 +244,11 @@ void setLevelGet(AsyncWebServerRequest *request) {
   request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
 }
 
-void updateRequest(AsyncWebServerRequest *request){
+void updateRequest(ESP8266WebServerRequest *request){
     request->send(200,"text/html",updateView);
 }
 
-void httpProcessUpdate(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final)
+void httpProcessUpdate(ESP8266WebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final)
 {
   uint32_t free_space = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
   if (!index)
@@ -285,7 +285,7 @@ void httpProcessUpdate(AsyncWebServerRequest *request, const String &filename, s
 Settings* TempWebServer::mSettings;
 
 TempWebServer::TempWebServer(
-       AsyncWebServer& server,
+       ESP8266WebServerRequest& server,
        Settings* set) :
         mServer(server) {
           TempWebServer::mSettings = set;
@@ -298,7 +298,7 @@ void TempWebServer::begin(){
       mServer.on("/setUp", HTTP_GET, setLevel);
       mServer.on("/setUpGet", HTTP_GET, setLevelGet);
       mServer.on("/update", HTTP_GET, updateRequest);
-      mServer.on("/process", HTTP_POST, [](AsyncWebServerRequest *request){
+      mServer.on("/process", HTTP_POST, [](ESP8266WebServerRequest *request){
         request->send(200);
       }, httpProcessUpdate);
       mServer.onNotFound( notFound );
