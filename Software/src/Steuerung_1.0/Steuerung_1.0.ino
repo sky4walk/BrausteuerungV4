@@ -7,8 +7,8 @@
 #else
 #include <WiFi.h>
 #endif
-#include <DNSServer.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
 #include <RCSwitch.h>
 #include <ezBuzzer.h> 
@@ -55,9 +55,9 @@ TemperaturSensorDS18B20 tmpSensor(GPIO04_D2,datas);
 ezBuzzer buzzer(GPIO00_D3);
 DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 PID myPID(&actTmp,&pidOutput,&sollTmp,datas.getPidKp(),datas.getPidKi(),datas.getPidKd(),DIRECT);
-WiFiServer  server(80);
+//WiFiServer  server(80);
+ESP8266WebServer server(80);
 //TempWebServer rmpServer(server,&datas);
-DNSServer dns;
 Ticker LedTicker;
 WaitTime          timerTempMeasure;
 WaitTime          timerPidCompute;
@@ -189,8 +189,16 @@ void setup() {
   wifiManager.setAPStaticIPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
   wifiManager.autoConnect("Brausteuerung"); 
 
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    CONSOLELN(F("."));
+    delay(500);
+  }
   WiFi.hostname("Brausteuerung");
   CONSOLELN(WiFi.localIP());
+  if (MDNS.begin("Brausteuerung"))   {  
+    CONSOLELN(F("DNS started"));  
+  }
   
   ArduinoOTA.begin();
   
@@ -209,6 +217,9 @@ void setup() {
   LedTicker.detach();
   //keep LED on
   digitalWrite(BUILTIN_LED, LOW);
+
+  server.begin();
+  CONSOLELN(F("Srv run"));
 }
 ///////////////////////////////////////////////////////////////////////////////
 // main loop
