@@ -48,15 +48,16 @@
 double pidOutput                 = 0;
 double actTmp                    = 25;
 double sollTmp                   = 25;
-Settings datas;
-SettingsLoader loader(datas);
+Settings brewDatas;
+SettingsLoader loaderDat(brewDatas);
 RCSwitch mySwitch = RCSwitch();
-TemperaturSensorDS18B20 tmpSensor(GPIO04_D2,datas);
+TemperaturSensorDS18B20 tmpSensor(GPIO04_D2,brewDatas);
 ezBuzzer buzzer(GPIO00_D3);
 DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
-PID myPID(&actTmp,&pidOutput,&sollTmp,datas.getPidKp(),datas.getPidKi(),datas.getPidKd(),DIRECT);
+PID myPID(&actTmp,&pidOutput,&sollTmp,brewDatas.getPidKp(),brewDatas.getPidKi(),brewDatas.getPidKd(),DIRECT);
 ESP8266WebServer server(80);
-TempWebServer rmpServer(server,datas);
+//WebSocketsServer webSocket(81);
+TempWebServer rmpServer(server, brewDatas);
 Ticker LedTicker;
 WaitTime          timerTempMeasure;
 WaitTime          timerPidCompute;
@@ -85,9 +86,9 @@ void resetPID() {
 // setPID
 ///////////////////////////////////////////////////////////////////////////////
 void setPID() {
-  myPID.SetOutputLimits(datas.getPidMinWindow(), datas.getPidWindowSize());
-  myPID.SetTunings(datas.getPidKp(), datas.getPidKi(), datas.getPidKd());
-  myPID.SetSampleTime(datas.getPidOWinterval());
+  myPID.SetOutputLimits(brewDatas.getPidMinWindow(), brewDatas.getPidWindowSize());
+  myPID.SetTunings(brewDatas.getPidKp(), brewDatas.getPidKi(), brewDatas.getPidKd());
+  myPID.SetSampleTime(brewDatas.getPidOWinterval());
   resetPID();
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,10 +98,10 @@ void Relais(bool onOff)
 {
   if ( onOff ) {
     CONSOLELN(F("On"));
-    mySwitch.send(datas.getSwitchOn(), datas.getSwitchBits());
+    mySwitch.send(brewDatas.getSwitchOn(), brewDatas.getSwitchBits());
   } else {
     CONSOLELN(F("Off"));
-    mySwitch.send(datas.getSwitchOff(), datas.getSwitchBits());
+    mySwitch.send(brewDatas.getSwitchOff(), brewDatas.getSwitchBits());
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,12 +111,12 @@ void PidLoop() {
   timerPidCompute.start();
   if ( timerPidCompute.timeOver() ) {
     timerPidCompute.restart();
-    actTmp = datas.getActTemp();
+    actTmp = brewDatas.getActTemp();
     myPID.Compute();
-    datas.setPidOutput(pidOutput);
+    brewDatas.setPidOutput(pidOutput);
     CONSOLE(F("PIDcomp:"));
     CONSOLELN(pidOutput);
-    pidRelaisTimer.setTime(datas.getPidOutput());
+    pidRelaisTimer.setTime(brewDatas.getPidOutput());
     pidRelaisTimer.start();
   }
 }
@@ -123,16 +124,16 @@ void PidLoop() {
 // detect state of heater is changed
 ///////////////////////////////////////////////////////////////////////////////
 void changeHeatState(bool onOff) {
-  if ( onOff != datas.getHeatState() )
-    datas.setHeatStateChanged(true);
-  datas.setHeatState(onOff);
+  if ( onOff != brewDatas.getHeatState() )
+    brewDatas.setHeatStateChanged(true);
+  brewDatas.setHeatState(onOff);
 }
 ///////////////////////////////////////////////////////////////////////////////
 // detect state of heater is changed
 ///////////////////////////////////////////////////////////////////////////////
 void HeatLoop() {
   if ( ( false == pidRelaisTimer.timeOver() ) &&
-       ( datas.getPidOutput() > datas.getPidMinWindow()  ) ) {
+       ( brewDatas.getPidOutput() > brewDatas.getPidMinWindow()  ) ) {
     changeHeatState(true);
   } else {
     changeHeatState(false);
@@ -145,8 +146,8 @@ void TempLoop() {
   timerTempMeasure.start();
   if ( timerTempMeasure.timeOver() ) {
     timerTempMeasure.restart();       
-    datas.setActTemp(tmpSensor.getTemperatur());
-    CONSOLELN(datas.getActTemp()); 
+    brewDatas.setActTemp(tmpSensor.getTemperatur());
+    CONSOLELN(brewDatas.getActTemp()); 
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -154,10 +155,10 @@ void TempLoop() {
 ///////////////////////////////////////////////////////////////////////////////
 void RelaisLoop(){
   timerSendHeatState.start();
-  if ( timerSendHeatState.timeOver() || datas.getHeatStateChanged() ) {
+  if ( timerSendHeatState.timeOver() || brewDatas.getHeatStateChanged() ) {
     timerSendHeatState.restart();
-    datas.setHeatStateChanged(false);
-    Relais( datas.getHeatState() );
+    brewDatas.setHeatStateChanged(false);
+    Relais( brewDatas.getHeatState() );
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,8 +176,8 @@ void setup() {
 
   LedTicker.attach(0.6, tick);
 
-  if(!loader.load())
-    loader.save();
+  if(!loaderDat.load())
+    loaderDat.save();
 
   WiFiManager wifiManager;
   if ( drd.detectDoubleReset() ) {
@@ -203,14 +204,14 @@ void setup() {
   ArduinoOTA.begin();
   
   mySwitch.enableTransmit(GPIO15_D8);
-  mySwitch.setProtocol(datas.getSwitchProtocol());
-  mySwitch.setPulseLength(datas.getSwitchPulseLength()); 
+  mySwitch.setProtocol(brewDatas.getSwitchProtocol());
+  mySwitch.setPulseLength(brewDatas.getSwitchPulseLength()); 
 
-  timerPidCompute.setTime(datas.getPidOWinterval());
-  timerTempMeasure.setTime(datas.getPidWindowSize());
-  timerSendHeatState.setTime(datas.getPidWindowSize());
+  timerPidCompute.setTime(brewDatas.getPidOWinterval());
+  timerTempMeasure.setTime(brewDatas.getPidWindowSize());
+  timerSendHeatState.setTime(brewDatas.getPidWindowSize());
 
-  datas.setActState(STATE_BEGIN); 
+  brewDatas.setActState(STATE_BEGIN); 
 
   setPID();
 
@@ -227,7 +228,7 @@ void setup() {
 void loop() {
   ArduinoOTA.handle();
   TempLoop();
-  switch(datas.getActState()) {
+  switch(brewDatas.getActState()) {
     case STATE_BEGIN:
     break;
     case STATE_BREW:
@@ -240,8 +241,8 @@ void loop() {
   }
   RelaisLoop();
   drd.loop();
-  server.handleClient(); // https://www.youtube.com/watch?v=n1_uCypHofU
-  if ( datas.getRestartEsp() ) {
+  rmpServer.loop();
+  if ( brewDatas.getRestartEsp() ) {
     delay(500);
     ESP.restart();
   }

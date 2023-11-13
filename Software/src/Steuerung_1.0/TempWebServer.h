@@ -3,37 +3,38 @@
 #define __TEMPWEBSERVER__
 
 #include <ESP8266WebServer.h>
+#include <WebSocketsServer_Generic.h>
 #include <FS.h>
 #include "settings.h"
 
-    const char setup_html[] PROGMEM = R"rawliteral(
-      <form action="login" method="POST">
-        <input type="text" name="username" placeholder="Username"></br>
-        <input type="password" name="password" placeholder="Password"></br>
-        <input type="submit" value="Login">
-      </form>
-      <p>Try 'John Doe' and 'password123' ...</p>
-    )rawliteral";      
-
-
+const char upload_html[] PROGMEM = R"rawliteral(
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="name">
+    <input class="button" type="submit" value="Upload">
+  </form>
+)rawliteral";
  
-
 class TempWebServer {
   public:
     TempWebServer(
       ESP8266WebServer& server,
       Settings& set) :
       mServer(server),
+      mWebSocket(WebSocketsServer(81)),
       mSettings(set) {
+        //webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) 
+        //mWebSocket.onEvent(std::bind(&TempWebServer::webSocketEvent, this));
     }
     void begin(){
+      SPIFFS.begin();
+      mWebSocket.begin();
+
       // https://tttapa.github.io/ESP8266/Chap12%20-%20Uploading%20to%20Server.html
       mServer.on("/", std::bind(&TempWebServer::handleRoot, this));
       mServer.on("/Setup", std::bind(&TempWebServer::handleSetup, this));
       
       mServer.on("/upload", HTTP_GET, [this]() {
-//        if (!std::bind(&TempWebServer::handleFileRead("/upload.html"), this)) // if (!handleFileRead("/upload.html"))                
-          this->mServer.send(404, "text/plain", F("404: Not Found"));
+        mServer.send(200, "text/html", upload_html);
       });
       
       mServer.on("/upload", HTTP_POST,[this](){ this->mServer.send(200); }, std::bind(&TempWebServer::handleFileUpload, this));
@@ -41,23 +42,27 @@ class TempWebServer {
     }
     void handleNotFound(){
       if (!handleFileRead(mServer.uri()))                  
-        mServer.send(404, "text/plain", F("404: Not found")); 
+        mServer.send(404, "text/plain", F("404: Not found2")); 
     }
 
     void handleRoot() {
       mServer.send(200, "text/plain", F("Hello world!"));   
     }
-
+    void loop() {
+      mServer.handleClient();
+      mWebSocket.loop();
+    }
     void handleSetup() {
-      mServer.send(200, "text/html", setup_html);   
+//      mServer.send(200, "text/html", setup_html);   
     }
  
     String getContentType(String filename) { 
-      if (filename.endsWith(".html")) return "text/html";
-      else if (filename.endsWith(".css")) return "text/css";
-      else if (filename.endsWith(".js")) return "application/javascript";
-      else if (filename.endsWith(".ico")) return "image/x-icon";
-      else if (filename.endsWith(".gz")) return "application/x-gzip";
+      if (filename.endsWith(".html"))       return "text/html";
+      else if (filename.endsWith(".css"))   return "text/css";
+      else if (filename.endsWith(".js"))    return "application/javascript";
+      else if (filename.endsWith(".ico"))   return "image/x-icon";
+      else if (filename.endsWith(".gz"))    return "application/x-gzip";
+      else if (filename.endsWith(".json"))  return "text/plain";            
       return "text/plain";
     }
 
@@ -84,7 +89,7 @@ class TempWebServer {
     if(upload.status == UPLOAD_FILE_START){
       String filename = upload.filename;
       if(!filename.startsWith("/")) filename = "/"+filename;
-      CONSOLE("handleFileUpload Name: "); 
+      CONSOLE(F("loadName: ")); 
       CONSOLELN(filename);
       mFsUploadFile = SPIFFS.open(filename, "w");            
       filename = String();
@@ -94,7 +99,7 @@ class TempWebServer {
     } else if(upload.status == UPLOAD_FILE_END){
       if(mFsUploadFile) {                                    
         mFsUploadFile.close();                               
-        CONSOLE("handleFileUpload Size: "); 
+        CONSOLE(F("loadSize:")); 
         CONSOLELN(upload.totalSize);
         mServer.sendHeader("Location","/success.html");      
         mServer.send(303);
@@ -102,9 +107,27 @@ class TempWebServer {
         mServer.send(500, "text/plain", F("500: couldn't create file"));
       }
     }
-  }  
+  }
+  
+  void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) { 
+    switch (type) {
+      case WStype_DISCONNECTED:             
+        Serial.printf("[%u] Disconnected!\n", num);
+        break;
+      case WStype_CONNECTED: {              
+          IPAddress ip = mWebSocket.remoteIP(num);
+          Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+        }
+        break;
+      case WStype_TEXT:
+        Serial.printf("[%u] get Text: %s\n", num, payload);
+        break;
+    }
+  }
+    
   private:
     ESP8266WebServer& mServer;
+    WebSocketsServer mWebSocket;
     Settings& mSettings;
     File mFsUploadFile;
 };
