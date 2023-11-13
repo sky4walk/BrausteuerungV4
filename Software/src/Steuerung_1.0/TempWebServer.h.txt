@@ -2,17 +2,18 @@
 #ifndef __TEMPWEBSERVER__
 #define __TEMPWEBSERVER__
 
-#include <ESPAsyncWebServer.h>
+//#include <ESPAsyncWebServer.h>
+#include <ESP8266WebServer.h>
 #include "settings.h"
 
 
 class TempWebServer {
   public:
     static Settings* mSettings;
-    TempWebServer(AsyncWebServer& server,Settings* set);
+    TempWebServer(ESP8266WebServer& server,Settings* set);
     void begin();
   private:
-    AsyncWebServer& mServer;
+    ESP8266WebServer& mServer;
         
 };
 

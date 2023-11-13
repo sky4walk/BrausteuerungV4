@@ -55,7 +55,6 @@ TemperaturSensorDS18B20 tmpSensor(GPIO04_D2,datas);
 ezBuzzer buzzer(GPIO00_D3);
 DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 PID myPID(&actTmp,&pidOutput,&sollTmp,datas.getPidKp(),datas.getPidKi(),datas.getPidKd(),DIRECT);
-//WiFiServer  server(80);
 ESP8266WebServer server(80);
 //TempWebServer rmpServer(server,&datas);
 Ticker LedTicker;
@@ -198,6 +197,7 @@ void setup() {
   CONSOLELN(WiFi.localIP());
   if (MDNS.begin("Brausteuerung"))   {  
     CONSOLELN(F("DNS started"));  
+
   }
   
   ArduinoOTA.begin();
@@ -217,7 +217,6 @@ void setup() {
   LedTicker.detach();
   //keep LED on
   digitalWrite(BUILTIN_LED, LOW);
-
   server.begin();
   CONSOLELN(F("Srv run"));
 }
@@ -240,6 +239,7 @@ void loop() {
   }
   RelaisLoop();
   drd.loop();
+  server.handleClient(); // https://www.youtube.com/watch?v=n1_uCypHofU
   if ( datas.getRestartEsp() ) {
     delay(500);
     ESP.restart();
