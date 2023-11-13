@@ -40,9 +40,9 @@ class ControllerPID
     }
     bool getState(float actTmp) {
       if ( isHeater() ){
-        CONSOLE(" Heater ");
+        CONSOLE(F("Heater"));
       } else {
-        CONSOLE(" Cooler ");       
+        CONSOLE(F("Cooler"));       
       }
       
       return isHeater() ?  mState : !mState;

@@ -1,6 +1,6 @@
 // brausteuerung@AndreBetz.de
 ///////////////////////////////////////////////
-// includes https://randomnerdtutorials.com/wifimanager-with-esp8266-autoconnect-custom-parameter-and-manage-your-ssid-and-password/
+//http://brausteuerung
 ///////////////////////////////////////////////
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
@@ -21,7 +21,7 @@
 #include "WaitTime.h"
 #include "settings.h"
 #include "SettingsLoader.h"
-//#include "TempWebServer.h"
+#include "TempWebServer.h"
 ///////////////////////////////////////////////
 // HW defines
 ///////////////////////////////////////////////
@@ -56,7 +56,7 @@ ezBuzzer buzzer(GPIO00_D3);
 DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 PID myPID(&actTmp,&pidOutput,&sollTmp,datas.getPidKp(),datas.getPidKi(),datas.getPidKd(),DIRECT);
 ESP8266WebServer server(80);
-//TempWebServer rmpServer(server,&datas);
+TempWebServer rmpServer(server,datas);
 Ticker LedTicker;
 WaitTime          timerTempMeasure;
 WaitTime          timerPidCompute;
@@ -217,6 +217,7 @@ void setup() {
   LedTicker.detach();
   //keep LED on
   digitalWrite(BUILTIN_LED, LOW);
+  rmpServer.begin();
   server.begin();
   CONSOLELN(F("Srv run"));
 }
