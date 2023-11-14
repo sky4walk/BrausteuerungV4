@@ -1,5 +1,5 @@
-
-itemsShown="both"; // [both,box,lid]
+//brauverein@andrebetz.de
+itemsShown="both";
 wallThickness=2;
 bottomThickness=2;
 boxLength=41+2*wallThickness;
@@ -17,13 +17,12 @@ openTempPos = 16;
 openTemph = 6.5;
 openTempb = 13;
 openSwitchPos = 0;
-openSwitchh = 2;
-openSwitchb = 2;
-// Notch in the lid
+openSwitchb = 3;
 withNotch=true;
 $fn = 128;
 
-showLid();
+translate ([0, 0,-3.2]) showLid();
+translate ([2, -26,-3.2]) brick(2,1);
 showBoxAll();
 
 module showBoxAll() {
@@ -34,10 +33,12 @@ module showBoxAll() {
             cube([wallThickness*2,openUSBb,openUSBh]);
         translate ([boxLength-wallThickness-.1, boxWidth/2-openTempb/2,bottomThickness+openTempPos])
             cube([wallThickness*2,openTempb,openTemph]);            
-    
-        translate ([wallThickness*2, boxWidth-wallThickness*2,bottomThickness])
-            cube([openSwitchb,wallThickness*2,openSwitchh]);            
+        rotate([90,0,0])
+            translate ([wallThickness*3,wallThickness+openSwitchb/2,-boxWidth-wallThickness])
+                cylinder(wallThickness*3,openSwitchb/2,openSwitchb/2);
     }
+    translate ([-1.5, 0,-3.2])
+        brick(3,2);
 }
 module showLid(){
 	translate ([0, -2*wallThickness, 0]) 
@@ -130,4 +131,52 @@ module round_cube(l=40,w=30,h=20,r=5,t=0,$fn=30){
 		translate ([l-r,w-r, 0]) cylinder (h = h, r=r);
 		translate ([l-r, r, 0]) cylinder (h = h, r=r);
 	}
+}
+
+module brick(w,l){
+  DETAIL_SCALE=0.1; 
+  WALL_THICKNESS=16;
+  SQUARE_WIDTH=80; 
+  SQUARE_HEIGHT=96; 
+  PLATE_HEIGHT=32; 
+  PEG_RADIUS=24; 
+  PEG_HEIGHT=18; 
+  ANTI_PEG_RADIUS=32; 
+
+  my_height = PLATE_HEIGHT; 
+
+  scale(DETAIL_SCALE){
+    difference(){
+      cube([w*(SQUARE_WIDTH*2),l*(SQUARE_WIDTH*2),my_height]);
+      translate([WALL_THICKNESS,WALL_THICKNESS,-WALL_THICKNESS]){
+        cube([w*(2*SQUARE_WIDTH) - (2*WALL_THICKNESS), l*(2*SQUARE_WIDTH) - (2*WALL_THICKNESS), my_height]);
+      }
+    }    
+    for(i=[0:w-1]){
+      for(j=[0:l-1]){
+        for(x=[SQUARE_WIDTH*0.5,SQUARE_WIDTH*1.5]) {
+          for(y=[SQUARE_WIDTH*0.5, SQUARE_WIDTH*1.5]) {
+            translate([(i * SQUARE_WIDTH * 2) + x, (j * SQUARE_WIDTH * 2) + y,my_height]){
+              difference(){
+                cylinder(h=PEG_HEIGHT, r=PEG_RADIUS);
+				 cylinder(h=PEG_HEIGHT+0.1, r=(PEG_RADIUS - WALL_THICKNESS/2));
+              }
+            }
+          }
+        }
+      }
+    }
+    for(i=[0:(w-1)*2]){
+      for(j=[0:(l-1)*2]){
+        translate([SQUARE_WIDTH + (SQUARE_WIDTH * i), SQUARE_WIDTH + (SQUARE_WIDTH * j), 0]){
+          difference(){
+            cylinder(r=ANTI_PEG_RADIUS, h=my_height);
+            translate([0,0,-1]){
+              cylinder(r=(ANTI_PEG_RADIUS - (WALL_THICKNESS/2)), h=my_height+0.5);
+            }
+          }
+        }
+      }
+    }
+  }
 }
