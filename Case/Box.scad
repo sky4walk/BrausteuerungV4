@@ -11,8 +11,8 @@ lidClearance=0.2;
 lidEdgeThickness=0.5;
 // openings
 openUSBPos = 0;
-openUSBh = 6;
-openUSBb = 10;
+openUSBh = 6.5;
+openUSBb = 11.5;
 openTempPos = 16;
 openTemph = 6.5;
 openTempb = 13;
