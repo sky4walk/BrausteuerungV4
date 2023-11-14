@@ -29,47 +29,48 @@ class TempWebServer {
           std::placeholders::_3, 
           std::placeholders::_4 ));
     }
+///////////////////////////////////////////////////////////////////////////
+// getContentType
+///////////////////////////////////////////////////////////////////////////
     String getContentType(String filename) { 
       if (filename.endsWith(".html"))       return "text/html";
+      else if (filename.endsWith(".htm"))        return "text/html";
       else if (filename.endsWith(".css"))   return "text/css";
       else if (filename.endsWith(".js"))    return "application/javascript";
       else if (filename.endsWith(".ico"))   return "image/x-icon";
+      else if (filename.endsWith(".png"))   return "image/png";
+      else if (filename.endsWith(".gif"))   return "image/gif";
+      else if (filename.endsWith(".jpg"))   return "image/jpeg";
+      else if (filename.endsWith(".xml"))   return "text/xml";
+      else if (filename.endsWith(".pdf"))   return "application/pdf";
+      else if (filename.endsWith(".zip"))   return "application/zip";  
       else if (filename.endsWith(".gz"))    return "application/x-gzip";
       else if (filename.endsWith(".json"))  return "text/plain";            
       return "text/plain";
     }
-    void begin(){
-      SPIFFS.begin();
-      mWebSocket.begin();
-
-      // https://tttapa.github.io/ESP8266/Chap12%20-%20Uploading%20to%20Server.html
-      mServer.on("/", std::bind(&TempWebServer::handleRoot, this));
-      mServer.on("/Setup", std::bind(&TempWebServer::handleSetup, this));
-      
-      mServer.on("/upload", HTTP_GET, [this]() {
-        mServer.send(200, "text/html", upload_html);
-      });
-      
-      mServer.on("/upload", HTTP_POST,[this](){ this->mServer.send(200); }, std::bind(&TempWebServer::handleFileUpload, this));
-      mServer.onNotFound(std::bind(&TempWebServer::handleNotFound, this));
-    }
-
+///////////////////////////////////////////////////////////////////////////
+// handle Not Found
+///////////////////////////////////////////////////////////////////////////
     void handleNotFound(){
       if (!handleFileRead(mServer.uri()))                  
         mServer.send(404, "text/plain", F("404: Not found2")); 
     }
-
+///////////////////////////////////////////////////////////////////////////
+// handle Root
+///////////////////////////////////////////////////////////////////////////
     void handleRoot() {
-      mServer.send(200, "text/plain", F("Hello world!"));   
-    }
-    void loop() {
-      mServer.handleClient();
-      mWebSocket.loop();
-    }
-    void handleSetup() {
 //      mServer.send(200, "text/html", setup_html);   
+    } 
+///////////////////////////////////////////////////////////////////////////
+// handle Setup
+///////////////////////////////////////////////////////////////////////////
+    void handleSetup() {
+      mServer.sendHeader("Location", "/setup.html", true);
+      mServer.send(302, "text/plane","");   
     }
- 
+///////////////////////////////////////////////////////////////////////////
+// handle File Read
+/////////////////////////////////////////////////////////////////////////// 
     bool handleFileRead(String path) {
       CONSOLELN("handleFileRead: " + path);
       if (path.endsWith("/")) path += "index.html";          
@@ -87,7 +88,9 @@ class TempWebServer {
       CONSOLELN(String("\tFile Not Found: ") + path);
       return false;
     }
-
+///////////////////////////////////////////////////////////////////////////
+// handle File Upload
+/////////////////////////////////////////////////////////////////////////// 
     void handleFileUpload(){ 
       HTTPUpload& upload = mServer.upload();
       if(upload.status == UPLOAD_FILE_START){
@@ -112,7 +115,9 @@ class TempWebServer {
         }
       }
     }
-  
+///////////////////////////////////////////////////////////////////////////
+// web socket Event
+///////////////////////////////////////////////////////////////////////////   
     void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) { 
       switch (type) {
         case WStype_DISCONNECTED:             
@@ -133,7 +138,31 @@ class TempWebServer {
           break;
       }
     }
-    
+///////////////////////////////////////////////////////////////////////////
+// begin
+///////////////////////////////////////////////////////////////////////////
+    void begin(){
+      SPIFFS.begin();
+      mWebSocket.begin();
+
+      // https://tttapa.github.io/ESP8266/Chap12%20-%20Uploading%20to%20Server.html
+      mServer.on("/", std::bind(&TempWebServer::handleRoot, this));
+      mServer.on("/Setup", std::bind(&TempWebServer::handleSetup, this));
+      
+      mServer.on("/upload", HTTP_GET, [this]() {
+        mServer.send(200, "text/html", upload_html);
+      });
+      
+      mServer.on("/upload", HTTP_POST,[this](){ this->mServer.send(200); }, std::bind(&TempWebServer::handleFileUpload, this));
+      mServer.onNotFound(std::bind(&TempWebServer::handleNotFound, this));
+    }    
+///////////////////////////////////////////////////////////////////////////
+// loop
+///////////////////////////////////////////////////////////////////////////
+    void loop() {
+      mServer.handleClient();
+      mWebSocket.loop();
+    }    
   private:
     ESP8266WebServer& mServer;
     WebSocketsServer mWebSocket;
