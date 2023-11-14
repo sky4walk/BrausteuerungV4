@@ -22,7 +22,12 @@ class TempWebServer {
       mServer(server),
       mWebSocket(WebSocketsServer(81)),
       mSettings(set) {
-      mWebSocket.onEvent(std::bind(&TempWebServer::webSocketEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+      mWebSocket.onEvent(
+        std::bind(&TempWebServer::webSocketEvent, this, 
+          std::placeholders::_1, 
+          std::placeholders::_2, 
+          std::placeholders::_3, 
+          std::placeholders::_4 ));
     }
     String getContentType(String filename) { 
       if (filename.endsWith(".html"))       return "text/html";
@@ -118,13 +123,13 @@ class TempWebServer {
             IPAddress ip = mWebSocket.remoteIP(num);
             CONSOLE(F("Con:"));
             CONSOLE(String(num));
-            Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+            Serial.printf(" %d.%d.%d.%d url: %s\n", ip[0], ip[1], ip[2], ip[3], payload);
           }
           break;
         case WStype_TEXT:
           CONSOLE(F("Text:"));
           CONSOLE(num);
-          Serial.printf("[%u] url: %s\n", num, payload);
+          Serial.printf(" url: %s\n", payload);
           break;
       }
     }
