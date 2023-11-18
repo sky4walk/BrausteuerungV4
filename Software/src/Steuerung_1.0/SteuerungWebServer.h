@@ -11,6 +11,7 @@ class SteuerungWebServer {
     SteuerungWebServer(Settings& set);
     void begin();
   private:
+    //handleFileUpload(AsyncWebServerRequest *request);
     Settings& mSettings;        
 };
 
