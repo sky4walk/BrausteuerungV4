@@ -34,7 +34,7 @@ module showBoxAll() {
         translate ([boxLength-wallThickness-.1, boxWidth/2-openTempb/2,bottomThickness+openTempPos])
             cube([wallThickness*2,openTempb,openTemph]);            
         rotate([90,0,0])
-            translate ([wallThickness*5,wallThickness+openSwitchb/2,-boxWidth-wallThickness])
+            translate ([wallThickness*6,wallThickness+openSwitchb/2,-boxWidth-wallThickness])
                 cylinder(wallThickness*3,openSwitchb/2,openSwitchb/2);
     }
     translate ([-1.5, 0,-3.2])

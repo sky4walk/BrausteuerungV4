@@ -7,7 +7,6 @@
 #else
 #include <WiFi.h>
 #endif
-#include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
 #include <RCSwitch.h>
@@ -21,7 +20,7 @@
 #include "WaitTime.h"
 #include "settings.h"
 #include "SettingsLoader.h"
-#include "TempWebServer.h"
+#include "SteuerungWebServer.h"
 ///////////////////////////////////////////////
 // HW defines
 ///////////////////////////////////////////////
@@ -55,9 +54,7 @@ TemperaturSensorDS18B20 tmpSensor(GPIO04_D2,brewDatas);
 ezBuzzer buzzer(GPIO00_D3);
 DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 PID myPID(&actTmp,&pidOutput,&sollTmp,brewDatas.getPidKp(),brewDatas.getPidKi(),brewDatas.getPidKd(),DIRECT);
-ESP8266WebServer server(80);
-//WebSocketsServer webSocket(81);
-TempWebServer rmpServer(server, brewDatas);
+SteuerungWebServer rmpServer(brewDatas);
 Ticker LedTicker;
 WaitTime          timerTempMeasure;
 WaitTime          timerPidCompute;
@@ -187,12 +184,16 @@ void setup() {
     CONSOLELN(F("No DRD"));   
   }
   wifiManager.setAPStaticIPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
-  wifiManager.autoConnect("Brausteuerung"); 
+  if ( !wifiManager.autoConnect("Brausteuerung") ) {
+    WiFi.mode(WIFI_AP);
+    WiFi.softAPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
+    CONSOLELN(F("AP Mode"));
+  }
 
   while (WiFi.status() != WL_CONNECTED) 
   {
     CONSOLELN(F("."));
-    delay(500);
+    yield();
   }
   WiFi.hostname("Brausteuerung");
   CONSOLELN(WiFi.localIP());
@@ -219,7 +220,6 @@ void setup() {
   //keep LED on
   digitalWrite(BUILTIN_LED, LOW);
   rmpServer.begin();
-  server.begin();
   CONSOLELN(F("Srv run"));
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -241,7 +241,6 @@ void loop() {
   }
   RelaisLoop();
   drd.loop();
-  rmpServer.loop();
   if ( brewDatas.getRestartEsp() ) {
     delay(500);
     ESP.restart();

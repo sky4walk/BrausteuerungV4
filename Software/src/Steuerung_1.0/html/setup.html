@@ -1,16 +1,64 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Receiving data from ESP8266</title>
-        <!-- Link to Grandeur -->
-        <script src="https://unpkg.com/grandeur-js"></script>
-        <link rel="stylesheet" href="./main.css">
-    </head>
-    <body>
-        <h1>Receiving data from ESP8266 &nbsp</h1>
-        <h1 class="loader">/</h1>
-        <p id="data">–</p>
+<head>
+<title>Brausteuerung
+</title>
+<style>
+body { 
+	background-color: #fffff; 
+	font-family: Arial, Helvetica, Sans-Serif; 
+	Color: #000088; 
+}
+</style>
+</head>
+<body>
 
+<h2>Brausteuerung - Setup<h2>
 
-        <script src="./index.js"></script>
-    </body>
+<div>
+	Value is : <span id="ADCValue">0</span><br>
+</div>
+
+<form action="/setupAction">
+  First name:<br>
+  <input type="text" name="firstname" value="Mickey">
+  <br>
+  Last name:<br>
+  <input type="text" name="lastname" value="Mouse">
+  <br><br>
+  <input type="submit" value="Submit">
+</form> 
+
+<script>
+/*
+setInterval(function() {
+  getData();
+}, 2000); 
+*/
+function sendData(led) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("LEDState").innerHTML =
+      this.responseText;
+    }
+  };
+  xhttp.open("GET", "setLED?LEDstate="+led, true);
+  xhttp.send();
+}
+
+function getData() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("ADCValue").innerHTML =
+      this.responseText;
+    }
+  };
+  xhttp.open("GET", "readADC", true);
+  xhttp.send();
+}
+</script>
+
+</body>
 </html>
