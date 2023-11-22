@@ -137,13 +137,28 @@ void SteuerungWebServer::begin() {
   ///////////////////////////////////////////////////////////////////////////
   // Root
   ///////////////////////////////////////////////////////////////////////////
-  mServer.on("/", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", F("Hallo World"));
+  mServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/start.html", String(), false);
   });
+  ///////////////////////////////////////////////////////////////////////////
   mServer.on("/uploadDo", HTTP_POST, [](AsyncWebServerRequest *request) {
-        request->send(200); }, handleUpload);       
+    request->send(200); }, handleUpload);       
   mServer.on("/upload", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/html", upload_html);
   });
   mServer.onFileUpload(handleUpload);
+  ///////////////////////////////////////////////////////////////////////////
+  mServer.on("/download", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //request->send(SPIFFS, "/settings.json", String(), true);
+    AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/settings.json", String(), true);
+    response->addHeader("Server", "ESP Async Web Server");
+    request->send(response);
+  });       
+  ///////////////////////////////////////////////////////////////////////////
+  mServer.onNotFound([](AsyncWebServerRequest *request){
+    int fnsstart = request->url().lastIndexOf('/');
+    String fn = request->url().substring(fnsstart);
+    CONSOLELN(fn);
+    request->send(SPIFFS, fn, String(), true);
+  });  
 }
