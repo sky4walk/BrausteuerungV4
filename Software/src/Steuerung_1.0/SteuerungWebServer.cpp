@@ -7,22 +7,142 @@
 #include "DbgConsole.h"
 
 static AsyncWebServer mServer(80);
-
+///////////////////////////////////////////////////////////////////////////
+// upload html
+///////////////////////////////////////////////////////////////////////////
 const char upload_html[] PROGMEM = R"rawliteral(
- 
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>File Upload</title>
-  </head>
-  <body>
-    <h1>File Upload</h1>
-    <form method="POST" action="/uploadDo" enctype="multipart/form-data" target="iframe">
-    <input type="file" name="upload"><input type="submit" value="Upload"></form>
-    <iframe style="visibility: hidden;" src="http://" )+local_IPstr+"/Usm" name="iframe"></iframe>
-  </body>
-</html>
+<html><head><title>File Upload</title></head>
+<body><h1>File Upload</h1>
+<form method="POST" action="/uploadDo" enctype="multipart/form-data" target="iframe">
+<input type="file" name="upload"><input type="submit" value="Upload"></form>
+<iframe style="visibility: hidden;" src="http://" )+local_IPstr+"/Usm" name="iframe"></iframe>
+<a href="/">Back</a>
+</body></html>
 )rawliteral";
+///////////////////////////////////////////////////////////////////////////
+// update html
+///////////////////////////////////////////////////////////////////////////
+const char update_html[] PROGMEM = R"rawliteral(
+  <h1>Choose .ino or .bin file for update</h1>
+  <form id='form' method='POST' action='/updateProcess' enctype='multipart/form-data'>
+  <input type='file' name='file' id='file'>
+  <br><input type='submit' class='btn' value='Update It'></form>
+)rawliteral";
+///////////////////////////////////////////////////////////////////////////
+// httpProcessUpdate
+///////////////////////////////////////////////////////////////////////////
+void httpProcessUpdate(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
+  uint32_t free_space = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+  if (!index)   {
+    CONSOLELN("process update");
+    Update.runAsync(true);
+    if (!Update.begin(free_space))     {
+      Update.printError(Serial);
+    }
+    CONSOLE("UploadStart: ");
+    CONSOLELN(filename.c_str());
+  }
+
+  if (Update.write(data, len) != len)   {
+    Update.printError(Serial);
+  }
+
+  if (final)   {
+    if (!Update.end(true))     {
+      Update.printError(Serial);
+    } else {
+      SteuerungWebServer::mSettings->setRestartEsp(true);
+      CONSOLELN("Update complete");
+    }
+  }
+}
+///////////////////////////////////////////////////////////////////////////
+// getContentType
+///////////////////////////////////////////////////////////////////////////
+String processorSetup(const String& var){
+  if(var == "OFFINPUT"){
+    return String(SteuerungWebServer::mSettings->getKalM());
+  } 
+  else if(var == "ONINPUT"){
+    return String(SteuerungWebServer::mSettings->getKalT());
+  }
+  else if(var == "SWITCHON"){
+    return String(SteuerungWebServer::mSettings->getSwitchOn());
+  }
+  else if(var == "SWITCHOFF"){
+    return String(SteuerungWebServer::mSettings->getSwitchOff());
+  }
+  else if(var == "SWITCHPROTOCOL"){
+    return String(SteuerungWebServer::mSettings->getSwitchProtocol());
+  }
+  else if(var == "SWITCHPULSELENGTH"){
+    return String(SteuerungWebServer::mSettings->getSwitchPulseLength());
+  }
+  else if(var == "SWITCHBITS"){
+    return String(SteuerungWebServer::mSettings->getSwitchBits());
+  }
+  else if(var == "SWITCHREPEATS"){
+    return String(SteuerungWebServer::mSettings->getSwitchRepeat());
+  }
+  return String();
+}
+
+void processorSetupGet(AsyncWebServerRequest *request) {
+  String inputMessage;
+  if (request->hasParam("OnInput")) {
+      inputMessage = request->getParam("OnInput")->value();
+      CONSOLELN(inputMessage);
+      SteuerungWebServer::mSettings->setKalT(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("OffInput")) {
+      inputMessage = request->getParam("OffInput")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setKalM(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("SwitchOn")) {
+      inputMessage = request->getParam("SwitchOn")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setSwitchOn(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("SwitchOff")) {
+      inputMessage = request->getParam("SwitchOff")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setSwitchOff(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("SwitchProtocol")) {
+      inputMessage = request->getParam("SwitchProtocol")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setSwitchProtocol(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("SwitchPulseLength")) {
+      inputMessage = request->getParam("SwitchPulseLength")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setSwitchPulseLength(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("SwitchBits")) {
+      inputMessage = request->getParam("SwitchBits")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setSwitchBits(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("SwitchRepeats")) {
+      inputMessage = request->getParam("SwitchRepeats")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setSwitchRepeat(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("PwInput")) {
+      inputMessage = request->getParam("PwInput")->value();
+  }
+  request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
+}
 ///////////////////////////////////////////////////////////////////////////
 // getContentType
 ///////////////////////////////////////////////////////////////////////////
@@ -84,7 +204,7 @@ void readFile(fs::FS &fs, String filename){
 void SteuerungWebServer::Datenzeigen() {
   String message = "received\n";
   message += "URI: ";
-  message += mServer.uri();
+  message += mServer.url();
   message += "\nMethod: ";
   message += (mServer.method() == HTTP_GET) ? "GET" : "POST";
   message += "\nArguments: ";
@@ -126,39 +246,69 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
 ///////////////////////////////////////////////////////////////////////////
 // Class
 ///////////////////////////////////////////////////////////////////////////
-SteuerungWebServer::SteuerungWebServer(Settings& set) :
-  mSettings(set) {
+Settings* SteuerungWebServer::mSettings;
+
+SteuerungWebServer::SteuerungWebServer(Settings* set) {
+  SteuerungWebServer::mSettings = set;
 }
 
 void SteuerungWebServer::begin() {
   SPIFFS.begin();
   mServer.begin();
 
-  ///////////////////////////////////////////////////////////////////////////
-  // Root
-  ///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// Root
+///////////////////////////////////////////////////////////////////////////
   mServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    CONSOLELN(F("root"));
     request->send(SPIFFS, "/start.html", String(), false);
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/uploadDo", HTTP_POST, [](AsyncWebServerRequest *request) {
+    CONSOLELN(F("uploadDo"));
     request->send(200); }, handleUpload);       
   mServer.on("/upload", HTTP_GET, [](AsyncWebServerRequest *request){
+    CONSOLELN(F("upload"));  
     request->send(200, "text/html", upload_html);
   });
   mServer.onFileUpload(handleUpload);
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/download", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //request->send(SPIFFS, "/settings.json", String(), true);
+    CONSOLELN(F("download"));    
     AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/settings.json", String(), true);
-    response->addHeader("Server", "ESP Async Web Server");
+    response->addHeader(F("Server"), F("ESP Async Web Server"));
     request->send(response);
-  });       
+  });
+  ///////////////////////////////////////////////////////////////////////////
+  mServer.on("/update", HTTP_GET, [](AsyncWebServerRequest *request){
+    CONSOLELN(F("update"));    
+    request->send(200,"text/html",update_html);
+  });
+  mServer.on("/updateProcess", HTTP_POST, [](AsyncWebServerRequest *request){
+      CONSOLELN(F("updateProcess"));
+      request->send(200);
+    }, httpProcessUpdate);      
+  ///////////////////////////////////////////////////////////////////////////
+  mServer.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request) {
+    CONSOLELN(F("setup"));
+    request->send(SPIFFS, "/setup.html", String(), false,processorSetup);
+  });
+  mServer.on("/setupProcess", HTTP_GET, processorSetupGet);
+  ///////////////////////////////////////////////////////////////////////////
+  mServer.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
+    CONSOLELN(F("format"));
+    SPIFFS.end();
+    SPIFFS.begin();
+    CONSOLELN(SPIFFS.format());
+    SPIFFS.begin();
+    request->send(200, "text/html", "format done");
+  });
   ///////////////////////////////////////////////////////////////////////////
   mServer.onNotFound([](AsyncWebServerRequest *request){
+    CONSOLELN(F("not found"));
     int fnsstart = request->url().lastIndexOf('/');
     String fn = request->url().substring(fnsstart);
     CONSOLELN(fn);
-    request->send(SPIFFS, fn, String(), true);
+    request->send(SPIFFS, fn, String(), false);
   });  
 }

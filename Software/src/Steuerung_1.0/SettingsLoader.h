@@ -43,70 +43,33 @@ class SettingsLoader {
           return false;
       }
 
-      if ( doc.containsKey("kalT") )
-        mSettings.setKalT( doc["kalT"] );
-      if ( doc.containsKey("kalM") )
-        mSettings.setKalM( doc["kalM"] );
-      if ( doc.containsKey("pidKp") )
-        mSettings.setPidKp( doc["pidKp"] );
-      if ( doc.containsKey("pidKi") )
-        mSettings.setPidKi( doc["pidKi"] );
-      if ( doc.containsKey("pidKd") )
-        mSettings.setPidKd( doc["pidKd"] );
-      if ( doc.containsKey("PidOWinterval") )
-        mSettings.setPidOWinterval( doc["PidOWinterval"] );
-      if ( doc.containsKey("PidWindowSize") )
-        mSettings.setPidWindowSize( doc["PidWindowSize"] );
-      if ( doc.containsKey("PidMinWindow") )
-        mSettings.setPidMinWindow( doc["PidMinWindow"] );
-      if ( doc.containsKey("switchProtocol") )
-        mSettings.setSwitchProtocol( doc["switchProtocol"] );
-      if ( doc.containsKey("switchPulseLength") )
-        mSettings.setSwitchPulseLength( doc["switchPulseLength"] );
-      if ( doc.containsKey("switchRepeat") )
-        mSettings.setSwitchRepeat( doc["switchRepeat"] );
-      if ( doc.containsKey("switchBits") )
-        mSettings.setSwitchBits( doc["switchBits"] );
-      if ( doc.containsKey("switchOn") )
-        mSettings.setSwitchOn( doc["switchOn"] );
-      if ( doc.containsKey("switchOff") )
-        mSettings.setSwitchOff( doc["switchOff"] );
-      if ( doc.containsKey("actRast") )
-        mSettings.setActRast( doc["actRast"] );
-      if ( doc.containsKey("actTemp") )
-        mSettings.setActTemp( doc["actTemp"] );
-      if ( doc.containsKey("started") )
-        mSettings.setStarted( doc["started"] );
-      if ( doc.containsKey("heatState") )
-        mSettings.setHeatState( doc["heatState"] );
-      if ( doc.containsKey("tempReached") )
-        mSettings.setTempReached( doc["tempReached"] );
-      if ( doc.containsKey("UseDefault") )
-        mSettings.setUseDefault( doc["UseDefault"] );
-      if ( doc.containsKey("ConfigMode") )
-        mSettings.setConfigMode( doc["ConfigMode"] );
-      if ( doc.containsKey("shouldSave") )
-        mSettings.setShouldSave( doc["shouldSave"] );
-      if ( doc.containsKey("restartEsp") )
-        mSettings.setRestartEsp( doc["restartEsp"] );
-      if ( doc.containsKey("setPassWd") )
-        mSettings.setWebPassWd( doc["setPassWd"] );
-      if ( doc.containsKey("passWd") )
-        mSettings.setPassWd( doc["passWd"] );
+      if ( doc.containsKey("kalT") )                  mSettings.setKalT( doc["kalT"] );
+      if ( doc.containsKey("kalM") )                  mSettings.setKalM( doc["kalM"] );
+      if ( doc.containsKey("pidKp") )                 mSettings.setPidKp( doc["pidKp"] );
+      if ( doc.containsKey("pidKi") )                 mSettings.setPidKi( doc["pidKi"] );
+      if ( doc.containsKey("pidKd") )                 mSettings.setPidKd( doc["pidKd"] );
+      if ( doc.containsKey("PidOWinterval") )         mSettings.setPidOWinterval( doc["PidOWinterval"] );
+      if ( doc.containsKey("PidWindowSize") )         mSettings.setPidWindowSize( doc["PidWindowSize"] );
+      if ( doc.containsKey("PidMinWindow") )          mSettings.setPidMinWindow( doc["PidMinWindow"] );
+      if ( doc.containsKey("switchProtocol") )        mSettings.setSwitchProtocol( doc["switchProtocol"] );
+      if ( doc.containsKey("switchPulseLength") )     mSettings.setSwitchPulseLength( doc["switchPulseLength"] );
+      if ( doc.containsKey("switchRepeat") )          mSettings.setSwitchRepeat( doc["switchRepeat"] );
+      if ( doc.containsKey("switchBits") )            mSettings.setSwitchBits( doc["switchBits"] );
+      if ( doc.containsKey("switchOn") )              mSettings.setSwitchOn( doc["switchOn"] );
+      if ( doc.containsKey("switchOff") )             mSettings.setSwitchOff( doc["switchOff"] );
+      if ( doc.containsKey("UseDefault") )            mSettings.setUseDefault( doc["UseDefault"] );
+      if ( doc.containsKey("ConfigMode") )            mSettings.setConfigMode( doc["ConfigMode"] );
+      if ( doc.containsKey("setPassWd") )             mSettings.setWebPassWd( doc["setPassWd"] );
+      if ( doc.containsKey("passWd") )                mSettings.setPassWd( doc["passWd"] );
 
       for ( int i=0; i < mSettings.getMAXRAST(); i++ ) {
          JsonObject posRast = doc[F("Rast_")+String(i)];
          if ( !posRast.isNull() ){
-           if ( posRast.containsKey("time") ) 
-              mSettings.setTime(i,posRast["time"]);
-           if ( posRast.containsKey("temp") ) 
-              mSettings.setTemp(i,posRast["temp"]);
-           if ( posRast.containsKey("active") ) 
-              mSettings.setActive(i,posRast["active"]);
-           if ( posRast.containsKey("wait") ) 
-              mSettings.setWait(i,posRast["wait"]);
-           if ( posRast.containsKey("alarm") ) 
-              mSettings.setAlarm(i,posRast["alarm"]);
+           if ( posRast.containsKey("time") )         mSettings.setTime(i,posRast["time"]);
+           if ( posRast.containsKey("temp") )         mSettings.setTemp(i,posRast["temp"]);
+           if ( posRast.containsKey("active") )       mSettings.setActive(i,posRast["active"]);
+           if ( posRast.containsKey("wait") )         mSettings.setWait(i,posRast["wait"]);
+           if ( posRast.containsKey("alarm") )        mSettings.setAlarm(i,posRast["alarm"]);
          }
         
          mSettings.printRast(i);
@@ -149,15 +112,8 @@ class SettingsLoader {
       doc["switchBits"]         = mSettings.getSwitchBits();
       doc["switchOn"]           = mSettings.getSwitchOn();
       doc["switchOff"]          = mSettings.getSwitchOff();
-      doc["actRast"]            = mSettings.getActRast();
-      doc["actTemp"]            = mSettings.getActTemp();
-      doc["started"]            = mSettings.getStarted();
-      doc["heatState"]          = mSettings.getHeatState();
-      doc["tempReached"]        = mSettings.getTempReached();
       doc["UseDefault"]         = mSettings.getUseDefault();
       doc["ConfigMode"]         = mSettings.getConfigMode();
-      doc["shouldSave"]         = mSettings.getShouldSave();
-      doc["restartEsp"]         = mSettings.getRestartEsp();
       doc["setPassWd"]          = mSettings.getWebPassWd();
       doc["passWd"]             = mSettings.getPassWd();
 
@@ -183,7 +139,6 @@ class SettingsLoader {
       configFile.flush();
       configFile.close();
       SPIFFS.gc();
-      SPIFFS.end();
       CONSOLELN(F("\nsaved successfully"));
       return true;
   }

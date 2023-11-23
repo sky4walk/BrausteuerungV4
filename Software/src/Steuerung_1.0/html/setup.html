@@ -1,64 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Brausteuerung
-</title>
-<style>
-body { 
-	background-color: #fffff; 
-	font-family: Arial, Helvetica, Sans-Serif; 
-	Color: #000088; 
-}
-</style>
-</head>
-<body>
-
-<h2>Brausteuerung - Setup<h2>
-
-<div>
-	Value is : <span id="ADCValue">0</span><br>
-</div>
-
-<form action="/setupAction">
-  First name:<br>
-  <input type="text" name="firstname" value="Mickey">
-  <br>
-  Last name:<br>
-  <input type="text" name="lastname" value="Mouse">
-  <br><br>
-  <input type="submit" value="Submit">
-</form> 
-
-<script>
-/*
-setInterval(function() {
-  getData();
-}, 2000); 
-*/
-function sendData(led) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("LEDState").innerHTML =
-      this.responseText;
+<!DOCTYPE HTML><html>
+  <head></head>
+    <h2>Controller Setup</h2>
+    <h3> <a href="http://www.Brauverein-Schwabach.de/">Brauverein-Schwabach.de</a></h3>
+    <form action="/setupProcess">
+      <hr>
+      Temp On  <input type="number" step="0.1" name="OnInput" value="%ONINPUT%" required> C<br>
+      Temp Off <input type="number" step="0.1" name="OffInput" value="%OFFINPUT%" required> C<br>
+      <hr>
+      Switch On          <input type="number" step="1" name="SwitchOn" value="%SWITCHON%" required><br>
+      Switch Off         <input type="number" step="1" name="SwitchOff" value="%SWITCHOFF%" required><br>
+      Switch Protocol    <input type="number" step="1" name="SwitchProtocol" value="%SWITCHPROTOCOL%" required><br>
+      Switch Puls Length <input type="number" step="1" name="SwitchPulseLength" value="%SWITCHPULSELENGTH%" required><br>
+      Switch Bits        <input type="number" step="1" name="SwitchBits" value="%SWITCHBITS%" required><br>
+      Switch Repeats     <input type="number" step="1" name="SwitchRepeats" value="%SWITCHREPEATS%" required><br>
+      <input type="submit" value="Submit">
+      <button onclick="window.location.href='/'">Back</button>
+    </form> 
+  <script>
+  /*
+    function myFunction() {
+      window.location.href="/";
     }
-  };
-  xhttp.open("GET", "setLED?LEDstate="+led, true);
-  xhttp.send();
-}
-
-function getData() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("ADCValue").innerHTML =
-      this.responseText;
-    }
-  };
-  xhttp.open("GET", "readADC", true);
-  xhttp.send();
-}
-</script>
-
-</body>
-</html>
+    */
+  </script>
+   
+  </body></html>

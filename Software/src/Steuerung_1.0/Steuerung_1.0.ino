@@ -54,7 +54,7 @@ TemperaturSensorDS18B20 tmpSensor(GPIO04_D2,brewDatas);
 ezBuzzer buzzer(GPIO00_D3);
 DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 PID myPID(&actTmp,&pidOutput,&sollTmp,brewDatas.getPidKp(),brewDatas.getPidKi(),brewDatas.getPidKd(),DIRECT);
-SteuerungWebServer rmpServer(brewDatas);
+SteuerungWebServer rmpServer(&brewDatas);
 Ticker LedTicker;
 WaitTime          timerTempMeasure;
 WaitTime          timerPidCompute;
@@ -241,6 +241,10 @@ void loop() {
   }
   RelaisLoop();
   drd.loop();
+  if ( brewDatas.getShouldSave() ) {
+    loaderDat.save();
+    brewDatas.setShouldSave(false);
+  }
   if ( brewDatas.getRestartEsp() ) {
     delay(500);
     ESP.restart();

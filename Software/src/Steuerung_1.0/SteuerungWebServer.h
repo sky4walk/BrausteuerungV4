@@ -8,11 +8,10 @@
 
 class SteuerungWebServer {
   public:
-    SteuerungWebServer(Settings& set);
+    static Settings* mSettings;
+    SteuerungWebServer(Settings* set);
     void begin();
   private:
-    //handleFileUpload(AsyncWebServerRequest *request);
-    Settings& mSettings;        
 };
 
 #endif

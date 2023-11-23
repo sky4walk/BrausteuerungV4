@@ -2,13 +2,11 @@
 <html>
 <body>
 
-<h2>Brausteuerung<h2>
-<h3> Start</h3>
-
-start
+<h2>Start<h2>
 
 <a href='/setup'> Setup </a> <br>
 <a href='/upload'> Upload </a> <br>
+<a href='/download'> Download settings </a> <br>
 
 </body>
 </html>
