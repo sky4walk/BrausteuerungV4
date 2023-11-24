@@ -1,6 +1,18 @@
 // brausteuerung@AndreBetz.de
 ///////////////////////////////////////////////
 //http://brausteuerung
+//C:\Users\skype\OneDrive\Dokumente\Arduino\libraries
+//https://github.com/sui77/rc-switch 2.6.4
+//https://arduinogetstarted.com/tutorials/arduino-buzzer-library 1.0.0
+//https://github.com/tzapu/WiFiManager 2.0.16-rc.2
+//PID 1.2.0
+//https://www.pjrc.com/teensy/td_libs_OneWire.html 2.3.7
+//https://github.com/dvarrel/ESPAsyncTCP 1.2.4
+//https://github.com/datacute/DoubleResetDetector 1.0.3
+//https://github.com/milesburton/Arduino-Temperature-Control-Library 3.9.0
+//https://github.com/dvarrel/AsyncTCP 1.1.4
+//https://arduinojson.org/ 6.21.3
+//https://github.com/me-no-dev/ESPAsyncWebServer 
 ///////////////////////////////////////////////
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
