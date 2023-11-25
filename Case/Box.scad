@@ -17,7 +17,7 @@ openTempPos = 16;
 openTemph = 6.5;
 openTempb = 13;
 openSwitchPos = 0;
-openSwitchb = 3;
+openSwitchb = 5;
 withNotch=true;
 $fn = 128;
 
@@ -34,11 +34,13 @@ module showBoxAll() {
         translate ([boxLength-wallThickness-.1, boxWidth/2-openTempb/2,bottomThickness+openTempPos])
             cube([wallThickness*2,openTempb,openTemph]);            
         rotate([90,0,0])
-            translate ([wallThickness*6,wallThickness+openSwitchb/2,-boxWidth-wallThickness])
+            translate ([15,wallThickness+openSwitchb/2,-boxWidth-wallThickness])
                 cylinder(wallThickness*3,openSwitchb/2,openSwitchb/2);
     }
     translate ([-1.5, 0,-3.2])
         brick(3,2);
+    translate ([wallThickness*4,wallThickness,bottomThickness])        cube([2,boxWidth-wallThickness*2,1]);
+    
 }
 module showLid(){
 	translate ([0, -2*wallThickness, 0]) 
