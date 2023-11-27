@@ -19,11 +19,19 @@ openTempb = 13;
 openSwitchPos = 0;
 openSwitchb = 5;
 withNotch=true;
+showWhat = 0;
 $fn = 128;
 
-translate ([0, 0,-3.2]) showLid();
-translate ([2, -26,-3.2]) brick(2,1);
-showBoxAll();
+
+if (0 == showWhat ) { // box
+    showBoxAll();
+} else if (1 == showWhat ) { // lid
+    showLid();
+} else if (2 == showWhat ) { // knob
+} else if (3 == showWhat ) { // all
+    showBoxAll();
+    translate ([0, 0,-3.2]) showLid();
+}
 
 module showBoxAll() {
     difference() 
@@ -50,6 +58,7 @@ module showLid(){
 				et=lidEdgeThickness,
 				r=cornerRadius-wallThickness,
 				notch=withNotch);
+    translate ([2, -26,0]) brick(2,1);
 }
 
 module showBox(){
