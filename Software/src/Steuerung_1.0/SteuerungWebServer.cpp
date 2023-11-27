@@ -61,28 +61,31 @@ void httpProcessUpdate(AsyncWebServerRequest *request, const String &filename, s
 // getContentType
 ///////////////////////////////////////////////////////////////////////////
 String processorSetup(const String& var){
-  if(var == "OFFINPUT"){
+  if(var == "ZIELTEMP"){
+    return String(SteuerungWebServer::mSettings->getTemp(0));
+  } else if(var == "RASTZEIT"){
+    return String(SteuerungWebServer::mSettings->getTime(0));
+  } else if(var == "PIDKP"){
+    return String(SteuerungWebServer::mSettings->getPidKp());
+  } else if(var == "PIDKI"){
+    return String(SteuerungWebServer::mSettings->getPidKi());
+  } else if(var == "PIDKD"){
+    return String(SteuerungWebServer::mSettings->getPidKd());  
+  } else if(var == "KALIBM"){
     return String(SteuerungWebServer::mSettings->getKalM());
-  } 
-  else if(var == "ONINPUT"){
+  } else if(var == "KALIBT"){
     return String(SteuerungWebServer::mSettings->getKalT());
-  }
-  else if(var == "SWITCHON"){
+  } else if(var == "SWITCHON"){
     return String(SteuerungWebServer::mSettings->getSwitchOn());
-  }
-  else if(var == "SWITCHOFF"){
+  } else if(var == "SWITCHOFF"){
     return String(SteuerungWebServer::mSettings->getSwitchOff());
-  }
-  else if(var == "SWITCHPROTOCOL"){
+  } else if(var == "SWITCHPROTOCOL"){
     return String(SteuerungWebServer::mSettings->getSwitchProtocol());
-  }
-  else if(var == "SWITCHPULSELENGTH"){
+  } else if(var == "SWITCHPULSELENGTH"){
     return String(SteuerungWebServer::mSettings->getSwitchPulseLength());
-  }
-  else if(var == "SWITCHBITS"){
+  } else if(var == "SWITCHBITS"){
     return String(SteuerungWebServer::mSettings->getSwitchBits());
-  }
-  else if(var == "SWITCHREPEATS"){
+  } else if(var == "SWITCHREPEATS"){
     return String(SteuerungWebServer::mSettings->getSwitchRepeat());
   }
   return String();
@@ -90,14 +93,44 @@ String processorSetup(const String& var){
 
 void processorSetupGet(AsyncWebServerRequest *request) {
   String inputMessage;
-  if (request->hasParam("OnInput")) {
-      inputMessage = request->getParam("OnInput")->value();
+  if (request->hasParam("ZielTemp")) {
+      inputMessage = request->getParam("ZielTemp")->value();
       CONSOLELN(inputMessage);
-      SteuerungWebServer::mSettings->setKalT(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setTemp(0,inputMessage.toFloat());
       SteuerungWebServer::mSettings->setShouldSave(true);
   }
-  if (request->hasParam("OffInput")) {
-      inputMessage = request->getParam("OffInput")->value();
+  if (request->hasParam("RastZeit")) {
+      inputMessage = request->getParam("RastZeit")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setTime(0,inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("Kp")) {
+      inputMessage = request->getParam("Kp")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setPidKp(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("Ki")) {
+      inputMessage = request->getParam("Ki")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setPidKi(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("Kd")) {
+      inputMessage = request->getParam("Kd")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setPidKd(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("KalM")) {
+      inputMessage = request->getParam("KalM")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setKalM(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("KalT")) {
+      inputMessage = request->getParam("KalT")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setKalM(inputMessage.toFloat());
       SteuerungWebServer::mSettings->setShouldSave(true);
