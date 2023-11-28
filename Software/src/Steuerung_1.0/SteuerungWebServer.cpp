@@ -92,6 +92,7 @@ String processorSetup(const String& var){
 }
 
 void processorSetupGet(AsyncWebServerRequest *request) {
+  CONSOLELN(F("processorSetupGet"));
   String inputMessage;
   if (request->hasParam("ZielTemp")) {
       inputMessage = request->getParam("ZielTemp")->value();
@@ -132,7 +133,7 @@ void processorSetupGet(AsyncWebServerRequest *request) {
   if (request->hasParam("KalT")) {
       inputMessage = request->getParam("KalT")->value();
       CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setKalM(inputMessage.toFloat());
+      SteuerungWebServer::mSettings->setKalT(inputMessage.toFloat());
       SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("SwitchOn")) {
