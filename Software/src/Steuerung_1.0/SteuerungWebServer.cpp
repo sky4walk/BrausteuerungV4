@@ -16,8 +16,8 @@ const char upload_html[] PROGMEM = R"rawliteral(
 <body><h1>File Upload</h1>
 <form method="POST" action="/uploadDo" enctype="multipart/form-data" target="iframe">
 <input type="file" name="upload"><input type="submit" value="Upload"></form>
+<form action="/"><button onclick="window.location.href='/'">Back</button></form>
 <iframe style="visibility: hidden;" src="http://" )+local_IPstr+"/Usm" name="iframe"></iframe>
-<a href="/">Back</a>
 </body></html>
 )rawliteral";
 ///////////////////////////////////////////////////////////////////////////
@@ -276,6 +276,7 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   CONSOLELN(logmessage);
 
   if (!index) {
+    SPIFFS.begin();
     logmessage = "Upload Start: " + String(filename);
     request->_tempFile = SPIFFS.open("/" + filename, "w");
     CONSOLELN(logmessage);
@@ -291,7 +292,15 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
     CONSOLELN(logmessage);
     FSzeigen();
     readFile(SPIFFS,filename.c_str());
-    request->redirect("/");
+    //request->redirect("/");
+    //request->send(200, "/start.html");
+    /*
+    AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", "Ok");
+    response->addHeader("Test-Header", "My header value");
+    request->send(response);
+    */
+    //request->send(303,"/start.html");
+    request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
   }
 }
 ///////////////////////////////////////////////////////////////////////////
@@ -370,10 +379,15 @@ void SteuerungWebServer::begin() {
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.onNotFound([](AsyncWebServerRequest *request){
-    CONSOLELN(F("not found"));
     int fnsstart = request->url().lastIndexOf('/');
     String fn = request->url().substring(fnsstart);
     CONSOLELN(fn);
-    request->send(SPIFFS, fn, String(), false);
+    if ( SPIFFS.exists(fn) ) {
+      CONSOLELN(F("File found"));
+      request->send(SPIFFS, fn, String(), false);
+    } else {
+      CONSOLELN(F("File not found"));
+      request->send(200, "text/html", upload_html);
+    }
   });  
 }

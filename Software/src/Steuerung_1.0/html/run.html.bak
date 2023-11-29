@@ -33,7 +33,7 @@
       <span class="dht-labels">Strom</span> 
       <span id="anaus">%ANAUS%</span>
     </p>
-    <button onclick="window.location.href='/'">Back</button>
+    <button onclick="window.location.href='/setUp'">Setup</button>
     
     <script>
       var myVar = setInterval(myTimer, 1000);

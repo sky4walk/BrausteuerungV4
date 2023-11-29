@@ -13,6 +13,7 @@
 //https://github.com/dvarrel/AsyncTCP 1.1.4
 //https://arduinojson.org/ 6.21.3
 //https://github.com/me-no-dev/ESPAsyncWebServer 
+// ask for HW type: esptool.exe -p COM4 flash_id
 ///////////////////////////////////////////////
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
