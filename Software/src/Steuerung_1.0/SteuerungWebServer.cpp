@@ -180,6 +180,23 @@ void processorSetupGet(AsyncWebServerRequest *request) {
 ///////////////////////////////////////////////////////////////////////////
 // getContentType
 ///////////////////////////////////////////////////////////////////////////
+String processorTemp(const String& var){
+  //Serial.println(var);
+  if(var == "TEMPERATURE"){
+    return String(SteuerungWebServer::mSettings->getActTemp());
+  }
+  if(var == "ANAUS"){
+    if ( SteuerungWebServer::mSettings->getHeatState() ) {
+      return String("On");
+    } else {
+      return String("Off");      
+    }
+  }  
+  return String();
+}
+///////////////////////////////////////////////////////////////////////////
+// getContentType
+///////////////////////////////////////////////////////////////////////////
 String getContentType(String filename) { 
   if (filename.endsWith(".html"))       return "text/html";
   else if (filename.endsWith(".htm"))   return "text/html";
@@ -336,6 +353,20 @@ void SteuerungWebServer::begin() {
     CONSOLELN(SPIFFS.format());
     SPIFFS.begin();
     request->send(200, "text/html", "format done");
+  });
+ ///////////////////////////////////////////////////////////////////////////
+  mServer.on("/run", HTTP_GET,[](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/run.html", String(), false, processorTemp);
+  });
+  mServer.on("/readTemp", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getActTemp()).c_str());
+  });
+  mServer.on("/readState", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if ( SteuerungWebServer::mSettings->getHeatState() ) {
+      request->send_P(200, "text/html", String("On").c_str() );
+    } else {
+      request->send_P(200, "text/html", String("Off").c_str() );    
+    }
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.onNotFound([](AsyncWebServerRequest *request){
