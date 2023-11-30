@@ -182,6 +182,7 @@ void processorSetupGet(AsyncWebServerRequest *request) {
 ///////////////////////////////////////////////////////////////////////////
 String processorTemp(const String& var){
   //Serial.println(var);
+  
   if(var == "TEMPERATURE"){
     return String(SteuerungWebServer::mSettings->getActTemp());
   }
@@ -191,7 +192,8 @@ String processorTemp(const String& var){
     } else {
       return String("Off");      
     }
-  }  
+  }
+    
   return String();
 }
 ///////////////////////////////////////////////////////////////////////////
@@ -306,6 +308,24 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
 ///////////////////////////////////////////////////////////////////////////
 // Class
 ///////////////////////////////////////////////////////////////////////////
+String handleOnOff(const String& var){
+  CONSOLELN(F("handleOnOff"));
+  CONSOLELN(var);
+  String ledState;
+  if(var == "STATE"){
+    if(SteuerungWebServer::mSettings->getStarted()){
+      ledState = "ON";
+    } else {
+      ledState = "OFF";
+    }
+    CONSOLELN(ledState);
+    return ledState;
+  }
+  return String();
+}
+///////////////////////////////////////////////////////////////////////////
+// Class
+///////////////////////////////////////////////////////////////////////////
 Settings* SteuerungWebServer::mSettings;
 
 SteuerungWebServer::SteuerungWebServer(Settings* set) {
@@ -325,8 +345,8 @@ void SteuerungWebServer::begin() {
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/uploadDo", HTTP_POST, [](AsyncWebServerRequest *request) {
-    CONSOLELN(F("uploadDo"));
-    request->send(200); }, handleUpload);       
+    CONSOLELN(F("upload done"));
+    request->send(200);    }, handleUpload);
   mServer.on("/upload", HTTP_GET, [](AsyncWebServerRequest *request){
     CONSOLELN(F("upload"));  
     request->send(200, "text/html", upload_html);
@@ -365,10 +385,18 @@ void SteuerungWebServer::begin() {
   });
  ///////////////////////////////////////////////////////////////////////////
   mServer.on("/run", HTTP_GET,[](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/run.html", String(), false, processorTemp);
+    CONSOLELN(F("run"));
+//    request->send(SPIFFS, "/run.html", String(), false, processorTemp);
+    request->send(SPIFFS, "/run.html", String(), false);
   });
   mServer.on("/readTemp", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getActTemp()).c_str());
+  });
+  mServer.on("/readSollTemp", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTemp(0)).c_str());
+  });
+  mServer.on("/readRastZeit", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTime(0)).c_str());
   });
   mServer.on("/readState", HTTP_GET, [](AsyncWebServerRequest *request) {
     if ( SteuerungWebServer::mSettings->getHeatState() ) {
@@ -376,6 +404,14 @@ void SteuerungWebServer::begin() {
     } else {
       request->send_P(200, "text/html", String("Off").c_str() );    
     }
+  });
+  mServer.on("/runOn", HTTP_GET, [](AsyncWebServerRequest *request){
+    CONSOLELN(F("runOn"));
+    request->send(SPIFFS, "/run.html", String(), false, handleOnOff);
+  });
+  mServer.on("/runOff", HTTP_GET, [](AsyncWebServerRequest *request){
+    CONSOLELN(F("runOff"));
+    request->send(SPIFFS, "/run.html", String(), false, handleOnOff);
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.onNotFound([](AsyncWebServerRequest *request){

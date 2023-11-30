@@ -265,6 +265,12 @@ class Settings
       if ( nr < MAXRAST )
         params.rasten[nr].temp = temp;
     }
+    unsigned long getDuration() {
+      return params.duration;
+    }
+    void setDuration(unsigned long duration) {
+      params.duration = duration;
+    }
     bool getActive(unsigned int nr) {
       if ( nr < MAXRAST )
         return params.rasten[nr].active;
@@ -339,6 +345,7 @@ class Settings
       int actRast;
       int actState;
       float actTemp;
+      unsigned long duration;
       bool started;
       bool heatState;
       bool heatStateChanged;
