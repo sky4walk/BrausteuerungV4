@@ -182,7 +182,6 @@ h2 { font-size: 3.0rem; }
       <span id="anaus">%ANAUS%</span>
     </p>
 
-
 	<span class="toggle">
     <input type="checkbox">
     <label data-off="&#9724;" data-on="&#9654;"></label>
@@ -190,7 +189,7 @@ h2 { font-size: 3.0rem; }
 
     <p>      <button onclick="window.location.href='/'">Back</button>     </p> 
     <script>
-      var myVar = setInterval(myTimer, 1000);
+      var myVar = setInterval(myTimer, 2000);
 
       function myTimer() {
         var d = new Date();
@@ -198,9 +197,9 @@ h2 { font-size: 3.0rem; }
         document.getElementById("time").innerHTML = t;
         getTemperatur();
 		getSollTemperatur();
+		getRastZeit();
         getState();
       }
-
       function getTemperatur() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -208,7 +207,7 @@ h2 { font-size: 3.0rem; }
             document.getElementById("temperature").innerHTML = this.responseText;
           }
         };
-        xhttp.open("GET", "readTemp", true);
+        xhttp.open("GET", "/runReadData?output=temperature", true);
         xhttp.send();
       }
 	  function getSollTemperatur() {
@@ -218,7 +217,7 @@ h2 { font-size: 3.0rem; }
             document.getElementById("solltemperature").innerHTML = this.responseText;
           }
         };
-        xhttp.open("GET", "readSollTemp", true);
+        xhttp.open("GET", "/runReadData?output=solltemperature", true);
         xhttp.send();
       }
 	  function getRastZeit() {
@@ -228,7 +227,7 @@ h2 { font-size: 3.0rem; }
             document.getElementById("rastzeit").innerHTML = this.responseText;
           }
         };
-        xhttp.open("GET", "readRastZeit", true);
+        xhttp.open("GET", "/runReadData?output=rastzeit", true);
         xhttp.send();
       }
       function getState() {
@@ -238,7 +237,7 @@ h2 { font-size: 3.0rem; }
             document.getElementById("anaus").innerHTML = this.responseText;
           }
         };
-        xhttp.open("GET", "readState", true);
+        xhttp.open("GET", "/runReadData?output=anaus", true);
         xhttp.send();
       }
       

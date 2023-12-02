@@ -1,7 +1,8 @@
 // brausteuerung@AndreBetz.de
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
+//#include <ESPAsyncWebServer.h>
+#include <ESPAsyncWebSrv.h>
 #include <FS.h>
 #include "SteuerungWebServer.h"
 #include "DbgConsole.h"
@@ -324,6 +325,40 @@ String handleOnOff(const String& var){
   return String();
 }
 ///////////////////////////////////////////////////////////////////////////
+// runHandle
+///////////////////////////////////////////////////////////////////////////
+void runHandle(AsyncWebServerRequest *request) {
+  String inputMessage;
+  
+  if ( request->hasParam("output") ) {
+    inputMessage = request->getParam("output")->value();
+    CONSOLELN(inputMessage);
+    
+    if ( inputMessage.equals("temperature")) {
+      //request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getActTemp()).c_str());
+      request->send_P(200, "text/html", "1");
+    } else if ( inputMessage.equals("solltemperature")) {
+      //request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTemp(0)).c_str());
+      request->send_P(200, "text/html", "2");
+    } else if ( inputMessage.equals("rastzeit")) {
+      //request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTime(0)).c_str());
+      request->send_P(200, "text/html", "3");
+    } else if ( inputMessage.equals("anaus")) {
+      
+      if ( SteuerungWebServer::mSettings->getHeatState() ) {
+//        request->send_P(200, "text/html", String("On").c_str() );
+        request->send_P(200, "text/html", "4" );
+      } else {
+//        request->send_P(200, "text/html", String("Off").c_str() );    
+        request->send_P(200, "text/html", "5" );
+      }
+    }
+    
+  }
+  
+  request->send(200, "text/plain", "wrong val");
+}
+///////////////////////////////////////////////////////////////////////////
 // Class
 ///////////////////////////////////////////////////////////////////////////
 Settings* SteuerungWebServer::mSettings;
@@ -389,22 +424,7 @@ void SteuerungWebServer::begin() {
 //    request->send(SPIFFS, "/run.html", String(), false, processorTemp);
     request->send(SPIFFS, "/run.html", String(), false);
   });
-  mServer.on("/readTemp", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getActTemp()).c_str());
-  });
-  mServer.on("/readSollTemp", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTemp(0)).c_str());
-  });
-  mServer.on("/readRastZeit", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTime(0)).c_str());
-  });
-  mServer.on("/readState", HTTP_GET, [](AsyncWebServerRequest *request) {
-    if ( SteuerungWebServer::mSettings->getHeatState() ) {
-      request->send_P(200, "text/html", String("On").c_str() );
-    } else {
-      request->send_P(200, "text/html", String("Off").c_str() );    
-    }
-  });
+  mServer.on("/runReadData", HTTP_GET, runHandle);
   mServer.on("/runOn", HTTP_GET, [](AsyncWebServerRequest *request){
     CONSOLELN(F("runOn"));
     request->send(SPIFFS, "/run.html", String(), false, handleOnOff);
