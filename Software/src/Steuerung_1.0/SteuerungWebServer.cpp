@@ -335,22 +335,16 @@ void runHandle(AsyncWebServerRequest *request) {
     CONSOLELN(inputMessage);
     
     if ( inputMessage.equals("temperature")) {
-      //request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getActTemp()).c_str());
-      request->send_P(200, "text/html", "1");
+      request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getActTemp()).c_str());
     } else if ( inputMessage.equals("solltemperature")) {
-      //request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTemp(0)).c_str());
-      request->send_P(200, "text/html", "2");
+      request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTemp(0)).c_str());
     } else if ( inputMessage.equals("rastzeit")) {
-      //request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTime(0)).c_str());
-      request->send_P(200, "text/html", "3");
-    } else if ( inputMessage.equals("anaus")) {
-      
+      request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTime(0)).c_str());
+    } else if ( inputMessage.equals("anaus")) {      
       if ( SteuerungWebServer::mSettings->getHeatState() ) {
-//        request->send_P(200, "text/html", String("On").c_str() );
-        request->send_P(200, "text/html", "4" );
+        request->send_P(200, "text/html", String("On").c_str() );
       } else {
-//        request->send_P(200, "text/html", String("Off").c_str() );    
-        request->send_P(200, "text/html", "5" );
+        request->send_P(200, "text/html", String("Off").c_str() );    
       }
     }
     

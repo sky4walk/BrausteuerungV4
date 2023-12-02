@@ -189,7 +189,7 @@ h2 { font-size: 3.0rem; }
 
     <p>      <button onclick="window.location.href='/'">Back</button>     </p> 
     <script>
-      var myVar = setInterval(myTimer, 2000);
+      var myVar = setInterval(myTimer, 1000);
 
       function myTimer() {
         var d = new Date();
