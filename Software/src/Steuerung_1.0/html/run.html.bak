@@ -195,51 +195,21 @@ h2 { font-size: 3.0rem; }
         var d = new Date();
         var t = d.toLocaleTimeString();
         document.getElementById("time").innerHTML = t;
-        getTemperatur();
-		getSollTemperatur();
-		getRastZeit();
-        getState();
+        getData();
       }
-      function getTemperatur() {
+      function getData() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("temperature").innerHTML = this.responseText;
+			var myObj = JSON.parse(this.responseText);
+			console.log(myObj);
+            document.getElementById("temperature").innerHTML 		= myObj.temperature;
+            document.getElementById("solltemperature").innerHTML 	= myObj.solltemperature;
+            document.getElementById("rastzeit").innerHTML 			= myObj.rastzeit;
           }
         };
-        xhttp.open("GET", "/runReadData?output=temperature", true);
+        xhttp.open("GET", "/runReadData?output=getdata", true);
         xhttp.send();
-      }
-	  function getSollTemperatur() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("solltemperature").innerHTML = this.responseText;
-          }
-        };
-        xhttp.open("GET", "/runReadData?output=solltemperature", true);
-        xhttp.send();
-      }
-	  function getRastZeit() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("rastzeit").innerHTML = this.responseText;
-          }
-        };
-        xhttp.open("GET", "/runReadData?output=rastzeit", true);
-        xhttp.send();
-      }
-      function getState() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("anaus").innerHTML = this.responseText;
-          }
-        };
-        xhttp.open("GET", "/runReadData?output=anaus", true);
-        xhttp.send();
-      }
-      
+      }	        
     </script>  
   </body></html>

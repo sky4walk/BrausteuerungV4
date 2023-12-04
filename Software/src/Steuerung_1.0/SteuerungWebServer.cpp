@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 //#include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 #include <ESPAsyncWebSrv.h>
 #include <FS.h>
 #include "SteuerungWebServer.h"
@@ -328,29 +329,28 @@ String handleOnOff(const String& var){
 // runHandle
 ///////////////////////////////////////////////////////////////////////////
 void runHandle(AsyncWebServerRequest *request) {
-  String inputMessage;
-  
   if ( request->hasParam("output") ) {
-    inputMessage = request->getParam("output")->value();
+    String inputMessage = request->getParam("output")->value();
     CONSOLELN(inputMessage);
     
-    if ( inputMessage.equals("temperature")) {
-      request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getActTemp()).c_str());
-    } else if ( inputMessage.equals("solltemperature")) {
-      request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTemp(0)).c_str());
-    } else if ( inputMessage.equals("rastzeit")) {
-      request->send_P(200, "text/html", String(SteuerungWebServer::mSettings->getTime(0)).c_str());
-    } else if ( inputMessage.equals("anaus")) {      
+    if ( inputMessage.equals("getdata")) {
+      DynamicJsonDocument doc(1024);
+      doc["temperature"]     = SteuerungWebServer::mSettings->getActTemp();
+      doc["solltemperature"] = SteuerungWebServer::mSettings->getTemp(0);
+      doc["rastzeit"]        = SteuerungWebServer::mSettings->getTime(0);
+      
       if ( SteuerungWebServer::mSettings->getHeatState() ) {
-        request->send_P(200, "text/html", String("On").c_str() );
+        doc["anaus"]         = String("On");
       } else {
-        request->send_P(200, "text/html", String("Off").c_str() );    
+        doc["anaus"]         = String("Off");    
       }
-    }
-    
-  }
-  
-  request->send(200, "text/plain", "wrong val");
+
+      String jsonString;
+      serializeJson(doc, jsonString);
+      CONSOLELN(jsonString);
+      request->send(200, "text/html", jsonString);      
+    }    
+  }   
 }
 ///////////////////////////////////////////////////////////////////////////
 // Class
