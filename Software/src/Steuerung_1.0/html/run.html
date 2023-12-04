@@ -183,34 +183,43 @@ h2 { font-size: 3.0rem; }
     </p>
 
 	<span class="toggle">
-    <input type="checkbox">
-    <label data-off="&#9724;" data-on="&#9654;"></label>
+		<input type="checkbox" onchange=toggleCheckbox(this)>
+		<label class="switch" data-off="&#9724;" data-on="&#9654;"></label>
 	</span>    
-
-    <p>      <button onclick="window.location.href='/'">Back</button>     </p> 
+    <p><button onclick="window.location.href='/'">Back</button></p>
+	
     <script>
-      var myVar = setInterval(myTimer, 1000);
+		var myVar = setInterval(myTimer, 1000);
 
-      function myTimer() {
-        var d = new Date();
-        var t = d.toLocaleTimeString();
-        document.getElementById("time").innerHTML = t;
-        getData();
-      }
-      function getData() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-			var myObj = JSON.parse(this.responseText);
-			console.log(myObj);
-            document.getElementById("temperature").innerHTML 		= myObj.temperature;
-            document.getElementById("solltemperature").innerHTML 	= myObj.solltemperature;
-            document.getElementById("rastzeit").innerHTML 			= myObj.rastzeit;
-			document.getElementById("anaus").innerHTML 				= myObj.anaus;
-          }
-        };
-        xhttp.open("GET", "/runReadData?output=getdata", true);
-        xhttp.send();
-      }	        
+		function myTimer() {
+			var d = new Date();
+			var t = d.toLocaleTimeString();
+			document.getElementById("time").innerHTML = t;
+			getData();
+		}
+		function getData() {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var myObj = JSON.parse(this.responseText);
+					console.log(myObj);
+					document.getElementById("temperature").innerHTML 		= myObj.temperature;
+					document.getElementById("solltemperature").innerHTML 	= myObj.solltemperature;
+					document.getElementById("rastzeit").innerHTML 			= myObj.rastzeit;
+					document.getElementById("anaus").innerHTML 				= myObj.anaus;
+				}
+			};
+			xhttp.open("GET", "/runReadData?output=getdata", true);
+			xhttp.send();
+		}
+		function toggleCheckbox(element) {
+		  let xhr = new XMLHttpRequest();
+		  if (element.checked) {
+			xhr.open("GET", "/runState?state=1", true);
+		  } else {
+			xhr.open("GET", "/runState?state=0", true);
+		  }
+		  xhr.send();
+		}	  
     </script>  
   </body></html>

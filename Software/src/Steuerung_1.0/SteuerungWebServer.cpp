@@ -419,13 +419,18 @@ void SteuerungWebServer::begin() {
     request->send(SPIFFS, "/run.html", String(), false);
   });
   mServer.on("/runReadData", HTTP_GET, runHandle);
-  mServer.on("/runOn", HTTP_GET, [](AsyncWebServerRequest *request){
-    CONSOLELN(F("runOn"));
-    request->send(SPIFFS, "/run.html", String(), false, handleOnOff);
-  });
-  mServer.on("/runOff", HTTP_GET, [](AsyncWebServerRequest *request){
-    CONSOLELN(F("runOff"));
-    request->send(SPIFFS, "/run.html", String(), false, handleOnOff);
+  mServer.on("/runState", HTTP_GET, [](AsyncWebServerRequest *request){
+    CONSOLELN(F("runState"));
+    String inputMessage;
+    if (request->hasParam("state"))
+    {
+        inputMessage = request->getParam("state")->value();
+        CONSOLELN(inputMessage);
+    } else {
+        inputMessage = "No message sent";
+    }
+    CONSOLELN(inputMessage);
+    request->send(200, "text/plain", "OK");
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.onNotFound([](AsyncWebServerRequest *request){
