@@ -33,6 +33,8 @@ class Settings
       params.switchOn           = 1631343;
       params.switchOff          = 1631342;
       params.actRast            = 0;
+      params.shouldStart        = false;
+      params.playSound          = false;
       params.started            = false;
       params.heatState          = false;
       params.heatStateChanged   = false;
@@ -46,6 +48,7 @@ class Settings
       {
         params.rasten[i].temp = i;
         params.rasten[i].time = i;
+        params.rasten[i].alarm = true;
       }
     }
     int getMAXRAST() {
@@ -193,6 +196,28 @@ class Settings
     void setActState(int actState) {
       params.actState = actState;
     }
+    int getActBrewState() {
+      return params.actBrewState;
+    }
+    void setActBrewState(int actBrewState) {
+      params.actBrewState = actBrewState;
+    }
+    bool getPlaySound()
+    {
+      return params.playSound;
+    }
+    void setPlaySound(bool playSound)
+    {
+      params.playSound = playSound;
+    }
+    bool getShouldStart()
+    {
+      return params.shouldStart;
+    }
+    void setShouldStart(bool shouldStart)
+    {
+      params.shouldStart = shouldStart;
+    }
     bool getStarted()
     {
       return params.started;
@@ -200,6 +225,14 @@ class Settings
     void setStarted(bool started)
     {
       params.started = started;
+    }
+    bool getShouldResetState()
+    {
+      return params.shouldResetState;
+    }
+    void setShouldResetState(bool shouldResetState)
+    {
+      params.shouldResetState = shouldResetState;
     }
     bool getHeatState()
     {
@@ -344,16 +377,21 @@ class Settings
       unsigned long switchOff;
       int actRast;
       int actState;
+      int actBrewState;
       float actTemp;
       unsigned long duration;
+      bool shouldStart;
+      bool playSound;
       bool started;
       bool heatState;
       bool heatStateChanged;
       bool tempReached;
       bool UseDefault;
       bool shouldSave;
+      bool shouldResetState;
       bool configMode;
       bool restartEsp;
+      String DNSEntry;
       String webPassWd;
       String passWd;      
     } params;

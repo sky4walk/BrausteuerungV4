@@ -225,14 +225,17 @@ void FSzeigen() {
   SPIFFS.info(fs_info);
   float fileTotalKB = fs_info.totalBytes / 1024.0;
   float fileUsedKB = fs_info.usedBytes / 1024.0;
-  Serial.print("\nFilesystem Total KB "); Serial.print(fileTotalKB);
-  Serial.print(" benutzt KB "); Serial.println(fileUsedKB);
+  CONSOLE("\nFilesystem Total KB "); 
+  CONSOLE(fileTotalKB);
+  CONSOLE(" benutzt KB "); 
+  CONSOLELN(fileUsedKB);
 
   Dir dir = SPIFFS.openDir("/");  // Dir ausgeben
   while (dir.next()) {
-    Serial.print(dir.fileName()); Serial.print("\t");
+    CONSOLE(dir.fileName()); 
+    CONSOLE("\t");
     File f = dir.openFile("r");
-    Serial.println(f.size());
+    CONSOLELN(f.size());
   }
 }
 ///////////////////////////////////////////////////////////////////////////
@@ -308,24 +311,6 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   }
 }
 ///////////////////////////////////////////////////////////////////////////
-// Class
-///////////////////////////////////////////////////////////////////////////
-String handleOnOff(const String& var){
-  CONSOLELN(F("handleOnOff"));
-  CONSOLELN(var);
-  String ledState;
-  if(var == "STATE"){
-    if(SteuerungWebServer::mSettings->getStarted()){
-      ledState = "ON";
-    } else {
-      ledState = "OFF";
-    }
-    CONSOLELN(ledState);
-    return ledState;
-  }
-  return String();
-}
-///////////////////////////////////////////////////////////////////////////
 // runHandle
 ///////////////////////////////////////////////////////////////////////////
 void runHandle(AsyncWebServerRequest *request) {
@@ -335,14 +320,34 @@ void runHandle(AsyncWebServerRequest *request) {
     
     if ( inputMessage.equals("getdata")) {
       DynamicJsonDocument doc(1024);
+      int actRast = SteuerungWebServer::mSettings->getActRast();
       doc["temperature"]     = SteuerungWebServer::mSettings->getActTemp();
-      doc["solltemperature"] = SteuerungWebServer::mSettings->getTemp(0);
-      doc["rastzeit"]        = SteuerungWebServer::mSettings->getTime(0);
+      doc["solltemperature"] = SteuerungWebServer::mSettings->getTemp(actRast);
+      if ( SteuerungWebServer::mSettings->getTempReached() ) {
+        unsigned long sT = SteuerungWebServer::mSettings->getDuration() / 1000;
+        if ( sT > 119 )
+          sT = sT / 60;
+        doc["rastzeit"]        = sT;
+       } else {
+        doc["rastzeit"]        = SteuerungWebServer::mSettings->getTime(actRast);
+      }
       
       if ( SteuerungWebServer::mSettings->getHeatState() ) {
         doc["anaus"]         = String("On");
       } else {
         doc["anaus"]         = String("Off");    
+      }
+
+      if ( SteuerungWebServer::mSettings->getStarted() ) {
+        doc["started"]       = String("1");
+      } else {
+        doc["started"]       = String("0");
+      }
+
+      if ( SteuerungWebServer::mSettings->getPlaySound() ) {
+        doc["playsound"]       = String("1");
+      } else {
+        doc["playsound"]       = String("0");
       }
 
       String jsonString;
@@ -351,6 +356,34 @@ void runHandle(AsyncWebServerRequest *request) {
       request->send(200, "text/html", jsonString);      
     }    
   }   
+}
+///////////////////////////////////////////////////////////////////////////
+// runGetSwitches
+///////////////////////////////////////////////////////////////////////////
+void runGetSwitches(AsyncWebServerRequest *request){
+  CONSOLELN(F("runState"));
+  String inputMessage;
+  if (request->hasParam("state"))
+  {
+      inputMessage = request->getParam("state")->value();
+      if ( inputMessage.equals("1")) {
+        SteuerungWebServer::mSettings->setShouldStart(true);
+      } else {
+        SteuerungWebServer::mSettings->setShouldResetState(true);
+      }
+  } if (request->hasParam("sound")) {
+      inputMessage = request->getParam("sound")->value();
+      if ( inputMessage.equals("1")) {
+        SteuerungWebServer::mSettings->setPlaySound(true);
+      } else {
+        SteuerungWebServer::mSettings->setPlaySound(false);
+      }
+  } else {
+      inputMessage = "No message sent";
+  }
+  
+  CONSOLELN(inputMessage);
+  request->send(200, "text/plain", "OK");
 }
 ///////////////////////////////////////////////////////////////////////////
 // Class
@@ -419,19 +452,7 @@ void SteuerungWebServer::begin() {
     request->send(SPIFFS, "/run.html", String(), false);
   });
   mServer.on("/runReadData", HTTP_GET, runHandle);
-  mServer.on("/runState", HTTP_GET, [](AsyncWebServerRequest *request){
-    CONSOLELN(F("runState"));
-    String inputMessage;
-    if (request->hasParam("state"))
-    {
-        inputMessage = request->getParam("state")->value();
-        CONSOLELN(inputMessage);
-    } else {
-        inputMessage = "No message sent";
-    }
-    CONSOLELN(inputMessage);
-    request->send(200, "text/plain", "OK");
-  });
+  mServer.on("/runState", HTTP_GET, runGetSwitches);
   ///////////////////////////////////////////////////////////////////////////
   mServer.onNotFound([](AsyncWebServerRequest *request){
     int fnsstart = request->url().lastIndexOf('/');

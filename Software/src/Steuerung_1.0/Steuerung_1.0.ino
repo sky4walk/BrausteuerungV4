@@ -51,9 +51,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 // states
 ///////////////////////////////////////////////////////////////////////////////
-#define STATE_BEGIN   0
-#define STATE_START   1
-#define STATE_BREW    10
+#define STATE_BEGIN       0
+#define STATE_START       1
+#define STATE_BREW        10
+#define STATE_TMPREACHED  20
+#define STATE_FIN         30
 ///////////////////////////////////////////////////////////////////////////////
 // variablen
 ///////////////////////////////////////////////////////////////////////////////
@@ -240,13 +242,45 @@ void setup() {
 ///////////////////////////////////////////////////////////////////////////////
 void loop() {
   ArduinoOTA.handle();
+  buzzer.loop();
   TempLoop();
+  int actRast = brewDatas.getActRast();
   switch(brewDatas.getActState()) {
-    case STATE_BEGIN:
+    case STATE_BEGIN: {
+      brewDatas.setPlaySound(brewDatas.getAlarm(actRast));
+    }
     break;
-    case STATE_BREW:
-    {
+    case STATE_BREW: {
+      PidLoop();
       HeatLoop();
+      if ( brewDatas.getActTemp( ) >= brewDatas.getTemp(actRast) ) {
+        brewDatas.setActState(STATE_TMPREACHED);
+        brewDatas.setTempReached(true);
+        timerBrewTimer.setTime(brewDatas.getTime(actRast));
+        sollTmp = brewDatas.getTemp(actRast);
+        resetPID();
+        timerBrewTimer.start();
+        CONSOLELN(F("STATE_TMPREACHED"));
+      }
+    }
+    break;
+    case STATE_TMPREACHED: {
+      PidLoop();
+      HeatLoop();
+      brewDatas.setDuration(timerBrewTimer.getDuration());
+      if ( timerBrewTimer.timeOver() ) {
+        timerBrewTimer.resume();
+        brewDatas.setActState(STATE_FIN);
+        CONSOLELN(F("STATE_FIN"));
+      }
+    }
+    break;
+    case STATE_FIN: {
+      PidLoop();
+      HeatLoop();
+      if (brewDatas.getPlaySound()) {
+        buzzer.beep(100);
+      }
     }
     break;
     default:
@@ -257,6 +291,23 @@ void loop() {
   if ( brewDatas.getShouldSave() ) {
     loaderDat.save();
     brewDatas.setShouldSave(false);
+  }
+  if ( brewDatas.getShouldResetState() ) {
+    CONSOLELN("getShouldResetState");
+    changeHeatState(false);
+    brewDatas.setTempReached(false);
+    brewDatas.setStarted(false);
+    brewDatas.setActState(STATE_BEGIN); 
+    resetPID();
+    timerBrewTimer.resume();
+    brewDatas.setShouldResetState(false);
+  }
+  if ( brewDatas.getShouldStart() ) {
+    CONSOLELN("getShouldStart");
+    resetPID();
+    brewDatas.setStarted(true);
+    brewDatas.setActState(STATE_BREW);
+    brewDatas.setShouldStart(false); 
   }
   if ( brewDatas.getRestartEsp() ) {
     delay(500);

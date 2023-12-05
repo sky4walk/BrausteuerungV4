@@ -183,7 +183,11 @@ h2 { font-size: 3.0rem; }
     </p>
 
 	<span class="toggle">
-		<input type="checkbox" onchange=toggleCheckbox(this)>
+		<input type="checkbox" id="boxstart" name="boxstart" onchange=toggleCheckboxStart(this)>
+		<label class="switch" data-off="Stop" data-on="Start"></label>
+	</span>    
+	<span class="toggle">
+		<input type="checkbox" id="boxsound" name="boxsound" onchange=toggleCheckboxSound(this)>
 		<label class="switch" data-off="&#9724;" data-on="&#9654;"></label>
 	</span>    
     <p><button onclick="window.location.href='/'">Back</button></p>
@@ -207,17 +211,35 @@ h2 { font-size: 3.0rem; }
 					document.getElementById("solltemperature").innerHTML 	= myObj.solltemperature;
 					document.getElementById("rastzeit").innerHTML 			= myObj.rastzeit;
 					document.getElementById("anaus").innerHTML 				= myObj.anaus;
+					
+					if ( myObj.started == "1" )
+						document.getElementById("boxstart").checked = true;
+					else
+						document.getElementById("boxstart").checked = false;
+					if ( myObj.playsound == "1" )
+						document.getElementById("boxsound").checked = true;
+					else
+						document.getElementById("boxsound").checked = false;
 				}
 			};
 			xhttp.open("GET", "/runReadData?output=getdata", true);
 			xhttp.send();
 		}
-		function toggleCheckbox(element) {
+		function toggleCheckboxStart(element) {
 		  let xhr = new XMLHttpRequest();
 		  if (element.checked) {
 			xhr.open("GET", "/runState?state=1", true);
 		  } else {
 			xhr.open("GET", "/runState?state=0", true);
+		  }
+		  xhr.send();
+		}	  
+		function toggleCheckboxSound(element) {
+		  let xhr = new XMLHttpRequest();
+		  if (element.checked) {
+			xhr.open("GET", "/runState?sound=1", true);
+		  } else {
+			xhr.open("GET", "/runState?sound=0", true);
 		  }
 		  xhr.send();
 		}	  
