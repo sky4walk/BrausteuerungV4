@@ -56,6 +56,7 @@
 #define STATE_BREW        10
 #define STATE_TMPREACHED  20
 #define STATE_FIN         30
+#define MIL2MIN           60 * 1000
 ///////////////////////////////////////////////////////////////////////////////
 // variablen
 ///////////////////////////////////////////////////////////////////////////////
@@ -256,11 +257,12 @@ void loop() {
       if ( brewDatas.getActTemp( ) >= brewDatas.getTemp(actRast) ) {
         brewDatas.setActState(STATE_TMPREACHED);
         brewDatas.setTempReached(true);
-        timerBrewTimer.setTime(brewDatas.getTime(actRast));
+        timerBrewTimer.setTime(brewDatas.getTime(actRast)*MIL2MIN);
         sollTmp = brewDatas.getTemp(actRast);
         resetPID();
         timerBrewTimer.start();
         CONSOLELN(F("STATE_TMPREACHED"));
+        CONSOLELN(brewDatas.getTime(actRast));
       }
     }
     break;
