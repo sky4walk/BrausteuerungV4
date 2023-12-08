@@ -5,7 +5,7 @@
 #include "DbgConsole.h"
 
 #define MAXRAST             16
-#define TEMPRESOLUTION      12
+#define TEMPRESOLUTION      11
 #define PIDOWINTERVAL       (1000 / (1 << (12 - TEMPRESOLUTION)))
 #define PIDWINDOWSIZE       (PIDOWINTERVAL * 6)
 #define PIDMINWINDOW        500
@@ -18,11 +18,15 @@ class Settings
   public:
     Settings()
     {
+      reset();
+    }
+    void reset() {
       params.mKalT              = 0.0f;
       params.mKalM              = 1.0f;
       params.pidKp              = 5000.0f;
       params.pidKi              = 1000.0f;
-      params.pidKd              = 0.0f;      
+      params.pidKd              = 0.0f;
+      params.tempRes            = TEMPRESOLUTION;      
       params.PidOWinterval      = PIDOWINTERVAL;
       params.PidWindowSize      = PIDWINDOWSIZE;
       params.PidMinWindow       = PIDMINWINDOW;
@@ -43,6 +47,9 @@ class Settings
       params.tempReached        = false;
       params.shouldSave         = false;
       params.restartEsp         = false;
+      params.useAP              = true;
+      params.resetWM            = false;
+      params.maxRast            = MAXRAST;
       
       for ( int i = 0; i < MAXRAST; i++ )
       {
@@ -94,12 +101,13 @@ class Settings
     {
       params.pidKd = pidKd;
     }
-    unsigned long getPidOWinterval()
-    {
+    int getTempRes() {
+      return params.tempRes;
+    }
+    unsigned long getPidOWinterval() {
       return params.PidOWinterval;
     }
-    void setPidOWinterval(unsigned long PidOWinterval)
-    {
+    void setPidOWinterval(unsigned long PidOWinterval) {
       params.PidOWinterval = PidOWinterval;
     }
     unsigned long getPidWindowSize()
@@ -141,6 +149,18 @@ class Settings
     }
     void setShouldSave(bool shouldSave) {
       params.shouldSave = shouldSave;
+    }    
+    bool getResetWM() {
+      return params.resetWM;
+    }
+    void setResetWM(bool resetWM) {
+      params.resetWM = resetWM;
+    }
+    bool getUseAP() {
+      return params.useAP;
+    }
+    void setUseAP(bool useAP) {
+      params.useAP = useAP;
     }
     String getPassWd() {
       return params.passWd;
@@ -365,6 +385,7 @@ class Settings
       float pidKp;
       float pidKi;
       float pidKd;
+      int tempRes;
       unsigned long PidOWinterval;
       unsigned long PidWindowSize;
       unsigned long PidMinWindow;
@@ -380,6 +401,7 @@ class Settings
       int actBrewState;
       float actTemp;
       unsigned long duration;
+      int maxRast;
       bool shouldStart;
       bool playSound;
       bool started;
@@ -391,6 +413,8 @@ class Settings
       bool shouldResetState;
       bool configMode;
       bool restartEsp;
+      bool resetWM;
+      bool useAP;
       String DNSEntry;
       String webPassWd;
       String passWd;      

@@ -126,6 +126,12 @@ void processorSetupGet(AsyncWebServerRequest *request) {
       SteuerungWebServer::mSettings->setPidKd(inputMessage.toFloat());
       SteuerungWebServer::mSettings->setShouldSave(true);
   }
+  if (request->hasParam("wdsize")) {
+      inputMessage = request->getParam("wdsize")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
   if (request->hasParam("KalM")) {
       inputMessage = request->getParam("KalM")->value();
       CONSOLELN(inputMessage);     
@@ -446,6 +452,12 @@ void SteuerungWebServer::begin() {
     request->send(200, "text/html", "format done");
   });
  ///////////////////////////////////////////////////////////////////////////
+  mServer.on("/reset", HTTP_GET, [](AsyncWebServerRequest *request) {
+    CONSOLELN(F("reset"));
+    SteuerungWebServer::mSettings->reset();
+    SteuerungWebServer::mSettings->setShouldSave(true);
+    request->send(200, "text/html", "reset done");
+  });///////////////////////////////////////////////////////////////////////////
   mServer.on("/run", HTTP_GET,[](AsyncWebServerRequest *request) {
     CONSOLELN(F("run"));
 //    request->send(SPIFFS, "/run.html", String(), false, processorTemp);

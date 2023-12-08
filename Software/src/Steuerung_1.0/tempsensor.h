@@ -38,7 +38,7 @@ class TemperaturSensorDS18B20
     }
     void begin() {
       mSensor.begin();
-      mSensor.setResolution(11);
+      mSensor.setResolution(mSettings.getTempRes());
       mSensor.setWaitForConversion(false);
       mSensor.requestTemperatures();
     }
@@ -50,8 +50,12 @@ class TemperaturSensorDS18B20
       if ( DEVICE_DISCONNECTED_C == val)
       {
         sensorConnected = false;
+        CONSOLELN(F("sensor disc"));
       }
       return val * mSettings.getKalM() + mSettings.getKalT();
+    }
+    bool getSensorConnected() {
+      return sensorConnected;
     }
   private:
     uint8_t mPin;

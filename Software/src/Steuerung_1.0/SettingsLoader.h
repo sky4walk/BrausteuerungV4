@@ -61,6 +61,7 @@ class SettingsLoader {
       if ( doc.containsKey("ConfigMode") )            mSettings.setConfigMode( doc["ConfigMode"] );
       if ( doc.containsKey("setPassWd") )             mSettings.setWebPassWd( doc["setPassWd"] );
       if ( doc.containsKey("passWd") )                mSettings.setPassWd( doc["passWd"] );
+      if ( doc.containsKey("useAP") )                 mSettings.setUseAP(doc["useAP"]);
 
       for ( int i=0; i < mSettings.getMAXRAST(); i++ ) {
          JsonObject posRast = doc[F("Rast_")+String(i)];
@@ -116,6 +117,7 @@ class SettingsLoader {
       doc["ConfigMode"]         = mSettings.getConfigMode();
       doc["setPassWd"]          = mSettings.getWebPassWd();
       doc["passWd"]             = mSettings.getPassWd();
+      doc["useAP"]              = mSettings.getUseAP();
 
       for ( int i=0; i < mSettings.getMAXRAST(); i++ ) {
         JsonObject posRast  = doc.createNestedObject(F("Rast_")+String(i));

@@ -26,7 +26,6 @@ class ControllerPID
             mSettings.getPidKi(), 
             mSettings.getPidKd(), 
             DIRECT);
-        timerPidCompute.setTime(mSettings.getPidWindowSize());
       }
     void begin() 
     {
@@ -48,6 +47,7 @@ class ControllerPID
       return isHeater() ?  mState : !mState;
     }
     void resetPID() {
+      timerPidCompute.setTime(mSettings.getPidWindowSize());
       myPid.SetMode(MANUAL);
       pidOutput = 0;
       myPid.SetMode(AUTOMATIC);
@@ -73,7 +73,6 @@ class ControllerPID
     double actTmp;
     double pidOutput;
     double sollTmp;
-    WaitTime timerPidCompute;
     bool isHeater()
     {
       return true;

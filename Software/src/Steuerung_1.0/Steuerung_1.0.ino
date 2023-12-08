@@ -90,6 +90,7 @@ void tick()
 // resetPID
 ///////////////////////////////////////////////////////////////////////////////
 void resetPID() {
+  timerPidCompute.setTime(brewDatas.getPidWindowSize());
   myPID.SetMode(MANUAL);
   pidOutput = 0;
   myPID.SetMode(AUTOMATIC);
@@ -160,7 +161,7 @@ void TempLoop() {
   if ( timerTempMeasure.timeOver() ) {
     timerTempMeasure.restart();       
     brewDatas.setActTemp(tmpSensor.getTemperatur());
-    CONSOLELN(brewDatas.getActTemp()); 
+    CONSOLELN(brewDatas.getActTemp());     
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,41 +192,66 @@ void setup() {
 
   if(!loaderDat.load())
     loaderDat.save();
-
-  WiFiManager wifiManager;
+  
   if ( drd.detectDoubleReset() ) {
-    CONSOLELN(F("web cfg"));
-    wifiManager.resetSettings();
+    CONSOLELN(F("ddr"));
+    brewDatas.setResetWM(true);
+    if ( brewDatas.getUseAP() ) {
+      brewDatas.setUseAP(false);
+    } else {
+      brewDatas.setUseAP(true);
+    }
+    loaderDat.save();
   } else {
-    CONSOLELN(F("No DRD"));   
+    CONSOLELN(F("No ddr"));   
   }
-  wifiManager.setAPStaticIPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
-  if ( !wifiManager.autoConnect("Brausteuerung") ) {
+
+  if ( brewDatas.getUseAP() ) {
+    CONSOLELN(F("AP Mode"));
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
-    CONSOLELN(F("AP Mode"));
+    WiFi.softAP("Brausteuerung", "");
+    CONSOLELN(WiFi.softAPIP());
+  } else {
+    CONSOLELN(F("STA Mode"));
+    WiFiManager wm;
+    if ( brewDatas.getResetWM() ) {
+      CONSOLELN(F("reset WM"));
+      brewDatas.setResetWM(false);
+      wm.resetSettings();
+    }
+    wm.setAPStaticIPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
+    wm.setEnableConfigPortal(false);    
+    if ( !wm.autoConnect("Brausteuerung") ) {
+      delay(1000);
+      CONSOLELN(F("not con"));
+      wm.startConfigPortal("Brausteuerung");
+      ESP.restart();
+    } else {
+      while (WiFi.status() != WL_CONNECTED) {
+        CONSOLE(F("."));
+        yield();
+      }
+      CONSOLELN(F("connected to WIFI"));
+    }
   }
 
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    CONSOLELN(F("."));
-    yield();
-  }
   WiFi.hostname("Brausteuerung");
   CONSOLELN(WiFi.localIP());
   if (MDNS.begin("Brausteuerung"))   {  
     CONSOLELN(F("DNS started"));  
 
   }
-  
-  ArduinoOTA.begin();
+
+  //ArduinoOTA.setHostname("Brausteuerung");
+  //ArduinoOTA.begin();
   
   mySwitch.enableTransmit(GPIO15_D8);
   mySwitch.setProtocol(brewDatas.getSwitchProtocol());
   mySwitch.setPulseLength(brewDatas.getSwitchPulseLength()); 
 
-  timerPidCompute.setTime(brewDatas.getPidOWinterval());
-  timerTempMeasure.setTime(brewDatas.getPidWindowSize());
+  timerPidCompute.setTime(brewDatas.getPidWindowSize());
+  timerTempMeasure.setTime(brewDatas.getPidOWinterval());
   timerSendHeatState.setTime(brewDatas.getPidWindowSize());
 
   brewDatas.setActState(STATE_BEGIN); 
@@ -242,7 +268,7 @@ void setup() {
 // main loop
 ///////////////////////////////////////////////////////////////////////////////
 void loop() {
-  ArduinoOTA.handle();
+  //ArduinoOTA.handle();
   buzzer.loop();
   TempLoop();
   int actRast = brewDatas.getActRast();
