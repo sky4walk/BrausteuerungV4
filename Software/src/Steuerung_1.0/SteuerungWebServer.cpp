@@ -91,12 +91,36 @@ String processorSetup(const String& var){
     return String(SteuerungWebServer::mSettings->getSwitchBits());
   } else if(var == "SWITCHREPEATS"){
     return String(SteuerungWebServer::mSettings->getSwitchRepeat());
+  } else if(var == "APMODEBOX"){ 
+    if (SteuerungWebServer::mSettings->getUseAP()) {
+      return String("checked");
+    } else {
+      return String("");
+    }
   }
   return String();
+}
+void showParams(AsyncWebServerRequest *request) {
+  int params = request->params();
+  String outMessage = String("Params:") + String(params) + String("\n");
+  CONSOLELN(outMessage);
+  for (int i = 0; i < params; i++) {
+    AsyncWebParameter *p = request->getParam(i);
+    if (p->isFile()) {
+      outMessage = String("FILE:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String(":") + String(p->size()) + String("\n");
+    } else if (p->isPost()) {
+      outMessage = String("Post:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String("\n");
+    } else {
+      outMessage = String("Get:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String("\n");
+    }
+    CONSOLELN(outMessage);
+  }
 }
 
 void processorSetupGet(AsyncWebServerRequest *request) {
   CONSOLELN(F("processorSetupGet"));
+  CONSOLELN(request->url());
+  showParams(request);
   String inputMessage;
   if (request->hasParam("ZielTemp")) {
       inputMessage = request->getParam("ZielTemp")->value();
@@ -182,6 +206,14 @@ void processorSetupGet(AsyncWebServerRequest *request) {
       SteuerungWebServer::mSettings->setSwitchRepeat(inputMessage.toInt());
       SteuerungWebServer::mSettings->setShouldSave(true);
   }
+  SteuerungWebServer::mSettings->setUseAP(false);
+  if (request->hasParam("ApMode")) {
+      inputMessage = request->getParam("ApMode")->value();
+      CONSOLELN("ApMode");
+      CONSOLELN(inputMessage);
+      SteuerungWebServer::mSettings->setUseAP(true);
+      SteuerungWebServer::mSettings->setShouldSave(true);
+  }
   if (request->hasParam("PwInput")) {
       inputMessage = request->getParam("PwInput")->value();
   }
@@ -263,25 +295,6 @@ void readFile(fs::FS &fs, String filename){
   file.close();
   CONSOLELN(fileContent);
 }
-///////////////////////////////////////////////////////////////////////////
-// Datenzeigen
-/////////////////////////////////////////////////////////////////////////// 
-/*
-void SteuerungWebServer::Datenzeigen() {
-  String message = "received\n";
-  message += "URI: ";
-  message += mServer.url();
-  message += "\nMethod: ";
-  message += (mServer.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += mServer.args();
-  message += "\n";
-  for (uint8_t i = 0; i < mServer.args(); i++) {
-    message += " " + mServer.argName(i) + ": " + mServer.arg(i) + "\n";
-  }
-  CONSOLELN(message);
-}
-*/
 ///////////////////////////////////////////////////////////////////////////
 // handle File Upload
 ///////////////////////////////////////////////////////////////////////////
