@@ -73,6 +73,8 @@ String processorSetup(const String& var){
     return String(SteuerungWebServer::mSettings->getPidKi());
   } else if(var == "PIDKD"){
     return String(SteuerungWebServer::mSettings->getPidKd());  
+  } else if(var == "PIDCYCLE"){
+    return String(SteuerungWebServer::mSettings->getPidWindowSize()/1000);  
   } else if(var == "KALIBM"){
     return String(SteuerungWebServer::mSettings->getKalM());
   } else if(var == "KALIBT"){
@@ -126,10 +128,10 @@ void processorSetupGet(AsyncWebServerRequest *request) {
       SteuerungWebServer::mSettings->setPidKd(inputMessage.toFloat());
       SteuerungWebServer::mSettings->setShouldSave(true);
   }
-  if (request->hasParam("wdsize")) {
-      inputMessage = request->getParam("wdsize")->value();
+  if (request->hasParam("pidcycle")) {
+      inputMessage = request->getParam("pidcycle")->value();
       CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt());
+      SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt()*1000);
       SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("KalM")) {

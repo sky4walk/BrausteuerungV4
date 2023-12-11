@@ -137,7 +137,7 @@ class SettingsLoader {
         return false;
       }
   
-      serializeJson(doc, configFile);
+      serializeJsonPretty(doc, configFile);
       configFile.flush();
       configFile.close();
       SPIFFS.gc();
