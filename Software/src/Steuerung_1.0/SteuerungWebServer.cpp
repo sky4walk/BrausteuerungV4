@@ -211,8 +211,8 @@ void processorSetupGet(AsyncWebServerRequest *request) {
 // getContentType
 ///////////////////////////////////////////////////////////////////////////
 String processorTemp(const String& var){
-  //Serial.println(var);
-  
+  /* in html file all % need to be replaced by %% */
+  CONSOLELN(var);
   if(var == "TEMPERATURE"){
     return String(SteuerungWebServer::mSettings->getActTemp());
   }
@@ -446,6 +446,14 @@ void SteuerungWebServer::begin() {
   });
   mServer.on("/setupProcess", HTTP_GET, processorSetupGet);
   ///////////////////////////////////////////////////////////////////////////
+  /*
+  mServer.on("/setupRast", HTTP_GET, [](AsyncWebServerRequest *request) {
+    CONSOLELN(F("setuprast"));
+    request->send(SPIFFS, "/setuprast.html", String(), false,processorSetupRast);
+  });
+  mServer.on("/setupRastProcess", HTTP_GET, processorSetupRastGet);
+  */
+  ///////////////////////////////////////////////////////////////////////////
   mServer.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
     CONSOLELN(F("format"));
     SPIFFS.end();
@@ -463,8 +471,8 @@ void SteuerungWebServer::begin() {
   });///////////////////////////////////////////////////////////////////////////
   mServer.on("/run", HTTP_GET,[](AsyncWebServerRequest *request) {
     CONSOLELN(F("run"));
-//    request->send(SPIFFS, "/run.html", String(), false, processorTemp);
-    request->send(SPIFFS, "/run.html", String(), false);
+    request->send(SPIFFS, "/run.html", String(), false, processorTemp);
+//    request->send(SPIFFS, "/run.html", String(), false);
   });
   mServer.on("/runReadData", HTTP_GET, runHandle);
   mServer.on("/runState", HTTP_GET, runGetSwitches);
