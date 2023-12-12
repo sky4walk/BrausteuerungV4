@@ -101,7 +101,7 @@ class SettingsLoader {
         }        
       }      
 
-      DynamicJsonDocument doc(2048);
+      DynamicJsonDocument doc(4096);
       
       doc["kalT"]               = mSettings.getKalT();
       doc["kalM"]               = mSettings.getKalM();
