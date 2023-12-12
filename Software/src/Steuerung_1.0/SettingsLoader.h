@@ -62,6 +62,9 @@ class SettingsLoader {
       if ( doc.containsKey("setPassWd") )             mSettings.setWebPassWd( doc["setPassWd"] );
       if ( doc.containsKey("passWd") )                mSettings.setPassWd( doc["passWd"] );
       if ( doc.containsKey("useAP") )                 mSettings.setUseAP(doc["useAP"]);
+      if ( doc.containsKey("resetWM") )               mSettings.setResetWM(doc["resetWM"]);
+      if ( doc.containsKey("DNSEntry") )              mSettings.setDNSEntry(doc["DNSEntry"]);     
+      if ( doc.containsKey("Info") )                  mSettings.setInfo(doc["Info"]);     
 
       for ( int i=0; i < mSettings.getMAXRAST(); i++ ) {
          JsonObject posRast = doc[F("Rast_")+String(i)];
@@ -71,6 +74,7 @@ class SettingsLoader {
            if ( posRast.containsKey("active") )       mSettings.setActive(i,posRast["active"]);
            if ( posRast.containsKey("wait") )         mSettings.setWait(i,posRast["wait"]);
            if ( posRast.containsKey("alarm") )        mSettings.setAlarm(i,posRast["alarm"]);
+           if ( posRast.containsKey("info") )         mSettings.setInfo(i,posRast["info"]);
          }
         
          mSettings.printRast(i);
@@ -118,14 +122,18 @@ class SettingsLoader {
       doc["setPassWd"]          = mSettings.getWebPassWd();
       doc["passWd"]             = mSettings.getPassWd();
       doc["useAP"]              = mSettings.getUseAP();
+      doc["resetWM"]            = mSettings.getResetWM();
+      doc["DNSEntry"]           = mSettings.getDNSEntry();
+      doc["Info"]               = mSettings.getInfo();
 
       for ( int i=0; i < mSettings.getMAXRAST(); i++ ) {
         JsonObject posRast  = doc.createNestedObject(F("Rast_")+String(i));
-        posRast["time"] = mSettings.getTime(i);
-        posRast["temp"] = mSettings.getTemp(i);
+        posRast["time"]   = mSettings.getTime(i);
+        posRast["temp"]   = mSettings.getTemp(i);
         posRast["active"] = mSettings.getActive(i);
-        posRast["wait"] = mSettings.getWait(i);
-        posRast["alarm"] = mSettings.getAlarm(i);
+        posRast["wait"]   = mSettings.getWait(i);
+        posRast["alarm"]  = mSettings.getAlarm(i);
+        posRast["Info"]   = mSettings.getInfo(i);
       }
 
       serializeJsonPretty(doc, Serial);

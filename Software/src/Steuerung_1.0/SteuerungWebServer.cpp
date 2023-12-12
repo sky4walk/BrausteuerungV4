@@ -126,97 +126,85 @@ void processorSetupGet(AsyncWebServerRequest *request) {
       inputMessage = request->getParam("ZielTemp")->value();
       CONSOLELN(inputMessage);
       SteuerungWebServer::mSettings->setTemp(0,inputMessage.toFloat());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("RastZeit")) {
       inputMessage = request->getParam("RastZeit")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setTime(0,inputMessage.toFloat());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("Kp")) {
       inputMessage = request->getParam("Kp")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setPidKp(inputMessage.toFloat());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("Ki")) {
       inputMessage = request->getParam("Ki")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setPidKi(inputMessage.toFloat());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("Kd")) {
       inputMessage = request->getParam("Kd")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setPidKd(inputMessage.toFloat());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("pidcycle")) {
       inputMessage = request->getParam("pidcycle")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt()*1000);
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("KalM")) {
       inputMessage = request->getParam("KalM")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setKalM(inputMessage.toFloat());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("KalT")) {
       inputMessage = request->getParam("KalT")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setKalT(inputMessage.toFloat());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("SwitchOn")) {
       inputMessage = request->getParam("SwitchOn")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setSwitchOn(inputMessage.toInt());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("SwitchOff")) {
       inputMessage = request->getParam("SwitchOff")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setSwitchOff(inputMessage.toInt());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("SwitchProtocol")) {
       inputMessage = request->getParam("SwitchProtocol")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setSwitchProtocol(inputMessage.toInt());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("SwitchPulseLength")) {
       inputMessage = request->getParam("SwitchPulseLength")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setSwitchPulseLength(inputMessage.toInt());
-      SteuerungWebServer::mSettings->setShouldSave(true);
   }
   if (request->hasParam("SwitchBits")) {
-      inputMessage = request->getParam("SwitchBits")->value();
-      CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setSwitchBits(inputMessage.toInt());
-      SteuerungWebServer::mSettings->setShouldSave(true);
+    inputMessage = request->getParam("SwitchBits")->value();
+    CONSOLELN(inputMessage);     
+    SteuerungWebServer::mSettings->setSwitchBits(inputMessage.toInt());
   }
   if (request->hasParam("SwitchRepeats")) {
-      inputMessage = request->getParam("SwitchRepeats")->value();
-      CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setSwitchRepeat(inputMessage.toInt());
-      SteuerungWebServer::mSettings->setShouldSave(true);
+    inputMessage = request->getParam("SwitchRepeats")->value();
+    CONSOLELN(inputMessage);     
+    SteuerungWebServer::mSettings->setSwitchRepeat(inputMessage.toInt());
   }
   SteuerungWebServer::mSettings->setUseAP(false);
   if (request->hasParam("ApMode")) {
-      inputMessage = request->getParam("ApMode")->value();
-      CONSOLELN("ApMode");
-      CONSOLELN(inputMessage);
-      SteuerungWebServer::mSettings->setUseAP(true);
-      SteuerungWebServer::mSettings->setShouldSave(true);
+    inputMessage = request->getParam("ApMode")->value();
+    CONSOLELN("ApMode");
+    CONSOLELN(inputMessage);
+    SteuerungWebServer::mSettings->setUseAP(true);
+    SteuerungWebServer::mSettings->setResetWM(true);
   }
   if (request->hasParam("PwInput")) {
-      inputMessage = request->getParam("PwInput")->value();
+    inputMessage = request->getParam("PwInput")->value();
   }
+
+  SteuerungWebServer::mSettings->setShouldSave(true);
   request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
 }
 ///////////////////////////////////////////////////////////////////////////

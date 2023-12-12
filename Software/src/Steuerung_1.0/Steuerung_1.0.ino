@@ -15,6 +15,7 @@
 //https://github.com/me-no-dev/ESPAsyncWebServer 
 // ask for HW type: esptool.exe -p COM4 flash_id
 ///////////////////////////////////////////////
+//#define NO_CONSOLE
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #else
@@ -210,7 +211,7 @@ void setup() {
     CONSOLELN(F("AP Mode"));
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
-    WiFi.softAP("Brausteuerung", "");
+    WiFi.softAP(brewDatas.getDNSEntry().c_str(), "");
     CONSOLELN(WiFi.softAPIP());
   } else {
     CONSOLELN(F("STA Mode"));
@@ -219,13 +220,14 @@ void setup() {
       CONSOLELN(F("reset WM"));
       brewDatas.setResetWM(false);
       wm.resetSettings();
+      loaderDat.save();
     }
     wm.setAPStaticIPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
     wm.setEnableConfigPortal(false);    
-    if ( !wm.autoConnect("Brausteuerung") ) {
+    if ( !wm.autoConnect(brewDatas.getDNSEntry().c_str()) ) {
       delay(1000);
       CONSOLELN(F("not con"));
-      wm.startConfigPortal("Brausteuerung");
+      wm.startConfigPortal(brewDatas.getDNSEntry().c_str());
       ESP.restart();
     } else {
       while (WiFi.status() != WL_CONNECTED) {
@@ -236,9 +238,9 @@ void setup() {
     }
   }
 
-  WiFi.hostname("Brausteuerung");
+  WiFi.hostname(brewDatas.getDNSEntry().c_str());
   CONSOLELN(WiFi.localIP());
-  if (MDNS.begin("Brausteuerung"))   {  
+  if (MDNS.begin(brewDatas.getDNSEntry().c_str()))   {  
     CONSOLELN(F("DNS started"));  
 
   }

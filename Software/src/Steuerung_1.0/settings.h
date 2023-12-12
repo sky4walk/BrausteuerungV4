@@ -49,13 +49,16 @@ class Settings
       params.restartEsp         = false;
       params.useAP              = true;
       params.resetWM            = false;
+      params.DNSEntry           = "Brausteuerung";
+      params.info               = "";
       params.maxRast            = MAXRAST;
       
       for ( int i = 0; i < MAXRAST; i++ )
       {
-        params.rasten[i].temp = i;
-        params.rasten[i].time = i;
+        params.rasten[i].temp  = i;
+        params.rasten[i].time  = i;
         params.rasten[i].alarm = true;
+        params.rasten[i].info  = "";
       }
     }
     int getMAXRAST() {
@@ -324,6 +327,18 @@ class Settings
     void setDuration(unsigned long duration) {
       params.duration = duration;
     }
+    String getDNSEntry() {
+      return params.DNSEntry;
+    }
+    void setDNSEntry(String dnsEntry) {
+      params.DNSEntry = dnsEntry;
+    }
+    String getInfo() {
+        return params.info;
+    }
+    void setInfo(String info) {
+        params.info = info;
+    }
     bool getActive(unsigned int nr) {
       if ( nr < MAXRAST )
         return params.rasten[nr].active;
@@ -354,6 +369,16 @@ class Settings
       if ( nr < MAXRAST )
         params.rasten[nr].alarm = alarm;
     }
+    String getInfo(unsigned int nr) {
+      if ( nr < MAXRAST )
+        return params.rasten[nr].info;
+      else
+        return "";
+    }
+    void setInfo(unsigned int nr, String info) {
+      if ( nr < MAXRAST )
+        params.rasten[nr].info = info;
+    }
     void clear(){
       memset((char*)&params, 0, sizeof(params));
     }
@@ -376,6 +401,7 @@ class Settings
       bool active;
       bool wait;
       bool alarm;
+      String info;
     } Braurast;
     struct Rezept
     {
@@ -415,6 +441,7 @@ class Settings
       bool restartEsp;
       bool resetWM;
       bool useAP;
+      String info;
       String DNSEntry;
       String webPassWd;
       String passWd;      
