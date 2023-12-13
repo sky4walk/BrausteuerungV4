@@ -4,7 +4,7 @@ wallThickness=2;
 bottomThickness=2;
 boxLength=41+2*wallThickness;
 boxWidth=28+2*wallThickness;
-boxHeight=37+2*bottomThickness;
+boxHeight=39+2*bottomThickness;
 cornerRadius=5;
 lidThickness=2;
 lidClearance=0.2;
@@ -19,7 +19,7 @@ openTempb = 13;
 openSwitchPos = 0;
 openSwitchb = 5;
 withNotch=true;
-showWhat = 0;
+showWhat = 3;
 $fn = 128;
 
 
@@ -28,11 +28,19 @@ if (0 == showWhat ) { // box
 } else if (1 == showWhat ) { // lid
     showLid();
 } else if (2 == showWhat ) { // knob
+    knob();
 } else if (3 == showWhat ) { // all
     showBoxAll();
     translate ([0, 0,-3.2]) showLid();
+    translate ([-openSwitchb, 0,-3.2]) knob();
 }
 
+module knob() {
+    knobD = openSwitchb-0.2;
+    cylinder(wallThickness*3,knobD/2,knobD/2);
+    translate ([-openSwitchb/2, -openSwitchb/2, 0]) 
+        cube([openSwitchb,openSwitchb,1]);
+}
 module showBoxAll() {
     difference() 
     {
@@ -42,7 +50,7 @@ module showBoxAll() {
         translate ([boxLength-wallThickness-.1, boxWidth/2-openTempb/2,bottomThickness+openTempPos])
             cube([wallThickness*2,openTempb,openTemph]);            
         rotate([90,0,0])
-            translate ([15,wallThickness+openSwitchb/2,-boxWidth-wallThickness])
+            translate ([10,wallThickness+openSwitchb/2,-boxWidth-wallThickness])
                 cylinder(wallThickness*3,openSwitchb/2,openSwitchb/2);
     }
     translate ([-1.5, 0,-3.2])
