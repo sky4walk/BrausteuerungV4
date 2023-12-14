@@ -18,8 +18,9 @@ openTemph = 6.5;
 openTempb = 13;
 openSwitchPos = 0;
 openSwitchb = 5;
+knobLength  = wallThickness*4;
 withNotch=true;
-showWhat = 3;
+showWhat = 0;
 $fn = 128;
 
 
@@ -36,8 +37,8 @@ if (0 == showWhat ) { // box
 }
 
 module knob() {
-    knobD = openSwitchb-0.2;
-    cylinder(wallThickness*3,knobD/2,knobD/2);
+    knobD = openSwitchb-0.5;
+    cylinder(knobLength,knobD/2,knobD/2);
     translate ([-openSwitchb/2, -openSwitchb/2, 0]) 
         cube([openSwitchb,openSwitchb,1]);
 }
@@ -55,7 +56,9 @@ module showBoxAll() {
     }
     translate ([-1.5, 0,-3.2])
         brick(3,2);
-    translate ([wallThickness*4,wallThickness,bottomThickness])        cube([2,boxWidth-wallThickness*2,1]);
+    //bar floor
+    translate ([wallThickness*4,wallThickness,bottomThickness])        
+        cube([2,(boxWidth-knobLength-1),1]);
     
 }
 module showLid(){
