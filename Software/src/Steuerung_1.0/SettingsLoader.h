@@ -65,6 +65,8 @@ class SettingsLoader {
       if ( doc.containsKey("resetWM") )               mSettings.setResetWM(doc["resetWM"]);
       if ( doc.containsKey("DNSEntry") )              mSettings.setDNSEntry(doc["DNSEntry"]);     
       if ( doc.containsKey("Info") )                  mSettings.setInfo(doc["Info"]);     
+      if ( doc.containsKey("Cooling") )               mSettings.setCooling(doc["Cooling"]);     
+
 
       for ( int i=0; i < mSettings.getMAXRAST(); i++ ) {
          JsonObject posRast = doc[F("Rast_")+String(i)];
@@ -74,6 +76,7 @@ class SettingsLoader {
            if ( posRast.containsKey("active") )       mSettings.setActive(i,posRast["active"]);
            if ( posRast.containsKey("wait") )         mSettings.setWait(i,posRast["wait"]);
            if ( posRast.containsKey("alarm") )        mSettings.setAlarm(i,posRast["alarm"]);
+           if ( posRast.containsKey("name") )         mSettings.setName(i,posRast["name"]);
            if ( posRast.containsKey("info") )         mSettings.setInfo(i,posRast["info"]);
          }
         
@@ -125,6 +128,7 @@ class SettingsLoader {
       doc["resetWM"]            = mSettings.getResetWM();
       doc["DNSEntry"]           = mSettings.getDNSEntry();
       doc["Info"]               = mSettings.getInfo();
+      doc["Cooling"]            = mSettings.getCooling();
 
       for ( int i=0; i < mSettings.getMAXRAST(); i++ ) {
         JsonObject posRast  = doc.createNestedObject(F("Rast_")+String(i));
@@ -133,6 +137,7 @@ class SettingsLoader {
         posRast["active"] = mSettings.getActive(i);
         posRast["wait"]   = mSettings.getWait(i);
         posRast["alarm"]  = mSettings.getAlarm(i);
+        posRast["name"]   = mSettings.getName(i);
         posRast["Info"]   = mSettings.getInfo(i);
       }
 

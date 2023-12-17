@@ -74,7 +74,7 @@ String processorSetup(const String& var){
   } else if(var == "PIDKD"){
     return String(SteuerungWebServer::mSettings->getPidKd());  
   } else if(var == "PIDCYCLE"){
-    return String(SteuerungWebServer::mSettings->getPidWindowSize()/1000);  
+    return String(SteuerungWebServer::mSettings->getPidOWinterval()/1000);  
   } else if(var == "KALIBM"){
     return String(SteuerungWebServer::mSettings->getKalM());
   } else if(var == "KALIBT"){
@@ -150,7 +150,7 @@ void processorSetupGet(AsyncWebServerRequest *request) {
   if (request->hasParam("pidcycle")) {
       inputMessage = request->getParam("pidcycle")->value();
       CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt()*1000);
+      SteuerungWebServer::mSettings->setPidOWinterval(inputMessage.toInt()*1000);
   }
   if (request->hasParam("KalM")) {
       inputMessage = request->getParam("KalM")->value();
@@ -206,6 +206,14 @@ void processorSetupGet(AsyncWebServerRequest *request) {
 
   SteuerungWebServer::mSettings->setShouldSave(true);
   request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
+}
+///////////////////////////////////////////////////////////////////////////
+// processorSetupRast
+///////////////////////////////////////////////////////////////////////////
+String processorSetupRast(const String& var){
+  return String();
+}
+void processorSetupRastGet(AsyncWebServerRequest *request) {
 }
 ///////////////////////////////////////////////////////////////////////////
 // getContentType
@@ -446,13 +454,11 @@ void SteuerungWebServer::begin() {
   });
   mServer.on("/setupProcess", HTTP_GET, processorSetupGet);
   ///////////////////////////////////////////////////////////////////////////
-  /*
   mServer.on("/setupRast", HTTP_GET, [](AsyncWebServerRequest *request) {
     CONSOLELN(F("setuprast"));
     request->send(SPIFFS, "/setuprast.html", String(), false,processorSetupRast);
   });
   mServer.on("/setupRastProcess", HTTP_GET, processorSetupRastGet);
-  */
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
     CONSOLELN(F("format"));
@@ -472,7 +478,6 @@ void SteuerungWebServer::begin() {
   mServer.on("/run", HTTP_GET,[](AsyncWebServerRequest *request) {
     CONSOLELN(F("run"));
     request->send(SPIFFS, "/run.html", String(), false, processorTemp);
-//    request->send(SPIFFS, "/run.html", String(), false);
   });
   mServer.on("/runReadData", HTTP_GET, runHandle);
   mServer.on("/runState", HTTP_GET, runGetSwitches);

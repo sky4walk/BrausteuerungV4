@@ -42,6 +42,7 @@ class Settings
       params.started            = false;
       params.heatState          = false;
       params.heatStateChanged   = false;
+      params.cooling            = false;
       params.UseDefault         = true;
       params.configMode         = true;      
       params.tempReached        = false;
@@ -58,6 +59,7 @@ class Settings
         params.rasten[i].temp  = i;
         params.rasten[i].time  = i;
         params.rasten[i].alarm = true;
+        params.rasten[i].name  = "Rast"+String(i+1);
         params.rasten[i].info  = "";
       }
     }
@@ -272,6 +274,14 @@ class Settings
     void setHeatStateChanged(bool heatStateChanged)
     {
       params.heatStateChanged = heatStateChanged;
+    }
+     bool getCooling()
+    {
+      return params.cooling;
+    }
+    void setCooling(bool cooling)
+    {
+      params.cooling = cooling;
     }   
     bool getTempReached()
     {
@@ -369,6 +379,16 @@ class Settings
       if ( nr < MAXRAST )
         params.rasten[nr].alarm = alarm;
     }
+    String getName(unsigned int nr) {
+      if ( nr < MAXRAST )
+        return params.rasten[nr].name;
+      else
+        return "";
+    }
+    void setName(unsigned int nr, String name) {
+      if ( nr < MAXRAST )
+        params.rasten[nr].name = name;
+    }
     String getInfo(unsigned int nr) {
       if ( nr < MAXRAST )
         return params.rasten[nr].info;
@@ -385,11 +405,13 @@ class Settings
     void printRast(int nr) {
       if ( nr < MAXRAST ) {
         CONSOLELN(nr);
+        CONSOLELN(getName(nr));
         CONSOLELN(getTime(nr));
         CONSOLELN(getTemp(nr));
         CONSOLELN(getActive(nr));
         CONSOLELN(getWait(nr));
         CONSOLELN(getAlarm(nr));
+        CONSOLELN(getInfo(nr));
       }
     }
   private:
@@ -401,6 +423,7 @@ class Settings
       bool active;
       bool wait;
       bool alarm;
+      String name;
       String info;
     } Braurast;
     struct Rezept
@@ -433,6 +456,7 @@ class Settings
       bool started;
       bool heatState;
       bool heatStateChanged;
+      bool cooling;
       bool tempReached;
       bool UseDefault;
       bool shouldSave;

@@ -91,7 +91,7 @@ void tick()
 // resetPID
 ///////////////////////////////////////////////////////////////////////////////
 void resetPID() {
-  timerPidCompute.setTime(brewDatas.getPidWindowSize());
+  timerPidCompute.setTime(brewDatas.getPidOWinterval());
   myPID.SetMode(MANUAL);
   pidOutput = 0;
   myPID.SetMode(AUTOMATIC);
@@ -129,10 +129,10 @@ void PidLoop() {
     actTmp = brewDatas.getActTemp();
     myPID.Compute();
     brewDatas.setPidOutput(pidOutput);
-    CONSOLE(F("PIDcomp:"));
-    CONSOLELN(pidOutput);
     pidRelaisTimer.setTime(brewDatas.getPidOutput());
     pidRelaisTimer.start();
+    CONSOLE(F("PIDcomp:"));
+    CONSOLELN(pidOutput);
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -252,9 +252,9 @@ void setup() {
   mySwitch.setProtocol(brewDatas.getSwitchProtocol());
   mySwitch.setPulseLength(brewDatas.getSwitchPulseLength()); 
 
-  timerPidCompute.setTime(brewDatas.getPidWindowSize());
+  timerPidCompute.setTime(brewDatas.getPidOWinterval());
   timerTempMeasure.setTime(brewDatas.getPidOWinterval());
-  timerSendHeatState.setTime(brewDatas.getPidWindowSize());
+  timerSendHeatState.setTime(brewDatas.getPidOWinterval());
 
   brewDatas.setActState(STATE_BEGIN); 
 
