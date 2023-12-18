@@ -59,14 +59,12 @@
     <h2>Controller Setup</h2>
     <form action="/setupProcess">
       <hr>
-	  Rast:<br>
-      Ziel Temp  <input type="number" step="1" name="ZielTemp" value="%ZIELTEMP%" required><br>
-      Rast Zeit  <input type="number" step="1" name="RastZeit" value="%RASTZEIT%" required><br>
-      <hr>
 	  PID Werte:<br>
       Kp  <input type="number" step="0.1" name="Kp" value="%PIDKP%" required><br>
       Ki  <input type="number" step="0.1" name="Ki" value="%PIDKI%" required><br>
       Kd  <input type="number" step="0.1" name="Kd" value="%PIDKD%" required><br>
+      Min Val   <input type="number" step="1" name="pidminval" value="%PIDMINVAL%" required>[sek/10]<br>
+      Max Val   <input type="number" step="1" name="pidmaxval" value="%PIDMAXVAL%" required>[sek]<br>
       PID cycle  <input type="number" step="1" name="pidcycle" value="%PIDCYCLE%" required>[sek]<br>
       <hr>
 	  Kalibrier Temp = Temp * M + T:<br>

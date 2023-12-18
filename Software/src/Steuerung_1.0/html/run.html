@@ -372,7 +372,7 @@ h2 { font-size: 3.0rem; }
 						document.getElementById("boxsound").checked = false;
 				}
 			};
-			xhttp.open("GET", "/runReadData?output=getdata", true);
+			xhttp.open("GET", "/runReadData?output=getdata&time="+document.getElementById("time").innerHTML, true);
 			xhttp.send();
 		}
 		function toggleCheckboxStart(element) {

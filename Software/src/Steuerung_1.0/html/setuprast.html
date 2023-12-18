@@ -1,0 +1,114 @@
+<!DOCTYPE HTML><html>
+  <head>
+	<style>
+		.switch {
+		  position: relative;
+		  display: inline-block;
+		  width: 60px;
+		  height: 34px;
+		}
+		.switch input {
+		  opacity: 0;
+		  width: 0;
+		  height: 0;
+		}
+
+		.slider {
+		  position: absolute;
+		  cursor: pointer;
+		  top: 0;
+		  left: 0;
+		  right: 0;
+		  bottom: 0;
+		  background-color: #ccc;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		}
+
+		.slider:before {
+		  position: absolute;
+		  content: "";
+		  height: 26px;
+		  width: 26px;
+		  left: 4px;
+		  bottom: 4px;
+		  background-color: white;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		}
+
+		input:checked + .slider {
+		  background-color: #2196F3;
+		}
+		input:focus + .slider {
+		  box-shadow: 0 0 1px #2196F3;
+		}
+		input:checked + .slider:before {
+		  -webkit-transform: translateX(26px);
+		  -ms-transform: translateX(26px);
+		  transform: translateX(26px);
+		}
+		.slider.round {
+		  border-radius: 34px;
+		}
+		.slider.round:before {
+		  border-radius: 15px;
+		}
+	</style>	
+  </head>
+    <h2>Rasten</h2>
+	<form action="/setupRastProcess">
+		<select name="Rast" id="RastSelector" value="%RASTSELECTORVAL%" onchange="selectChanged()">
+			<option value="0">Rast 1</option>
+			<option value="1">Rast 2</option>
+			<option value="2">Rast 3</option>
+			<option value="3">Rast 4</option>
+			<option value="4">Rast 5</option>
+			<option value="5">Rast 6</option>
+			<option value="6">Rast 7</option>
+			<option value="7">Rast 8</option>
+			<option value="8">Rast 9</option>
+			<option value="9">Rast 10</option>
+			<option value="10">Rast 11</option>
+			<option value="11">Rast 12</option>
+			<option value="12">Rast 13</option>
+			<option value="13">Rast 14</option>
+			<option value="14">Rast 15</option>
+			<option value="15">Rast 16</option>
+		</select>
+	</form>
+<button onClick="window.location.reload();">Load Values</button>
+    <form action="/setupRastProcess">
+      <hr>
+      Rast %RASTNR% <input type="text" required minlength="4" maxlength="32" step="1" name="RastName" value="%RASTNAME%" required><br>
+      Ziel Temp  <input type="number" min="-20" max="110" step="1" name="ZielTemp" value="%ZIELTEMP%" required><br>
+      Rast Zeit  <input type="number" min="0" step="1" name="RastZeit" value="%RASTZEIT%" required><br>
+      Aktiv   <label class="switch">   <input type="checkbox" name="RastAktiv" %RASTAKTIV%> <span class="slider round"></span></label>
+      Halten  <label class="switch">   <input type="checkbox" name="RastHalten" %RASTHALTEN%> <span class="slider round"></span></label>
+      Brauruf <label class="switch">   <input type="checkbox" name="RastBrauruf" %RASTBRAURUF%> <span class="slider round"></span></label>
+      <br>Info <input type="text" minlength="0" maxlength="100" name="RastInfo" value="%RASTINFO%"><br>
+      <hr>
+      <input type="submit" value="Submit">
+    </form> 
+	<form action="/">
+		<button onclick="window.location.href='/'">Back</button>
+	</form>
+  <script>
+	function selectChanged() {
+		var objSel = document.getElementById("RastSelector");
+		var value = objSel.options[objSel.selectedIndex].value;
+		//alert(value);
+
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				console.log(this.responseText);
+			}
+		}
+		xhttp.open("GET", "/setupRastNumber?rastnummer="+value, true);
+		xhttp.send();
+		//location.replace(location.href);
+  }
+  </script>
+   
+  </body></html>

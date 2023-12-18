@@ -60,21 +60,48 @@ void httpProcessUpdate(AsyncWebServerRequest *request, const String &filename, s
   }
 }
 ///////////////////////////////////////////////////////////////////////////
+// showParams
+///////////////////////////////////////////////////////////////////////////
+void showParams(AsyncWebServerRequest *request) {
+  int params = request->params();
+  String outMessage = String("Params:") + String(params) + String("\n");
+  CONSOLELN(outMessage);
+  for (int i = 0; i < params; i++) {
+    AsyncWebParameter *p = request->getParam(i);
+    if (p->isFile()) {
+      outMessage = String("FILE:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String(":") + String(p->size()) + String("\n");
+    } else if (p->isPost()) {
+      outMessage = String("Post:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String("\n");
+    } else {
+      outMessage = String("Get:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String("\n");
+    }
+    CONSOLELN(outMessage);
+  }
+}
+///////////////////////////////////////////////////////////////////////////
 // getContentType
 ///////////////////////////////////////////////////////////////////////////
 String processorSetup(const String& var){
-  if(var == "ZIELTEMP"){
-    return String(SteuerungWebServer::mSettings->getTemp(0));
-  } else if(var == "RASTZEIT"){
-    return String(SteuerungWebServer::mSettings->getTime(0));
-  } else if(var == "PIDKP"){
+  CONSOLELN(var);
+  String res = "";
+  if(var == "PIDKP"){
     return String(SteuerungWebServer::mSettings->getPidKp());
   } else if(var == "PIDKI"){
     return String(SteuerungWebServer::mSettings->getPidKi());
   } else if(var == "PIDKD"){
     return String(SteuerungWebServer::mSettings->getPidKd());  
+  } else if(var == "PIDMINVAL"){
+    res = String(SteuerungWebServer::mSettings->getPidMinWindow()/100); 
+    CONSOLELN(res);
+    return res;  
+  } else if(var == "PIDMAXVAL"){
+    res = String(SteuerungWebServer::mSettings->getPidWindowSize()/1000);
+    CONSOLELN(res);
+    return res;  
   } else if(var == "PIDCYCLE"){
-    return String(SteuerungWebServer::mSettings->getPidOWinterval()/1000);  
+    res = String(SteuerungWebServer::mSettings->getPidOWinterval()/1000);
+    CONSOLELN(res);
+    return res;  
   } else if(var == "KALIBM"){
     return String(SteuerungWebServer::mSettings->getKalM());
   } else if(var == "KALIBT"){
@@ -100,38 +127,11 @@ String processorSetup(const String& var){
   }
   return String();
 }
-void showParams(AsyncWebServerRequest *request) {
-  int params = request->params();
-  String outMessage = String("Params:") + String(params) + String("\n");
-  CONSOLELN(outMessage);
-  for (int i = 0; i < params; i++) {
-    AsyncWebParameter *p = request->getParam(i);
-    if (p->isFile()) {
-      outMessage = String("FILE:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String(":") + String(p->size()) + String("\n");
-    } else if (p->isPost()) {
-      outMessage = String("Post:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String("\n");
-    } else {
-      outMessage = String("Get:") + String(p->name().c_str()) + String(":") + String(p->value().c_str()) + String("\n");
-    }
-    CONSOLELN(outMessage);
-  }
-}
-
 void processorSetupGet(AsyncWebServerRequest *request) {
   CONSOLELN(F("processorSetupGet"));
   CONSOLELN(request->url());
   showParams(request);
-  String inputMessage;
-  if (request->hasParam("ZielTemp")) {
-      inputMessage = request->getParam("ZielTemp")->value();
-      CONSOLELN(inputMessage);
-      SteuerungWebServer::mSettings->setTemp(0,inputMessage.toFloat());
-  }
-  if (request->hasParam("RastZeit")) {
-      inputMessage = request->getParam("RastZeit")->value();
-      CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setTime(0,inputMessage.toFloat());
-  }
+  String inputMessage;  
   if (request->hasParam("Kp")) {
       inputMessage = request->getParam("Kp")->value();
       CONSOLELN(inputMessage);     
@@ -146,6 +146,16 @@ void processorSetupGet(AsyncWebServerRequest *request) {
       inputMessage = request->getParam("Kd")->value();
       CONSOLELN(inputMessage);     
       SteuerungWebServer::mSettings->setPidKd(inputMessage.toFloat());
+  }
+  if (request->hasParam("pidminval")) {
+      inputMessage = request->getParam("pidminval")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setPidMinWindow(inputMessage.toInt()*100);
+  }
+  if (request->hasParam("pidmaxval")) {
+      inputMessage = request->getParam("pidmaxval")->value();
+      CONSOLELN(inputMessage);     
+      SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt()*1000);
   }
   if (request->hasParam("pidcycle")) {
       inputMessage = request->getParam("pidcycle")->value();
@@ -211,9 +221,96 @@ void processorSetupGet(AsyncWebServerRequest *request) {
 // processorSetupRast
 ///////////////////////////////////////////////////////////////////////////
 String processorSetupRast(const String& var){
+  CONSOLELN(var);
+  String res = "";
+  int rastNr = SteuerungWebServer::mSettings->getActShowRast();  
+  if(var == "ZIELTEMP"){
+    return String(SteuerungWebServer::mSettings->getTemp(rastNr));
+  } else if(var == "RASTSELECTORVAL"){
+    CONSOLELN(rastNr);
+    return String(rastNr);
+  } else if(var == "RASTZEIT"){
+    return String(SteuerungWebServer::mSettings->getTime(rastNr));
+  } else if(var == "RASTNR"){
+    return String(rastNr+1);
+  } else if(var == "RASTNAME"){
+    return String(SteuerungWebServer::mSettings->getName(rastNr));
+  } else if(var == "RASTAKTIV") { 
+    if (SteuerungWebServer::mSettings->getActive(rastNr)) {
+      return String("checked");
+    } else {
+      return String("");
+    }
+  } else if(var == "RASTHALTEN") { 
+    if (SteuerungWebServer::mSettings->getWait(rastNr)) {
+      return String("checked");
+    } else {
+      return String("");
+    }
+  } else if(var == "RASTBRAURUF") { 
+    if (SteuerungWebServer::mSettings->getAlarm(rastNr)) {
+      return String("checked");
+    } else {
+      return String("");
+    }
+  } else if(var == "RASTINFO"){
+    return String(SteuerungWebServer::mSettings->getInfo(rastNr));
+  }
   return String();
 }
 void processorSetupRastGet(AsyncWebServerRequest *request) {
+  CONSOLELN(F("processorSetupRastGet"));
+  CONSOLELN(request->url());
+  showParams(request);
+  String inputMessage;
+  int rastNr = SteuerungWebServer::mSettings->getActShowRast();
+  if (request->hasParam("RastName")) {
+    inputMessage = request->getParam("RastName")->value();
+    CONSOLELN(inputMessage);
+    SteuerungWebServer::mSettings->setName(rastNr,inputMessage);
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  } 
+  if (request->hasParam("ZielTemp")) {
+    inputMessage = request->getParam("ZielTemp")->value();
+    CONSOLELN(inputMessage);
+    SteuerungWebServer::mSettings->setTemp(rastNr,inputMessage.toFloat());
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("RastZeit")) {
+    inputMessage = request->getParam("RastZeit")->value();
+    CONSOLELN(inputMessage);     
+    SteuerungWebServer::mSettings->setTime(rastNr,inputMessage.toInt());
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  SteuerungWebServer::mSettings->setActive(rastNr,false);
+  if (request->hasParam("RastAktiv")) {
+    inputMessage = request->getParam("RastAktiv")->value();
+    CONSOLELN(inputMessage);     
+    SteuerungWebServer::mSettings->setActive(rastNr,true);
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  SteuerungWebServer::mSettings->setWait(rastNr,false);
+  if (request->hasParam("RastHalten")) {
+    inputMessage = request->getParam("RastHalten")->value();
+    CONSOLELN(inputMessage);     
+    SteuerungWebServer::mSettings->setWait(rastNr,true);
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  SteuerungWebServer::mSettings->setAlarm(rastNr,false);
+  if (request->hasParam("RastBrauruf")) {
+    inputMessage = request->getParam("RastBrauruf")->value();
+    CONSOLELN(inputMessage);     
+    SteuerungWebServer::mSettings->setAlarm(rastNr,true);
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  if (request->hasParam("RastInfo")) {
+    inputMessage = request->getParam("RastInfo")->value();
+    CONSOLELN(inputMessage);
+    SteuerungWebServer::mSettings->setInfo(rastNr,inputMessage);
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  }
+  
+  request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
 }
 ///////////////////////////////////////////////////////////////////////////
 // getContentType
@@ -331,6 +428,13 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
 // runHandle
 ///////////////////////////////////////////////////////////////////////////
 void runHandle(AsyncWebServerRequest *request) {
+  int params = request->params();
+  CONSOLELN(params);
+  if ( request->hasParam("time") ) {
+    String inputMessage = request->getParam("time")->value();
+    CONSOLELN(inputMessage);
+    SteuerungWebServer::mSettings->setActTime(inputMessage);
+  }
   if ( request->hasParam("output") ) {
     String inputMessage = request->getParam("output")->value();
     CONSOLELN(inputMessage);
@@ -456,9 +560,23 @@ void SteuerungWebServer::begin() {
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/setupRast", HTTP_GET, [](AsyncWebServerRequest *request) {
     CONSOLELN(F("setuprast"));
+    
     request->send(SPIFFS, "/setuprast.html", String(), false,processorSetupRast);
   });
   mServer.on("/setupRastProcess", HTTP_GET, processorSetupRastGet);
+  mServer.on("/setupRastNumber", HTTP_GET, [](AsyncWebServerRequest *request) {
+    CONSOLELN(F("setupRastNumber"));
+    int params = request->params();
+    CONSOLELN(params);
+    String inputMessage;
+    if (request->hasParam("rastnummer")) {
+      String inputMessage = request->getParam("rastnummer")->value();
+      CONSOLELN(inputMessage);
+      SteuerungWebServer::mSettings->setActShowRast(inputMessage.toInt());
+    }
+    request->send(200, "text/plain", "OK");
+   // request->send(SPIFFS, "/setuprast.html", String(), false,processorSetupRast); 
+  });
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
     CONSOLELN(F("format"));

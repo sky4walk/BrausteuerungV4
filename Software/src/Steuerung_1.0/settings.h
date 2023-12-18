@@ -37,6 +37,7 @@ class Settings
       params.switchOn           = 1631343;
       params.switchOff          = 1631342;
       params.actRast            = 0;
+      params.actShowRast        = 0;
       params.shouldStart        = false;
       params.playSound          = false;
       params.started            = false;
@@ -53,6 +54,7 @@ class Settings
       params.DNSEntry           = "Brausteuerung";
       params.info               = "";
       params.maxRast            = MAXRAST;
+      params.actTime            = "";
       
       for ( int i = 0; i < MAXRAST; i++ )
       {
@@ -215,6 +217,12 @@ class Settings
     void setActRast(int actRast) {
       params.actRast = actRast;
     }
+    int getActShowRast() {
+      return params.actShowRast;
+    }
+    void setActShowRast(int actShowRast) {
+      params.actShowRast = actShowRast;
+    }
     int getActState() {
       return params.actState;
     }
@@ -349,6 +357,12 @@ class Settings
     void setInfo(String info) {
         params.info = info;
     }
+    String getActTime() {
+      return params.actTime;
+    }
+    void setActTime(String actTime) {
+      params.actTime = actTime;
+    }
     bool getActive(unsigned int nr) {
       if ( nr < MAXRAST )
         return params.rasten[nr].active;
@@ -446,6 +460,7 @@ class Settings
       unsigned long switchOn;
       unsigned long switchOff;
       int actRast;
+      int actShowRast;
       int actState;
       int actBrewState;
       float actTemp;
@@ -468,7 +483,8 @@ class Settings
       String info;
       String DNSEntry;
       String webPassWd;
-      String passWd;      
+      String passWd;
+      String actTime;      
     } params;
 };
 #endif
