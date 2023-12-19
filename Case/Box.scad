@@ -20,7 +20,7 @@ openSwitchPos = 0;
 openSwitchb = 5;
 knobLength  = wallThickness*3;
 withNotch=true;
-showWhat = 0;
+showWhat = 3;
 $fn = 128;
 
 
