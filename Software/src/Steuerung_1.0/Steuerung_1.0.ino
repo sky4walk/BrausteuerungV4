@@ -267,6 +267,22 @@ void setup() {
   CONSOLELN(F("Srv run"));
 }
 ///////////////////////////////////////////////////////////////////////////////
+// isEndRastReched
+///////////////////////////////////////////////////////////////////////////////
+bool isEndRastReached(int nr) {
+  return (brewDatas.getActRast() < brewDatas.getMAXRAST()) ? false : true;
+}
+///////////////////////////////////////////////////////////////////////////////
+// nextRast
+///////////////////////////////////////////////////////////////////////////////
+int nextRast() {
+  int nr = brewDatas.getActRast()+1;
+  while ( !isEndRastReached(nr) && !brewDatas.getActive(nr)) {
+    nr++;
+  }
+  return nr;
+}
+///////////////////////////////////////////////////////////////////////////////
 // main loop
 ///////////////////////////////////////////////////////////////////////////////
 void loop() {
@@ -276,7 +292,10 @@ void loop() {
   int actRast = brewDatas.getActRast();
   switch(brewDatas.getActState()) {
     case STATE_BEGIN: {
+      actRast = brewDatas.getStartRast();
+      brewDatas.setActRast(actRast);
       brewDatas.setPlaySound(brewDatas.getAlarm(actRast));
+      brewDatas.setRastWait(brewDatas.getWait(actRast));
     }
     break;
     case STATE_BREW: {
@@ -310,6 +329,17 @@ void loop() {
       HeatLoop();
       if (brewDatas.getPlaySound()) {
         buzzer.beep(100);
+      }
+      if ( false == brewDatas.getRastWait() ) {
+        int nr = nextRast();
+        if ( isEndRastReached(nr) ) {
+          brewDatas.setShouldResetState(true);
+        } else {
+          brewDatas.setActRast(nr);
+          brewDatas.setActState(STATE_BREW);
+          CONSOLELN(F("Next State"));
+          CONSOLELN(brewDatas.getActRast());
+        }
       }
     }
     break;

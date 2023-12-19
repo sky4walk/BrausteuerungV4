@@ -314,6 +314,12 @@ h2 { font-size: 3.0rem; }
       <span id="temperature">%TEMPERATURE%</span>
       <sup class="units">&deg;C</sup>
     </p>
+	<p>
+      <i class="gg-thermostat" style="color:#059e8a;"></i> 
+      <span class="dht-labels">Aktuelle Rast</span> 
+      <span id="temperature">%RASTNUMMERNAME%</span>
+      <sup class="units">&deg;C</sup>
+    </p>
     <p>
       <i class="gg-thermostat" style="color:#059e8a;"></i> 
       <span class="dht-labels">Soll Temperature</span> 
@@ -339,7 +345,11 @@ h2 { font-size: 3.0rem; }
 	<span class="toggle">
 		<input type="checkbox" id="boxsound" name="boxsound" onchange=toggleCheckboxSound(this)>
 		<label class="switch" data-off="&#9724;" data-on="&#9654;"></label>
-	</span>    
+	</span>
+	<span class="toggle">
+		<input type="checkbox" id="boxwait" name="boxwait" onchange=toggleCheckboxWait(this)>
+		<label class="switch" data-off="weiter" data-on="warten"></label>
+	</span>     
     <p><button onclick="window.location.href='/'">Back</button></p>
 	
     <script>
@@ -370,6 +380,10 @@ h2 { font-size: 3.0rem; }
 						document.getElementById("boxsound").checked = true;
 					else
 						document.getElementById("boxsound").checked = false;
+					if ( myObj.waitrast == "1" )
+						document.getElementById("boxwait").checked = true;
+					else
+						document.getElementById("boxwait").checked = false;
 				}
 			};
 			xhttp.open("GET", "/runReadData?output=getdata&time="+document.getElementById("time").innerHTML, true);
@@ -392,6 +406,15 @@ h2 { font-size: 3.0rem; }
 			xhr.open("GET", "/runState?sound=0", true);
 		  }
 		  xhr.send();
-		}	  
+		}
+		function toggleCheckboxWait(element) {
+		  let xhr = new XMLHttpRequest();
+		  if (element.checked) {
+			xhr.open("GET", "/runState?wait=1", true);
+		  } else {
+			xhr.open("GET", "/runState?wait=0", true);
+		  }
+		  xhr.send();
+		}		
     </script>  
   </body></html>

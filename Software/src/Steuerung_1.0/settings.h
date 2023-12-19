@@ -37,9 +37,11 @@ class Settings
       params.switchOn           = 1631343;
       params.switchOff          = 1631342;
       params.actRast            = 0;
+      params.startRast          = 0;
       params.actShowRast        = 0;
       params.shouldStart        = false;
       params.playSound          = false;
+      params.rastWait           = false;
       params.started            = false;
       params.heatState          = false;
       params.heatStateChanged   = false;
@@ -217,6 +219,12 @@ class Settings
     void setActRast(int actRast) {
       params.actRast = actRast;
     }
+    int getStartRast() {
+      return params.startRast;
+    }
+    void setStartRast(int startRast) {
+      params.startRast = startRast;
+    }
     int getActShowRast() {
       return params.actShowRast;
     }
@@ -242,6 +250,14 @@ class Settings
     void setPlaySound(bool playSound)
     {
       params.playSound = playSound;
+    }
+    bool getRastWait()
+    {
+      return params.rastWait;
+    }
+    void setRastWait(bool rastWait)
+    {
+      params.rastWait = rastWait;
     }
     bool getShouldStart()
     {
@@ -461,6 +477,7 @@ class Settings
       unsigned long switchOff;
       int actRast;
       int actShowRast;
+      int startRast;
       int actState;
       int actBrewState;
       float actTemp;
@@ -468,6 +485,7 @@ class Settings
       int maxRast;
       bool shouldStart;
       bool playSound;
+      bool rastWait;
       bool started;
       bool heatState;
       bool heatStateChanged;

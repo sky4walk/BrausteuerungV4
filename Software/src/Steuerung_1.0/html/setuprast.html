@@ -77,8 +77,10 @@
 			<option value="15">Rast 16</option>
 		</select>
 	</form>
-<button onClick="window.location.reload();">Load Values</button>
-    <form action="/setupRastProcess">
+	<button onClick="window.location.reload();">Load Values</button>
+    Start Rast %STARTRAST% 
+	<form action="/setupRastProcess">
+      Description <input type="text" minlength="0" maxlength="200" name="RecipeInfo" value="%RECIPEINFO%"><br>
       <hr>
       Rast %RASTNR% <input type="text" required minlength="4" maxlength="32" step="1" name="RastName" value="%RASTNAME%" required><br>
       Ziel Temp  <input type="number" min="-20" max="110" step="1" name="ZielTemp" value="%ZIELTEMP%" required><br>

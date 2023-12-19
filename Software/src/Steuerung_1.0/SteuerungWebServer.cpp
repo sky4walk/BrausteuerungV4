@@ -229,7 +229,9 @@ String processorSetupRast(const String& var){
   } else if(var == "RASTSELECTORVAL"){
     CONSOLELN(rastNr);
     return String(rastNr);
-  } else if(var == "RASTZEIT"){
+  } else if(var == "STARTRAST"){
+    return String(SteuerungWebServer::mSettings->getStartRast()+1);
+  }else if(var == "RASTZEIT"){
     return String(SteuerungWebServer::mSettings->getTime(rastNr));
   } else if(var == "RASTNR"){
     return String(rastNr+1);
@@ -255,6 +257,8 @@ String processorSetupRast(const String& var){
     }
   } else if(var == "RASTINFO"){
     return String(SteuerungWebServer::mSettings->getInfo(rastNr));
+  } else if(var == "RECIPEINFO"){
+    return String(SteuerungWebServer::mSettings->getInfo());
   }
   return String();
 }
@@ -264,6 +268,7 @@ void processorSetupRastGet(AsyncWebServerRequest *request) {
   showParams(request);
   String inputMessage;
   int rastNr = SteuerungWebServer::mSettings->getActShowRast();
+  SteuerungWebServer::mSettings->setStartRast(rastNr);
   if (request->hasParam("RastName")) {
     inputMessage = request->getParam("RastName")->value();
     CONSOLELN(inputMessage);
@@ -309,7 +314,14 @@ void processorSetupRastGet(AsyncWebServerRequest *request) {
     SteuerungWebServer::mSettings->setInfo(rastNr,inputMessage);
     SteuerungWebServer::mSettings->setShouldSave(true);
   }
+  if (request->hasParam("RecipeInfo")) {
+    inputMessage = request->getParam("RecipeInfo")->value();
+    CONSOLELN(inputMessage);
+    SteuerungWebServer::mSettings->setInfo(inputMessage);
+    SteuerungWebServer::mSettings->setShouldSave(true);
+  }
   
+  //request->send(200, "text/html", "/");
   request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
 }
 ///////////////////////////////////////////////////////////////////////////
@@ -320,6 +332,10 @@ String processorTemp(const String& var){
   CONSOLELN(var);
   if(var == "TEMPERATURE"){
     return String(SteuerungWebServer::mSettings->getActTemp());
+  }
+  if(var == "RASTNUMMERNAME"){
+    int actRast = SteuerungWebServer::mSettings->getActRast();
+    return String(actRast+1)+String(":")+String(SteuerungWebServer::mSettings->getName(actRast));
   }
   if(var == "ANAUS"){
     if ( SteuerungWebServer::mSettings->getHeatState() ) {
@@ -470,7 +486,11 @@ void runHandle(AsyncWebServerRequest *request) {
       } else {
         doc["playsound"]       = String("0");
       }
-
+      if ( SteuerungWebServer::mSettings->getRastWait() ) {
+        doc["waitrast"]       = String("1");
+      } else {
+        doc["waitrast"]       = String("0");
+      }
       String jsonString;
       serializeJson(doc, jsonString);
       CONSOLELN(jsonString);
@@ -498,6 +518,13 @@ void runGetSwitches(AsyncWebServerRequest *request){
         SteuerungWebServer::mSettings->setPlaySound(true);
       } else {
         SteuerungWebServer::mSettings->setPlaySound(false);
+      }
+  } if (request->hasParam("wait")) {
+      inputMessage = request->getParam("wait")->value();
+      if ( inputMessage.equals("1")) {
+        SteuerungWebServer::mSettings->setRastWait(true);
+      } else {
+        SteuerungWebServer::mSettings->setRastWait(false);
       }
   } else {
       inputMessage = "No message sent";
@@ -574,8 +601,8 @@ void SteuerungWebServer::begin() {
       CONSOLELN(inputMessage);
       SteuerungWebServer::mSettings->setActShowRast(inputMessage.toInt());
     }
-    request->send(200, "text/plain", "OK");
-   // request->send(SPIFFS, "/setuprast.html", String(), false,processorSetupRast); 
+    //request->send(200, "text/plain", "OK");
+    request->send(SPIFFS, "/setuprast.html", String(), false,processorSetupRast); 
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
