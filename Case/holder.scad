@@ -1,8 +1,8 @@
 //brauverein@andrebetz.de
 
 dHold       = 0.9;
-distance    = 10;
-long        = 30;
+distance    = 5;
+long        = 20;
 bright      = 10;
 thick       = 3;
 

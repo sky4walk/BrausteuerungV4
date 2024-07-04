@@ -91,15 +91,15 @@ String processorSetup(const String& var){
   } else if(var == "PIDKD"){
     return String(SteuerungWebServer::mSettings->getPidKd());  
   } else if(var == "PIDMINVAL"){
-    res = String(SteuerungWebServer::mSettings->getPidMinWindow()/100); 
+    res = String(SteuerungWebServer::mSettings->getPidMinWindow()); 
     CONSOLELN(res);
     return res;  
   } else if(var == "PIDMAXVAL"){
-    res = String(SteuerungWebServer::mSettings->getPidWindowSize()/1000);
+    res = String(SteuerungWebServer::mSettings->getPidWindowSize());
     CONSOLELN(res);
     return res;  
   } else if(var == "PIDCYCLE"){
-    res = String(SteuerungWebServer::mSettings->getPidOWinterval()/1000);
+    res = String(SteuerungWebServer::mSettings->getPidOWinterval());
     CONSOLELN(res);
     return res;  
   } else if(var == "KALIBM"){
@@ -150,17 +150,17 @@ void processorSetupGet(AsyncWebServerRequest *request) {
   if (request->hasParam("pidminval")) {
       inputMessage = request->getParam("pidminval")->value();
       CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setPidMinWindow(inputMessage.toInt()*100);
+      SteuerungWebServer::mSettings->setPidMinWindow(inputMessage.toInt());
   }
   if (request->hasParam("pidmaxval")) {
       inputMessage = request->getParam("pidmaxval")->value();
       CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt()*1000);
+      SteuerungWebServer::mSettings->setPidWindowSize(inputMessage.toInt());
   }
   if (request->hasParam("pidcycle")) {
       inputMessage = request->getParam("pidcycle")->value();
       CONSOLELN(inputMessage);     
-      SteuerungWebServer::mSettings->setPidOWinterval(inputMessage.toInt()*1000);
+      SteuerungWebServer::mSettings->setPidOWinterval(inputMessage.toInt());
   }
   if (request->hasParam("KalM")) {
       inputMessage = request->getParam("KalM")->value();
@@ -413,7 +413,6 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   CONSOLELN(logmessage);
 
   if (!index) {
-    SPIFFS.begin();
     logmessage = "Upload Start: " + String(filename);
     request->_tempFile = SPIFFS.open("/" + filename, "w");
     CONSOLELN(logmessage);
@@ -437,6 +436,7 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
     request->send(response);
     */
     //request->send(303,"/start.html");
+//    SPIFFS.end();
     request->send(200, "text/html", "<a href=\"/\">Return to Home Page</a>");
   }
 }
@@ -543,7 +543,7 @@ SteuerungWebServer::SteuerungWebServer(Settings* set) {
 }
 
 void SteuerungWebServer::begin() {
-  SPIFFS.begin();
+    
   mServer.begin();
 
 ///////////////////////////////////////////////////////////////////////////
@@ -551,7 +551,16 @@ void SteuerungWebServer::begin() {
 ///////////////////////////////////////////////////////////////////////////
   mServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     CONSOLELN(F("root"));
-    request->send(SPIFFS, "/start.html", String(), false);
+    int fnsstart = request->url().lastIndexOf('/');
+    String fn = request->url().substring(fnsstart);
+    CONSOLELN(fn);
+    if ( SPIFFS.exists("/start.html") ) {
+      CONSOLELN(F("root found"));
+      request->send(SPIFFS, "/start.html", String(), false);
+    } else {
+      CONSOLELN(F("root not found"));
+      request->send(200, "text/html", upload_html);
+    }
   });
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/uploadDo", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -607,10 +616,15 @@ void SteuerungWebServer::begin() {
   ///////////////////////////////////////////////////////////////////////////
   mServer.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
     CONSOLELN(F("format"));
-    SPIFFS.end();
-    SPIFFS.begin();
+//    SPIFFS.end();
+//    if (!SPIFFS.begin()) {
+//        CONSOLELN(F(" format 1 ERROR: failed to mount FS!"));
+//        return;
+//    }  
     CONSOLELN(SPIFFS.format());
-    SPIFFS.begin();
+//    if (!SPIFFS.begin()) {
+//        CONSOLELN(F(" format 2 ERROR: failed to mount FS!"));
+//    }  
     request->send(200, "text/html", "format done");
   });
  ///////////////////////////////////////////////////////////////////////////

@@ -15,12 +15,6 @@ class SettingsLoader {
       
     }
     bool load() {
-      if (!SPIFFS.begin()) {
-        CONSOLELN(F(" ERROR: failed to mount FS!"));
-        return false;
-      }       
-      CONSOLELN(F(" mounted!"));
-
       if (!SPIFFS.exists(SETTINGSFILE)) {
         CONSOLELN(F("ERROR: failed to load json config"));
         return false;
@@ -84,25 +78,19 @@ class SettingsLoader {
       }  
 
       serializeJsonPretty(doc, Serial);
-
+      
       return true;
     }
     bool format(){
       CONSOLE(F("\nneed to format SPIFFS: "));
-      SPIFFS.end();
-      SPIFFS.begin();
+//      SPIFFS.end();
+//      SPIFFS.begin();
       CONSOLELN(SPIFFS.format());
-      return SPIFFS.begin();
+//      SPIFFS.begin();
+      return true;
     }
 
     bool save() {
-      if (!SPIFFS.begin())  {
-        CONSOLELN("Failed to mount file system");
-        if (!format()) {
-          CONSOLELN("Failed to format file system - hardware issues!");
-          return false;
-        }        
-      }      
 
       DynamicJsonDocument doc(4096);
       
@@ -147,14 +135,14 @@ class SettingsLoader {
       File configFile = SPIFFS.open(SETTINGSFILE, "w");
       if (!configFile) {
         CONSOLELN(F("failed to open config file for writing"));
-        SPIFFS.end();
+        format();
         return false;
       }
   
       serializeJsonPretty(doc, configFile);
       configFile.flush();
       configFile.close();
-      SPIFFS.gc();
+      //SPIFFS.gc();
       CONSOLELN(F("\nsaved successfully"));
       return true;
   }

@@ -132,7 +132,7 @@ void PidLoop() {
     pidRelaisTimer.setTime(brewDatas.getPidOutput());
     pidRelaisTimer.start();
     CONSOLE(F("PIDcomp:"));
-    CONSOLELN(pidOutput);
+    CONSOLELN(brewDatas.getPidOutput());
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,11 @@ void TempLoop() {
   if ( timerTempMeasure.timeOver() ) {
     timerTempMeasure.restart();       
     brewDatas.setActTemp(tmpSensor.getTemperatur());
-    CONSOLELN(brewDatas.getActTemp());     
+    tmpSensor.addVal(brewDatas.getActTemp());
+    CONSOLE(F("T:"));
+    CONSOLE(brewDatas.getActTemp());     
+    CONSOLE(F(" G:"));
+    CONSOLELN(tmpSensor.getGradient());     
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,22 +195,21 @@ void setup() {
 
   LedTicker.attach(0.6, tick);
 
+  if (!SPIFFS.begin()) {
+    CONSOLELN(F(" SteuerungWebServer::begin ERROR: failed to mount FS!"));
+  }
+
   if(!loaderDat.load())
     loaderDat.save();
   
   if ( drd.detectDoubleReset() ) {
     CONSOLELN(F("ddr"));
     brewDatas.setResetWM(true);
-    if ( brewDatas.getUseAP() ) {
-      brewDatas.setUseAP(false);
-    } else {
-      brewDatas.setUseAP(true);
-    }
-    loaderDat.save();
+    brewDatas.setUseAP(false);
   } else {
     CONSOLELN(F("No ddr"));   
   }
-
+  
   if ( brewDatas.getUseAP() ) {
     CONSOLELN(F("AP Mode"));
     WiFi.mode(WIFI_AP);
@@ -216,18 +219,28 @@ void setup() {
   } else {
     CONSOLELN(F("STA Mode"));
     WiFiManager wm;
-    if ( brewDatas.getResetWM() ) {
-      CONSOLELN(F("reset WM"));
-      brewDatas.setResetWM(false);
-      wm.resetSettings();
-      loaderDat.save();
-    }
+    
     wm.setAPStaticIPConfig(IPAddress(10,0,0,1), IPAddress(10,0,0,1), IPAddress(255,255,255,0));
-    wm.setEnableConfigPortal(false);    
-    if ( !wm.autoConnect(brewDatas.getDNSEntry().c_str()) ) {
-      delay(1000);
-      CONSOLELN(F("not con"));
+    wm.setEnableConfigPortal(false);
+
+    // wenn double reset ist betaetigt config portal wird gestartet
+    if ( true == brewDatas.getResetWM() ) {
+      CONSOLELN(F("wm config started"));
+      brewDatas.setResetWM(false);
+      brewDatas.setUseAP(false);
+      loaderDat.save();
+      wm.resetSettings();
       wm.startConfigPortal(brewDatas.getDNSEntry().c_str());
+    }
+
+    // startet autoconnect
+    // wenn nicht moeglich, dann geht er in Ap modus
+    if ( !wm.autoConnect(brewDatas.getDNSEntry().c_str()) ) {
+      CONSOLELN(F("no wm auto"));
+      brewDatas.setResetWM(false);
+      brewDatas.setUseAP(true);
+      loaderDat.save();
+      CONSOLELN(F("reset esp"));
       ESP.restart();
     } else {
       while (WiFi.status() != WL_CONNECTED) {
@@ -255,6 +268,7 @@ void setup() {
   timerPidCompute.setTime(brewDatas.getPidOWinterval());
   timerTempMeasure.setTime(brewDatas.getPidOWinterval());
   timerSendHeatState.setTime(brewDatas.getPidOWinterval());
+  tmpSensor.setTimerTempMeasure(brewDatas.getPidOWinterval());
 
   brewDatas.setActState(STATE_BEGIN); 
 
@@ -265,6 +279,9 @@ void setup() {
   digitalWrite(BUILTIN_LED, LOW);
   rmpServer.begin();
   CONSOLELN(F("Srv run"));
+
+  actTmp = tmpSensor.getTemperatur();
+  tmpSensor.resetStored(actTmp);
 }
 ///////////////////////////////////////////////////////////////////////////////
 // isEndRastReched
@@ -295,17 +312,17 @@ void loop() {
       actRast = brewDatas.getStartRast();
       brewDatas.setActRast(actRast);
       brewDatas.setPlaySound(brewDatas.getAlarm(actRast));
-      brewDatas.setRastWait(brewDatas.getWait(actRast));
+      brewDatas.setRastWait(brewDatas.getWait(actRast));      
     }
     break;
     case STATE_BREW: {
+      sollTmp = brewDatas.getTemp(actRast);
       PidLoop();
       HeatLoop();
       if ( brewDatas.getActTemp( ) >= brewDatas.getTemp(actRast) ) {
         brewDatas.setActState(STATE_TMPREACHED);
         brewDatas.setTempReached(true);
         timerBrewTimer.setTime(brewDatas.getTime(actRast)*MIL2MIN);
-        sollTmp = brewDatas.getTemp(actRast);
         resetPID();
         timerBrewTimer.start();
         CONSOLELN(F("STATE_TMPREACHED"));
