@@ -14,6 +14,7 @@
 //https://arduinojson.org/ 6.21.3
 //https://github.com/me-no-dev/ESPAsyncWebServer 
 // ask for HW type: esptool.exe -p COM4 flash_id
+// Think of flash size during compiling
 ///////////////////////////////////////////////
 //#define NO_CONSOLE
 #if defined(ESP8266)
@@ -107,16 +108,19 @@ void setPID() {
   resetPID();
 }
 ///////////////////////////////////////////////////////////////////////////////
-// Relais
+// read Temp
 ///////////////////////////////////////////////////////////////////////////////
-void Relais(bool onOff)
-{
-  if ( onOff ) {
-    CONSOLELN(F("On"));
-    mySwitch.send(brewDatas.getSwitchOn(), brewDatas.getSwitchBits());
-  } else {
-    CONSOLELN(F("Off"));
-    mySwitch.send(brewDatas.getSwitchOff(), brewDatas.getSwitchBits());
+void TempLoop() {
+  timerTempMeasure.start();
+  if ( timerTempMeasure.timeOver() ) {
+    timerTempMeasure.restart();       
+    brewDatas.setActTemp(tmpSensor.getTemperatur());
+    tmpSensor.addVal(brewDatas.getActTemp());
+    brewDatas.setGradient(tmpSensor.getGradient());
+    CONSOLE(F("T:"));
+    CONSOLE(brewDatas.getActTemp());     
+    CONSOLE(F(" G:"));
+    CONSOLELN(brewDatas.getGradient());     
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -127,12 +131,21 @@ void PidLoop() {
   if ( timerPidCompute.timeOver() ) {
     timerPidCompute.restart();
     actTmp = brewDatas.getActTemp();
-    myPID.Compute();
-    brewDatas.setPidOutput(pidOutput);
-    pidRelaisTimer.setTime(brewDatas.getPidOutput());
-    pidRelaisTimer.start();
-    CONSOLE(F("PIDcomp:"));
-    CONSOLELN(brewDatas.getPidOutput());
+    if ( true == myPID.Compute() ) {
+      brewDatas.setPidOutput(pidOutput);
+      pidRelaisTimer.setTime(brewDatas.getPidOutput());
+      pidRelaisTimer.start();
+      CONSOLE(F("PIDcomp:"));
+      CONSOLELN(brewDatas.getPidOutput());
+    }
+  }
+
+  if ( ( false == pidRelaisTimer.timeOver() ) &&
+        ( true == pidRelaisTimer.isInitialized() ) &&
+        ( brewDatas.getPidOutput() > brewDatas.getPidMinWindow()  ) ) {
+    changeHeatState(true);
+  } else {
+    changeHeatState(false);
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,30 +157,16 @@ void changeHeatState(bool onOff) {
   brewDatas.setHeatState(onOff);
 }
 ///////////////////////////////////////////////////////////////////////////////
-// detect state of heater is changed
+// Relay
 ///////////////////////////////////////////////////////////////////////////////
-void HeatLoop() {
-  if ( ( false == pidRelaisTimer.timeOver() ) &&
-       ( brewDatas.getPidOutput() > brewDatas.getPidMinWindow()  ) ) {
-    changeHeatState(true);
+void RelaySwitch(bool onOff) {
+  if ( true == onOff ) {
+    CONSOLELN(F("On"));
+    mySwitch.send(brewDatas.getSwitchOn(), brewDatas.getSwitchBits());
   } else {
-    changeHeatState(false);
-  }
-}
-///////////////////////////////////////////////////////////////////////////////
-// read Temp
-///////////////////////////////////////////////////////////////////////////////
-void TempLoop() {
-  timerTempMeasure.start();
-  if ( timerTempMeasure.timeOver() ) {
-    timerTempMeasure.restart();       
-    brewDatas.setActTemp(tmpSensor.getTemperatur());
-    tmpSensor.addVal(brewDatas.getActTemp());
-    CONSOLE(F("T:"));
-    CONSOLE(brewDatas.getActTemp());     
-    CONSOLE(F(" G:"));
-    CONSOLELN(tmpSensor.getGradient());     
-  }
+    CONSOLELN(F("Off"));
+    mySwitch.send(brewDatas.getSwitchOff(), brewDatas.getSwitchBits());
+  }    
 }
 ///////////////////////////////////////////////////////////////////////////////
 // detect state of heater is changed
@@ -177,7 +176,7 @@ void RelaisLoop(){
   if ( timerSendHeatState.timeOver() || brewDatas.getHeatStateChanged() ) {
     timerSendHeatState.restart();
     brewDatas.setHeatStateChanged(false);
-    Relais( brewDatas.getHeatState() );
+    RelaySwitch( brewDatas.getHeatState() );
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -193,8 +192,12 @@ void setup() {
   CONSOLELN(ESP.getSdkVersion());
   pinMode(LED_BUILTIN, OUTPUT);
 
-  LedTicker.attach(0.6, tick);
-
+  mySwitch.enableTransmit(GPIO15_D8);
+  mySwitch.setProtocol(brewDatas.getSwitchProtocol());
+  mySwitch.setPulseLength(brewDatas.getSwitchPulseLength());
+  changeHeatState(false); 
+  RelaySwitch(false);
+  
   if (!SPIFFS.begin()) {
     CONSOLELN(F(" SteuerungWebServer::begin ERROR: failed to mount FS!"));
   }
@@ -202,6 +205,13 @@ void setup() {
   if(!loaderDat.load())
     loaderDat.save();
   
+  timerPidCompute.setTime(brewDatas.getPidOWinterval());
+  timerTempMeasure.setTime(brewDatas.getPidOWinterval());
+  timerSendHeatState.setTime(brewDatas.getPidOWinterval());
+  tmpSensor.setTimerTempMeasure(brewDatas.getPidOWinterval());
+  
+  LedTicker.attach(0.6, tick);
+
   if ( drd.detectDoubleReset() ) {
     CONSOLELN(F("ddr"));
     brewDatas.setResetWM(true);
@@ -261,15 +271,6 @@ void setup() {
   //ArduinoOTA.setHostname("Brausteuerung");
   //ArduinoOTA.begin();
   
-  mySwitch.enableTransmit(GPIO15_D8);
-  mySwitch.setProtocol(brewDatas.getSwitchProtocol());
-  mySwitch.setPulseLength(brewDatas.getSwitchPulseLength()); 
-
-  timerPidCompute.setTime(brewDatas.getPidOWinterval());
-  timerTempMeasure.setTime(brewDatas.getPidOWinterval());
-  timerSendHeatState.setTime(brewDatas.getPidOWinterval());
-  tmpSensor.setTimerTempMeasure(brewDatas.getPidOWinterval());
-
   brewDatas.setActState(STATE_BEGIN); 
 
   setPID();
@@ -312,13 +313,13 @@ void loop() {
       actRast = brewDatas.getStartRast();
       brewDatas.setActRast(actRast);
       brewDatas.setPlaySound(brewDatas.getAlarm(actRast));
-      brewDatas.setRastWait(brewDatas.getWait(actRast));      
+      brewDatas.setRastWait(brewDatas.getWait(actRast));
+      changeHeatState(false);      
     }
     break;
     case STATE_BREW: {
       sollTmp = brewDatas.getTemp(actRast);
       PidLoop();
-      HeatLoop();
       if ( brewDatas.getActTemp( ) >= brewDatas.getTemp(actRast) ) {
         brewDatas.setActState(STATE_TMPREACHED);
         brewDatas.setTempReached(true);
@@ -332,7 +333,6 @@ void loop() {
     break;
     case STATE_TMPREACHED: {
       PidLoop();
-      HeatLoop();
       brewDatas.setDuration(timerBrewTimer.getDuration());
       if ( timerBrewTimer.timeOver() ) {
         timerBrewTimer.resume();
@@ -343,7 +343,6 @@ void loop() {
     break;
     case STATE_FIN: {
       PidLoop();
-      HeatLoop();
       if (brewDatas.getPlaySound()) {
         buzzer.beep(100);
       }

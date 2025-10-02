@@ -1,3 +1,5 @@
+#include <ESP8266httpUpdate.h>
+
 // brausteuerung@AndreBetz.de
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
@@ -409,6 +411,7 @@ void readFile(fs::FS &fs, String filename){
 ///////////////////////////////////////////////////////////////////////////
 // handles uploads to the filserver
 void handleUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+  SPIFFS.begin();
   String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
   CONSOLELN(logmessage);
 
@@ -543,13 +546,14 @@ SteuerungWebServer::SteuerungWebServer(Settings* set) {
 }
 
 void SteuerungWebServer::begin() {
-    
+  SPIFFS.begin();  
   mServer.begin();
 
 ///////////////////////////////////////////////////////////////////////////
 // Root
 ///////////////////////////////////////////////////////////////////////////
   mServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    SPIFFS.begin();
     CONSOLELN(F("root"));
     int fnsstart = request->url().lastIndexOf('/');
     String fn = request->url().substring(fnsstart);
@@ -642,6 +646,7 @@ void SteuerungWebServer::begin() {
   mServer.on("/runState", HTTP_GET, runGetSwitches);
   ///////////////////////////////////////////////////////////////////////////
   mServer.onNotFound([](AsyncWebServerRequest *request){
+    SPIFFS.begin();
     int fnsstart = request->url().lastIndexOf('/');
     String fn = request->url().substring(fnsstart);
     CONSOLELN(fn);

@@ -153,6 +153,12 @@ class Settings
     void setActTemp(float actTemp){
       params.actTemp = actTemp;
     }
+    float getGradient(){
+      return params.gradient;
+    }
+    void setGradient(float gradient){
+      params.gradient = gradient;
+    }
     bool getShouldSave() {
       return params.shouldSave;
     }
@@ -481,6 +487,7 @@ class Settings
       int actState;
       int actBrewState;
       float actTemp;
+      float gradient;
       unsigned long duration;
       int maxRast;
       bool shouldStart;

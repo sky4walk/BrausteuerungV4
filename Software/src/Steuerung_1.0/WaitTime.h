@@ -99,6 +99,10 @@ class WaitTime
     {
       return mPause;
     }
+    boolean isInitialized()
+    {
+      return mInitialized;
+    }
   private:
     unsigned long mStartTime;
     unsigned long mWaitTime;
