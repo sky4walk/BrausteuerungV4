@@ -1,6 +1,7 @@
 1. Arduino IDE vorbereiten
 
 download: https://www.arduino.cc/en/software
+sudo apt install esptool
 
 chmod +x arduino-ide_*.AppImage
 ./arduino-ide_2.3.8_Linux_64bit.AppImage --no-sandbox
@@ -28,3 +29,6 @@ RCSwitch            2.6.4       https://github.com/sui77/rc-switch/archive/refs/
 ArduinoJson         6.21.5      https://github.com/bblanchon/ArduinoJson/archive/refs/tags/v6.21.5.zip
 
 zeigt WeMo Port: ls /dev/ttyUSB* /dev/ttyACM*
+
+esptool --port /dev/ttyUSB0 --baud 921600 --chip esp8266 write_flash 0x0 deine.bin
+

@@ -342,6 +342,8 @@ Zustand zustand = GESTOPPT;
 // ── TEMPERATURSENSOR ─────────────────────────────────────────
 float tempAktuell = 0.0;
 float tempGradient = 0.0;          // °C/min
+uint8_t sensorFehlerZaehler = 0;   // Zählt aufeinanderfolgende Fehlmessungen
+bool    sensorFehler = false;       // true = Sensor getrennt
 unsigned long letztesTempRead = 0;
 const unsigned long TEMP_INTERVAL = 2000;
 
@@ -642,15 +644,29 @@ void tempLesen() {
   sensors.requestTemperatures();
   float t = sensors.getTempCByIndex(0);
   if (t != DEVICE_DISCONNECTED_C) {
+    // Sensor OK
+    if (sensorFehler) {
+      sensorFehler = false;
+      Serial.println("[SENSOR] Sensor wieder verbunden");
+    }
+    sensorFehlerZaehler = 0;
     tempHistorie[tempHistIdx] = t;
     tempHistIdx = (tempHistIdx + 1) % 6;
-    // Gradient: ältester vs neuester Wert über 12s → °C/min
-    float oldest = tempHistorie[tempHistIdx];  // ältester Wert
+    float oldest = tempHistorie[tempHistIdx];
     if (oldest > 0.0) {
-      tempGradient = (t - oldest) / 12.0 * 60.0;  // °C/min
+      tempGradient = (t - oldest) / 12.0 * 60.0;
     }
     tempAktuell = t;
     pidInput    = t;
+  } else {
+    // Sensor getrennt
+    sensorFehlerZaehler++;
+    if (sensorFehlerZaehler == 5) {  // 5 × 2s = 10s
+      sensorFehler = true;
+      heizungAus();
+      Serial.println("[FEHLER] Sensor getrennt — Heizung gestoppt!");
+      buzzerRuf(5);
+    }
   }
   logPunkt();
 }
@@ -721,6 +737,8 @@ void brauLogik() {
 
 // ── API: STATUS ──────────────────────────────────────────────
 void apiStatus() {
+  Serial.printf("[HTTP] GET /api/status — Client: %s\n",
+    server.client().remoteIP().toString().c_str());
   StaticJsonDocument<768> doc;
   doc["temp"]       = tempAktuell;
   doc["soll"]       = pidSetpoint;
@@ -731,6 +749,7 @@ void apiStatus() {
   doc["rast"]       = aktiveRast;
   doc["rastAnzahl"] = rastAnzahl;
   doc["wartHalt"]   = wartendHalt;
+  doc["sensorFehler"] = sensorFehler;
   if (aktiveRast >= 0 && aktiveRast < rastAnzahl) {
     Rast& r = rasten[aktiveRast];
     doc["rastName"]  = r.name;
@@ -789,6 +808,8 @@ void apiLogReset() {
 
 // ── API: STEUERUNG ───────────────────────────────────────────
 void apiStart() {
+  Serial.printf("[HTTP] POST /api/start — Client: %s\n",
+    server.client().remoteIP().toString().c_str());
   if (rastAnzahl == 0) {
     server.send(400, "application/json", "{\"error\":\"Kein Rezept geladen\"}");
     return;
@@ -804,6 +825,8 @@ void apiStart() {
 }
 
 void apiStop() {
+  Serial.printf("[HTTP] POST /api/stop — Client: %s\n",
+    server.client().remoteIP().toString().c_str());
   zustand    = GESTOPPT;
   aktiveRast = -1;
   heizungAus();
@@ -811,6 +834,8 @@ void apiStop() {
 }
 
 void apiWeiter() {
+  Serial.printf("[HTTP] POST /api/weiter — Client: %s\n",
+    server.client().remoteIP().toString().c_str());
   if (wartendHalt) {
     wartendHalt = false;
     Serial.printf("[WEITER] Rast %d bestätigt — nächste Rast\n", aktiveRast);
@@ -838,6 +863,8 @@ void apiConfigGet() {
 }
 
 void apiConfigPost() {
+  Serial.printf("[HTTP] POST /api/config — Client: %s\n",
+    server.client().remoteIP().toString().c_str());
   configSpeichern(server.arg("plain"));
   server.send(200, "application/json", "{\"ok\":true}");
 }
@@ -1039,6 +1066,8 @@ void setup() {
 
   // ── NORMALE ROUTEN (WLAN verbunden) ─────────────────────
   server.on("/", HTTP_GET, []() {
+    Serial.printf("[HTTP] GET / — Client: %s\n",
+      server.client().remoteIP().toString().c_str());
     if (LittleFS.exists("/index.html.gz")) {
       File f = LittleFS.open("/index.html.gz", "r");
       server.sendHeader("Content-Encoding", "gzip");
@@ -1064,6 +1093,8 @@ void setup() {
   server.on("/api/log",          HTTP_GET,  apiLog);
   server.on("/api/log/reset",    HTTP_POST, apiLogReset);
   server.on("/tools", HTTP_GET, []() {
+    Serial.printf("[HTTP] GET /tools — Client: %s\n",
+      server.client().remoteIP().toString().c_str());
     server.send_P(200, "text/html", TOOLS_HTML);
   });
 
@@ -1096,6 +1127,8 @@ void setup() {
   });
 
   server.onNotFound([]() {
+    Serial.printf("[HTTP] 404 %s — Client: %s\n",
+      server.uri().c_str(), server.client().remoteIP().toString().c_str());
     server.send(404, "text/plain", "Not found");
   });
 
@@ -1106,10 +1139,17 @@ void setup() {
 }
 
 // ── LOOP ─────────────────────────────────────────────────────
+unsigned long letztesTempLog = 0;
 void loop() {
   server.handleClient();
   MDNS.update();
   tempLesen();
   heizungRegeln();
   brauLogik();
+  // Temperatur alle 30s ins Serial loggen
+  if (millis() - letztesTempLog >= 30000) {
+    letztesTempLog = millis();
+    Serial.printf("[TEMP] Ist: %.1f°C | Soll: %.1f°C | Gradient: %.1f°C/min | PID: %.0f%% | Heap: %u B\n",
+      tempAktuell, pidSetpoint, tempGradient, pidOutput, ESP.getFreeHeap());
+  }
 }

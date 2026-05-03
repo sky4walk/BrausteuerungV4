@@ -165,6 +165,12 @@
     <div class="pid-pct" id="pidPct">0%</div>
   </div>
 
+  <div id="sensorBanner" style="display:none;background:rgba(192,80,74,0.12);border:1px solid var(--red);border-radius:3px;padding:14px 20px;margin-bottom:16px">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:#ff8080">
+      ⚠ Temperatursensor getrennt — Heizung gestoppt!
+    </span>
+  </div>
+
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:12px 16px;margin-bottom:16px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-d)">Temperaturverlauf</span>
@@ -296,6 +302,9 @@
 
   function updateUI(d) {
     document.getElementById('tempIst').textContent  = parseFloat(d.temp||0).toFixed(1);
+    // Sensor-Fehler Banner
+    const sb = document.getElementById('sensorBanner');
+    if (sb) sb.style.display = d.sensorFehler ? 'block' : 'none';
     const grad = parseFloat(d.gradient||0);
     const gEl = document.getElementById('gradientVal');
     if(gEl) {
