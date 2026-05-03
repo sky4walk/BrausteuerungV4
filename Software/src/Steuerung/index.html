@@ -32,12 +32,12 @@
       display:flex; align-items:center; gap:16px;
     }
     .logo { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:0.08em; color:var(--green-b); text-shadow:0 0 16px rgba(125,219,154,0.4); }
-    .logo span { color:var(--text-d); font-size:0.9rem; font-family:'IBM Plex Mono',monospace; }
+    .logo span { color:var(--text-d); font-size:0.9rem; font-family:IBM Plex Mono,monospace; }
     .header-sep { flex:1; }
-    #wifiStatus { font-family:'IBM Plex Mono',monospace; font-size:0.65rem; color:var(--text-d); letter-spacing:0.05em; }
+    #wifiStatus { font-family:IBM Plex Mono,monospace; font-size:0.65rem; color:var(--text-d); letter-spacing:0.05em; }
 
     .tabs { display:flex; background:var(--bg2); border-bottom:1px solid var(--border); }
-    .tab { font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-d); padding:12px 20px; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.15s; }
+    .tab { font-family:IBM Plex Mono,monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-d); padding:12px 20px; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.15s; }
     .tab:hover { color:var(--text); }
     .tab.active { color:var(--green-b); border-bottom-color:var(--green); }
 
@@ -45,31 +45,31 @@
     .panel.active { display:block; }
 
     .temp-display { background:var(--bg2); border:1px solid var(--border); border-radius:3px; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
-    .temp-label { font-family:'IBM Plex Mono',monospace; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-d); margin-bottom:4px; }
+    .temp-label { font-family:IBM Plex Mono,monospace; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-d); margin-bottom:4px; }
     .temp-value { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; line-height:1; color:var(--green-b); }
     .temp-value.warn { color:var(--amber); }
-    .temp-unit { font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--text-d); margin-top:2px; }
+    .temp-unit { font-family:IBM Plex Mono,monospace; font-size:0.72rem; color:var(--text-d); margin-top:2px; }
 
     .heizung-bar { background:var(--bg2); border:1px solid var(--border); border-radius:3px; padding:14px 20px; display:flex; align-items:center; gap:16px; margin-bottom:16px; }
     .heizung-dot { width:14px; height:14px; border-radius:50%; background:var(--text-d); transition:background 0.3s, box-shadow 0.3s; flex-shrink:0; }
     .heizung-dot.an { background:var(--red); box-shadow:0 0 10px rgba(192,80,74,0.6); }
-    .heizung-label { font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--text-d); flex:1; }
+    .heizung-label { font-family:IBM Plex Mono,monospace; font-size:0.78rem; color:var(--text-d); flex:1; }
     .pid-bar-wrap { flex:2; background:rgba(0,0,0,0.4); border-radius:2px; height:8px; overflow:hidden; }
     .pid-bar { height:100%; background:var(--amber); transition:width 1s ease; }
-    .pid-pct { font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--amber); min-width:40px; text-align:right; }
+    .pid-pct { font-family:IBM Plex Mono,monospace; font-size:0.72rem; color:var(--amber); min-width:40px; text-align:right; }
 
     .rast-status { background:var(--bg2); border:1px solid var(--border); border-radius:3px; padding:16px 20px; margin-bottom:16px; }
     .rast-name { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--text-b); letter-spacing:0.08em; }
-    .rast-info { font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--amber); margin-top:4px; }
+    .rast-info { font-family:IBM Plex Mono,monospace; font-size:0.72rem; color:var(--amber); margin-top:4px; }
     .rast-timer { display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap; }
     .timer-val { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--green-b); letter-spacing:0.05em; }
-    .timer-label { font-family:'IBM Plex Mono',monospace; font-size:0.65rem; color:var(--text-d); text-transform:uppercase; }
+    .timer-label { font-family:IBM Plex Mono,monospace; font-size:0.65rem; color:var(--text-d); text-transform:uppercase; }
     .timer-progress { flex:1; min-width:80px; background:rgba(0,0,0,0.4); border-radius:2px; height:6px; overflow:hidden; margin-left:8px; }
     .timer-bar { height:100%; background:var(--green-d); transition:width 1s linear; }
 
     .halt-banner { background:rgba(212,136,42,0.12); border:1px solid var(--amber-d); border-radius:3px; padding:16px 20px; display:none; margin-bottom:16px; }
     .halt-banner.show { display:flex; align-items:center; gap:16px; }
-    .halt-banner-text { flex:1; font-family:'IBM Plex Mono',monospace; font-size:0.85rem; color:var(--amber); }
+    .halt-banner-text { flex:1; font-family:IBM Plex Mono,monospace; font-size:0.85rem; color:var(--amber); }
     .halt-banner-info { font-size:0.72rem; color:var(--text-d); margin-top:4px; }
 
     .rasten-liste { display:flex; flex-direction:column; gap:4px; }
@@ -78,14 +78,14 @@
     .rast-item.aktiv { border-color:var(--green); background:rgba(76,175,110,0.06); }
     .rast-item.erledigt { opacity:0.4; }
     .rast-nr { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--green-d); min-width:28px; }
-    .rast-item-name { font-family:'IBM Plex Mono',monospace; font-size:0.85rem; font-weight:600; color:var(--text-b); flex:1; }
-    .rast-item-detail { font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--text-d); }
-    .rast-pill { font-size:0.6rem; padding:2px 6px; border-radius:2px; font-family:'IBM Plex Mono',monospace; font-weight:600; letter-spacing:0.05em; }
+    .rast-item-name { font-family:IBM Plex Mono,monospace; font-size:0.85rem; font-weight:600; color:var(--text-b); flex:1; }
+    .rast-item-detail { font-family:IBM Plex Mono,monospace; font-size:0.7rem; color:var(--text-d); }
+    .rast-pill { font-size:0.6rem; padding:2px 6px; border-radius:2px; font-family:IBM Plex Mono,monospace; font-weight:600; letter-spacing:0.05em; }
     .pill-halt { background:rgba(212,136,42,0.15); color:var(--amber); }
     .pill-call { background:rgba(76,175,110,0.15); color:var(--green); }
 
     .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
-    .btn { font-family:'IBM Plex Mono',monospace; font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; border:none; border-radius:2px; padding:12px 20px; cursor:pointer; transition:all 0.15s; }
+    .btn { font-family:IBM Plex Mono,monospace; font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; border:none; border-radius:2px; padding:12px 20px; cursor:pointer; transition:all 0.15s; }
     .btn-green { background:var(--green); color:var(--bg); }
     .btn-green:hover { background:var(--green-b); box-shadow:0 0 16px rgba(76,175,110,0.4); }
     .btn-red { background:var(--red-d); color:#ff8080; border:1px solid var(--red); }
@@ -99,22 +99,101 @@
     .upload-zone { border:2px dashed var(--green-d); border-radius:3px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:16px; }
     .upload-zone:hover, .upload-zone.drag { border-color:var(--green); background:rgba(76,175,110,0.05); }
     .upload-icon { font-size:2rem; margin-bottom:8px; }
-    .upload-label { font-family:'IBM Plex Mono',monospace; font-size:0.8rem; color:var(--text-d); }
+    .upload-label { font-family:IBM Plex Mono,monospace; font-size:0.8rem; color:var(--text-d); }
     .upload-label strong { color:var(--green-b); }
 
     .config-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
     @media(max-width:500px) { .config-grid { grid-template-columns:1fr; } .temp-display { grid-template-columns:1fr 1fr; } }
     .form-group { display:flex; flex-direction:column; gap:6px; }
-    .form-label { font-family:'IBM Plex Mono',monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-d); }
-    .form-input { background:rgba(0,0,0,0.4); border:1px solid var(--border); color:var(--text-b); font-family:'IBM Plex Mono',monospace; font-size:0.88rem; padding:9px 12px; border-radius:2px; outline:none; transition:border-color 0.15s; -moz-appearance:textfield; width:100%; }
+    .form-label { font-family:IBM Plex Mono,monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-d); }
+    .form-input { background:rgba(0,0,0,0.4); border:1px solid var(--border); color:var(--text-b); font-family:IBM Plex Mono,monospace; font-size:0.88rem; padding:9px 12px; border-radius:2px; outline:none; transition:border-color 0.15s; -moz-appearance:textfield; width:100%; }
     .form-input::-webkit-outer-spin-button, .form-input::-webkit-inner-spin-button { -webkit-appearance:none; }
     .form-input:focus { border-color:var(--green-d); box-shadow:0 0 0 2px rgba(76,175,110,0.12); }
     .section-title { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.1em; color:var(--green); padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:14px; margin-top:4px; }
 
-    .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--bg3); border:1px solid var(--green-d); color:var(--green-b); font-family:'IBM Plex Mono',monospace; font-size:0.78rem; padding:10px 24px; border-radius:2px; opacity:0; transition:all 0.3s; z-index:999; pointer-events:none; white-space:nowrap; }
+    .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--bg3); border:1px solid var(--green-d); color:var(--green-b); font-family:IBM Plex Mono,monospace; font-size:0.78rem; padding:10px 24px; border-radius:2px; opacity:0; transition:all 0.3s; z-index:999; pointer-events:none; white-space:nowrap; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
     .toast.err { border-color:var(--red); color:#ff8080; }
-  </style>
+  
+/* ── BML GENERATOR STYLES ── */
+#tab-generator {
+  display: none;
+  padding: 0;
+}
+#tab-generator.active {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  min-height: calc(100vh - 112px);
+}
+#gen-main {
+  padding: 20px;
+  overflow-y: auto;
+  background: #0F1410;
+}
+#gen-aside {
+  background: #161D17;
+  border-left: 1px solid #2A3D2E;
+  padding: 20px 18px;
+  overflow-y: auto;
+}
+@media(max-width:700px) {
+  #tab-generator.active { grid-template-columns: 1fr; }
+  #gen-aside { border-left: none; border-top: 1px solid #2A3D2E; }
+}
+/* Generator spezifische Styles */
+.gen-section-title { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.12em; color:#4CAF6E; padding-bottom:8px; border-bottom:1px solid #2A3D2E; margin-bottom:14px; margin-top:4px; }
+.gen-rasts-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.gen-rasts-list { display:flex; flex-direction:column; gap:8px; }
+.gen-rast-card { background:#161D17; border:1px solid #2A3D2E; border-radius:2px; overflow:hidden; transition:border-color 0.15s; }
+.gen-rast-card:hover { border-color:#3D5C42; }
+.gen-rast-card.disabled { opacity:0.4; }
+.gen-rast-header { display:flex; align-items:center; gap:12px; padding:10px 16px; background:#1C2620; border-bottom:1px solid #2A3D2E; cursor:pointer; user-select:none; }
+.gen-rast-nr { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:#2D6640; min-width:28px; }
+.gen-rast-name-display { font-family:IBM Plex Mono,monospace; font-size:0.88rem; font-weight:600; color:#E8F4E8; flex:1; }
+.gen-rast-body { display:none; padding:16px; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.gen-rast-body.open { display:grid; }
+.gen-field { display:flex; flex-direction:column; gap:5px; }
+.gen-field label { font-family:IBM Plex Mono,monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.12em; color:#5A7A5E; }
+.gen-field input, .gen-field textarea { background:#0F1410; border:1px solid #2A3D2E; color:#E8F4E8; font-family:IBM Plex Mono,monospace; font-size:0.82rem; padding:8px 10px; border-radius:2px; outline:none; width:100%; }
+.gen-field input:focus, .gen-field textarea:focus { border-color:#2D6640; box-shadow:0 0 0 2px rgba(76,175,110,0.12); }
+.gen-field textarea { resize:vertical; min-height:50px; }
+.gen-toggle-switch { position:relative; width:36px; height:20px; flex-shrink:0; }
+.gen-toggle-switch input { opacity:0; width:0; height:0; }
+.gen-toggle-track { position:absolute; inset:0; background:#0F1410; border:1px solid #2A3D2E; border-radius:10px; cursor:pointer; transition:all 0.2s; }
+.gen-toggle-track::after { content:''; position:absolute; width:12px; height:12px; background:#5A7A5E; border-radius:50%; top:3px; left:3px; transition:all 0.2s; }
+.gen-toggle-switch input:checked + .gen-toggle-track { background:#2D6640; border-color:#4CAF6E; }
+.gen-toggle-switch input:checked + .gen-toggle-track::after { background:#7DDB9A; left:19px; }
+.gen-stat-row { display:flex; justify-content:space-between; font-family:IBM Plex Mono,monospace; font-size:0.78rem; margin-bottom:6px; }
+.gen-stat-label { color:#5A7A5E; }
+.gen-stat-value { color:#E8F4E8; font-weight:600; }
+.gen-stat-value.green { color:#4CAF6E; }
+.gen-stat-value.amber { color:#D4882A; }
+.gen-timeline { display:flex; flex-direction:column; }
+.gen-timeline-step { display:flex; gap:10px; align-items:flex-start; position:relative; }
+.gen-timeline-dot { width:8px; height:8px; border-radius:50%; background:#2D6640; border:1px solid #4CAF6E; margin-top:5px; flex-shrink:0; position:relative; z-index:1; }
+.gen-timeline-step:not(:last-child) .gen-timeline-dot::after { content:''; position:absolute; left:3px; top:8px; width:1px; height:calc(100% + 8px); background:#2A3D2E; }
+.gen-timeline-content { padding-bottom:10px; flex:1; }
+.gen-timeline-name { font-family:IBM Plex Mono,monospace; font-size:0.75rem; color:#E8F4E8; font-weight:600; }
+.gen-timeline-detail { font-family:IBM Plex Mono,monospace; font-size:0.65rem; color:#5A7A5E; margin-top:2px; }
+.gen-btn { font-family:IBM Plex Mono,monospace; font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; border:none; border-radius:2px; padding:10px 18px; cursor:pointer; transition:all 0.15s; }
+.gen-btn-green { background:#4CAF6E; color:#0F1410; }
+.gen-btn-green:hover { background:#7DDB9A; }
+.gen-btn-secondary { background:transparent; color:#5A7A5E; border:1px solid #2A3D2E; width:100%; margin-top:6px; }
+.gen-btn-secondary:hover { border-color:#3D5C42; color:#C8DCC8; }
+.gen-btn-ghost { font-family:IBM Plex Mono,monospace; font-size:0.7rem; padding:6px 12px; border-radius:2px; border:1px solid #2A3D2E; background:transparent; color:#5A7A5E; cursor:pointer; }
+.gen-btn-ghost:hover { border-color:#3D5C42; color:#C8DCC8; }
+.gen-btn-danger { color:#C0504A; border-color:#5C2420; }
+.gen-btn-danger:hover { background:#5C2420; color:#ff8080; }
+.gen-name-input { font-family:'IBM Plex Sans',sans-serif !important; font-size:1rem !important; flex:1; }
+.gen-pid-toggle { font-family:IBM Plex Mono,monospace; font-size:0.65rem; color:#5A7A5E; cursor:pointer; letter-spacing:0.08em; text-decoration:underline; text-underline-offset:3px; grid-column:1/-1; }
+.gen-pid-section { display:none; grid-column:1/-1; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:10px; }
+.gen-pid-section.open { display:grid; }
+.gen-rast-actions { grid-column:1/-1; display:flex; justify-content:flex-end; gap:8px; padding-top:8px; border-top:1px solid #2A3D2E; }
+.gen-xml-preview { background:#0F1410; border:1px solid #2A3D2E; border-radius:2px; padding:10px; font-family:IBM Plex Mono,monospace; font-size:0.65rem; color:#5A7A5E; line-height:1.6; max-height:180px; overflow-y:auto; white-space:pre; }
+.gen-toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); background:#1C2620; border:1px solid #2D6640; color:#7DDB9A; font-family:IBM Plex Mono,monospace; font-size:0.78rem; padding:10px 24px; border-radius:2px; opacity:0; transition:all 0.3s; z-index:9999; pointer-events:none; }
+.gen-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.gen-toast.err { border-color:#C0504A; color:#ff8080; }
+</style>
 </head>
 <body>
 
@@ -128,9 +207,10 @@
   <div class="tab active" onclick="showTab('steuerung',this)">Steuerung</div>
   <div class="tab" onclick="showTab('rezept',this)">Rezept</div>
   <div class="tab" onclick="showTab('config',this)">Einstellungen</div>
-  <a href="/tools" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#C8DCC8'" onmouseout="this.style.color='#5A7A5E'">⚙ Tools</a>
-  <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/bml-generator.html" target="_blank" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">🌾 Rezept</a>
-  <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/braurechner.html" target="_blank" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">🧮 Rechner</a>
+  <a href="/tools" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#C8DCC8'" onmouseout="this.style.color='#5A7A5E'">⚙ Tools</a>
+  <div class="tab" onclick="showTab('generator',this)">📝 Rezept Erstellen</div>
+  <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/bml-generator.html" target="_blank" style="display:none" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">📝 Rezept Erstellen</a>
+  <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/braurechner.html" target="_blank" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">🧮 Rechner</a>
 </div>
 
 <!-- ══ TAB: STEUERUNG ══════════════════════════════════════ -->
@@ -166,17 +246,17 @@
   </div>
 
   <div id="sensorBanner" style="display:none;background:rgba(192,80,74,0.12);border:1px solid var(--red);border-radius:3px;padding:14px 20px;margin-bottom:16px">
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:#ff8080">
+    <span style="font-family:IBM Plex Mono,monospace;font-size:0.85rem;color:#ff8080">
       ⚠ Temperatursensor getrennt — Heizung gestoppt!
     </span>
   </div>
 
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:12px 16px;margin-bottom:16px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-d)">Temperaturverlauf</span>
+      <span style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-d)">Temperaturverlauf</span>
       <div style="display:flex;gap:6px">
-        <button onclick="downloadLog()" style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;background:transparent;border:1px solid var(--border);color:var(--text-d);padding:4px 10px;border-radius:2px;cursor:pointer" title="Log herunterladen">⬇ Log</button>
-        <button onclick="logReset()" style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;background:transparent;border:1px solid var(--border);color:var(--text-d);padding:4px 10px;border-radius:2px;cursor:pointer" title="Log zurücksetzen">↺ Reset</button>
+        <button onclick="downloadLog()" style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;background:transparent;border:1px solid var(--border);color:var(--text-d);padding:4px 10px;border-radius:2px;cursor:pointer" title="Log herunterladen">⬇ Log</button>
+        <button onclick="logReset()" style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;background:transparent;border:1px solid var(--border);color:var(--text-d);padding:4px 10px;border-radius:2px;cursor:pointer" title="Log zurücksetzen">↺ Reset</button>
       </div>
     </div>
     <canvas id="tempChart" style="width:100%;height:180px;display:block"></canvas>
@@ -227,7 +307,7 @@
     <div class="upload-label" style="margin-top:4px;font-size:0.68rem">.bml &middot; .xml</div>
   </div>
   <input type="file" id="bmlFileIn" style="display:none" accept=".bml,.xml" onchange="uploadBML(this.files[0])">
-  <div id="uploadStatus" style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-d);margin-bottom:16px;min-height:20px;"></div>
+  <div id="uploadStatus" style="font-family:IBM Plex Mono,monospace;font-size:0.78rem;color:var(--text-d);margin-bottom:16px;min-height:20px;"></div>
 
   <div id="rezeptInfo" style="display:none">
     <div class="section-title">Geladenes Rezept</div>
@@ -253,6 +333,7 @@
     <div class="form-group"><label class="form-label">Ki (Integral)</label><input type="number" class="form-input" id="cfg_Ki" value="0.05" step="0.01"></div>
     <div class="form-group"><label class="form-label">Kd (Differential)</label><input type="number" class="form-input" id="cfg_Kd" value="10.0" step="0.1"></div>
     <div class="form-group"><label class="form-label">PID-Fenster (Sekunden)</label><input type="number" class="form-input" id="cfg_pidFenster" value="30" min="5" max="120" step="5"></div>
+    <div class="form-group"><label class="form-label">PID Schwellwert (°C unter Soll → 100%)</label><input type="number" class="form-input" id="cfg_pidSchwelle" value="5.0" min="0" max="50" step="0.5"></div>
   </div>
 
   <div class="btn-row">
@@ -261,7 +342,7 @@
   </div>
 
   <div class="section-title" style="margin-top:8px">RCSwitch Codes ermitteln</div>
-  <p style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-d);line-height:1.7">
+  <p style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:var(--text-d);line-height:1.7">
     Einen 433MHz Empfänger an einem zweiten Arduino anschließen und das RCSwitch ReceiveDemo Beispiel ausführen.
     Die angezeigte Dezimalzahl beim Drücken der Fernbedienung als Code oben eintragen.
   </p>
@@ -289,7 +370,7 @@
       const j = await r.json();
       if (!j.ok) showToast(j.error || 'Fehler', true);
       return j;
-    } catch(e) { showToast('Verbindungsfehler', true); }
+    } catch(e) { console.error('[apiPost] Fehler:', e); showToast('Verbindungsfehler', true); }
   }
 
   async function pollStatus() {
@@ -393,8 +474,11 @@
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   async function startVon(nr) {
+    console.log('[startVon] Starte Rast', nr);
     const j = await apiPost('/api/start', { von: nr });
+    console.log('[startVon] Antwort:', j);
     if (j && j.ok) showToast('▶ Rast ' + nr + ' gestartet');
+    else if (j) showToast(j.error || 'Fehler beim Starten', true);
   }
 
   function dropBML(ev) {
@@ -454,7 +538,8 @@
       document.getElementById('cfg_Kp').value      = d.Kp  || 5.0;
       document.getElementById('cfg_Ki').value      = d.Ki  || 0.05;
       document.getElementById('cfg_Kd').value         = d.Kd  || 10.0;
-      document.getElementById('cfg_pidFenster').value = d.pidFenster  || 30;
+      document.getElementById('cfg_pidFenster').value  = d.pidFenster  || 30;
+      document.getElementById('cfg_pidSchwelle').value = d.pidSchwelle || 5.0;
     } catch(e) { showToast('Config Ladefehler', true); }
   }
 
@@ -469,7 +554,8 @@
       Kp: parseFloat(document.getElementById('cfg_Kp').value)||5.0,
       Ki: parseFloat(document.getElementById('cfg_Ki').value)||0.05,
       Kd:         parseFloat(document.getElementById('cfg_Kd').value)||10.0,
-      pidFenster: parseInt(document.getElementById('cfg_pidFenster').value)||30,
+      pidFenster:  parseInt(document.getElementById('cfg_pidFenster').value)||30,
+      pidSchwelle: parseFloat(document.getElementById('cfg_pidSchwelle').value)||5.0,
     };
     const j = await apiPost('/api/config', data);
     if (j && j.ok) showToast('✓ Gespeichert');
@@ -522,6 +608,275 @@
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
   }, { once: false });
+
+
+  // ══════════════════════════════════════════════════════════
+  // BML GENERATOR
+  // ══════════════════════════════════════════════════════════
+  let genRasts = [];
+  let genNextId = 0;
+
+  const GEN_DEFAULT = {
+    name:'', on:true, halt:false, call:false,
+    sollTemp:67, time:20, minTemp:-0.1, maxTemp:0.1,
+    kp:1.0, ki:0.0, kd:0.0, onPulse:0, offPulse:0,
+    maxGradient:1.0, info:''
+  };
+
+  function genAddRast(data={}) {
+    const r = { id:genNextId++, open:true, ...GEN_DEFAULT, ...data };
+    genRasts.push(r);
+    genRenderRasts();
+    genUpdateAll();
+    setTimeout(()=>{
+      const cards=document.querySelectorAll('.gen-rast-card');
+      if(cards.length) cards[cards.length-1].scrollIntoView({behavior:'smooth',block:'nearest'});
+    },50);
+  }
+
+  function genRemoveRast(id) { genRasts=genRasts.filter(r=>r.id!==id); genRenderRasts(); genUpdateAll(); }
+  function genMoveRast(id,dir) {
+    const idx=genRasts.findIndex(r=>r.id===id), ni=idx+dir;
+    if(ni<0||ni>=genRasts.length) return;
+    [genRasts[idx],genRasts[ni]]=[genRasts[ni],genRasts[idx]];
+    genRenderRasts(); genUpdateAll();
+  }
+  function genToggleCard(id) {
+    const r=genRasts.find(r=>r.id===id); if(r) r.open=!r.open; genRenderRasts();
+  }
+  function genUpdateField(id,field,value) {
+    const r=genRasts.find(r=>r.id===id); if(!r) return;
+    if(['on','halt','call'].includes(field)) r[field]=value;
+    else if(['sollTemp','time','minTemp','maxTemp','kp','ki','kd','onPulse','offPulse','maxGradient'].includes(field)) r[field]=parseFloat(value)||0;
+    else r[field]=value;
+    genUpdateAll();
+  }
+  function genTogglePID(id,el) {
+    const s=document.getElementById('gen_pid_'+id);
+    s.classList.toggle('open');
+    el.textContent=s.classList.contains('open')?'▼ PID ausblenden':'▶ PID anzeigen';
+  }
+
+  function genRenderRasts() {
+    const c=document.getElementById('gen_rastsList');
+    if (!c) return;  // Tab noch nicht sichtbar
+    if(!genRasts.length) {
+      c.innerHTML='<div style="text-align:center;padding:40px 20px;color:#5A7A5E;font-family:IBM Plex Mono,monospace;font-size:0.8rem;border:1px dashed #2A3D2E;border-radius:2px">⚗ Noch keine Rasten.</div>';
+      return;
+    }
+    c.innerHTML=genRasts.map((r,idx)=>{
+      const pills=(r.halt?'<span style="font-size:0.6rem;padding:2px 6px;border-radius:2px;background:rgba(212,136,42,0.15);color:#D4882A;font-family:IBM Plex Mono,monospace">HALT</span>':'')+
+                  (r.call?'<span style="font-size:0.6rem;padding:2px 6px;border-radius:2px;background:rgba(76,175,110,0.15);color:#4CAF6E;font-family:IBM Plex Mono,monospace">CALL</span>':'');
+      return `<div class="gen-rast-card ${r.on?'':'disabled'}" id="gen_card_${r.id}">
+        <div class="gen-rast-header" onclick="genToggleCard(${r.id})">
+          <span class="gen-rast-nr">${String(idx).padStart(2,'0')}</span>
+          <span class="gen-rast-name-display">${genEsc(r.name)||'<span style="color:#5A7A5E;font-weight:300">Unbenannt</span>'}</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            ${r.on?`<span style="font-size:0.72rem;color:#5A7A5E;font-family:IBM Plex Mono,monospace">${r.sollTemp}°C · ${r.time} min</span>`:'<span style="color:#C0504A;font-size:0.7rem;font-family:IBM Plex Mono,monospace">INAKTIV</span>'}
+            ${pills}
+          </div>
+          <span style="font-size:0.7rem;color:#5A7A5E;transition:transform 0.2s;${r.open?'transform:rotate(180deg)':''}">▼</span>
+        </div>
+        <div class="gen-rast-body ${r.open?'open':''}">
+          <div class="gen-field"><label>Name</label>
+            <input type="text" value="${genEsc(r.name)}" placeholder="z.B. Maltoserast"
+              oninput="genUpdateField(${r.id},'name',this.value);document.querySelector('#gen_card_${r.id} .gen-rast-name-display').innerHTML=this.value||'<span style=color:#5A7A5E;font-weight:300>Unbenannt</span>'">
+          </div>
+          <div class="gen-field"><label>Solltemperatur (°C)</label>
+            <input type="number" step="0.5" value="${r.sollTemp}" oninput="genUpdateField(${r.id},'sollTemp',this.value)">
+          </div>
+          <div class="gen-field"><label>Zeit (min)</label>
+            <input type="number" step="1" min="0" value="${r.time}" oninput="genUpdateField(${r.id},'time',this.value)">
+          </div>
+          <div class="gen-field"><label>MinTemp (°C)</label>
+            <input type="number" step="0.1" value="${r.minTemp}" oninput="genUpdateField(${r.id},'minTemp',this.value)">
+          </div>
+          <div class="gen-field"><label>MaxTemp (°C)</label>
+            <input type="number" step="0.1" value="${r.maxTemp}" oninput="genUpdateField(${r.id},'maxTemp',this.value)">
+          </div>
+          <div class="gen-field"><label>Max. Gradient (°C/min)</label>
+            <input type="number" step="0.1" min="0" value="${r.maxGradient}" oninput="genUpdateField(${r.id},'maxGradient',this.value)">
+          </div>
+          <div class="gen-field" style="grid-column:1/-1;display:flex;gap:24px;flex-wrap:wrap;align-items:center;padding:4px 0">
+            <div style="display:flex;align-items:center;gap:10px">
+              <label class="gen-toggle-switch"><input type="checkbox" ${r.on?'checked':''} onchange="genUpdateField(${r.id},'on',this.checked);document.getElementById('gen_card_${r.id}').classList.toggle('disabled',!this.checked)"><span class="gen-toggle-track"></span></label>
+              <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Aktiv</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label class="gen-toggle-switch"><input type="checkbox" ${r.halt?'checked':''} onchange="genUpdateField(${r.id},'halt',this.checked)"><span class="gen-toggle-track"></span></label>
+              <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Halt</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label class="gen-toggle-switch"><input type="checkbox" ${r.call?'checked':''} onchange="genUpdateField(${r.id},'call',this.checked)"><span class="gen-toggle-track"></span></label>
+              <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Call</span>
+            </div>
+          </div>
+          <div class="gen-field" style="grid-column:1/-1"><label>Info / Notiz</label>
+            <textarea oninput="genUpdateField(${r.id},'info',this.value)">${genEsc(r.info)}</textarea>
+          </div>
+          <span class="gen-pid-toggle" onclick="genTogglePID(${r.id},this)">▶ PID anzeigen</span>
+          <div class="gen-pid-section" id="gen_pid_${r.id}">
+            <div class="gen-field"><label>Kp</label><input type="number" step="0.1" value="${r.kp}" oninput="genUpdateField(${r.id},'kp',this.value)"></div>
+            <div class="gen-field"><label>Ki</label><input type="number" step="0.01" value="${r.ki}" oninput="genUpdateField(${r.id},'ki',this.value)"></div>
+            <div class="gen-field"><label>Kd</label><input type="number" step="0.01" value="${r.kd}" oninput="genUpdateField(${r.id},'kd',this.value)"></div>
+            <div class="gen-field"><label>OnPulse</label><input type="number" step="1" value="${r.onPulse}" oninput="genUpdateField(${r.id},'onPulse',this.value)"></div>
+            <div class="gen-field"><label>OffPulse</label><input type="number" step="1" value="${r.offPulse}" oninput="genUpdateField(${r.id},'offPulse',this.value)"></div>
+          </div>
+          <div class="gen-rast-actions">
+            <button class="gen-btn-ghost" onclick="genMoveRast(${r.id},-1)" ${idx===0?'disabled style="opacity:0.3"':''}>↑</button>
+            <button class="gen-btn-ghost" onclick="genMoveRast(${r.id},1)" ${idx===genRasts.length-1?'disabled style="opacity:0.3"':''}>↓</button>
+            <button class="gen-btn-ghost gen-btn-danger" onclick="genRemoveRast(${r.id})">✕ Löschen</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function genUpdateAll() {
+    if (!document.getElementById('gen_rastsList')) return;  // Tab noch nicht sichtbar
+    const active=genRasts.filter(r=>r.on);
+    const totalTime=active.reduce((s,r)=>s+(r.time||0),0);
+    document.getElementById('gen_statActive').textContent=active.length;
+    document.getElementById('gen_statTotal').textContent=genRasts.length+' / 16';
+    document.getElementById('gen_statTime').textContent=totalTime+' min';
+    document.getElementById('gen_statHalt').textContent=active.filter(r=>r.halt||r.call).length;
+    const tl=document.getElementById('gen_timeline');
+    tl.innerHTML=active.length?active.map(r=>`
+      <div class="gen-timeline-step">
+        <div class="gen-timeline-dot" style="${r.halt||r.call?'background:#D4882A;border-color:#D4882A':''}"></div>
+        <div class="gen-timeline-content">
+          <div class="gen-timeline-name">${genEsc(r.name)||'(Unbenannt)'}</div>
+          <div class="gen-timeline-detail">${r.sollTemp}°C · ${r.time} min${r.halt?' · HALT':''}${r.call?' · CALL':''}</div>
+        </div>
+      </div>`).join(''):'<div style="font-family:IBM Plex Mono,monospace;font-size:0.7rem;color:#5A7A5E">Noch keine Rasten.</div>';
+    const name=document.getElementById('gen_recipeName').value||'Rezept';
+    const prev=document.getElementById('gen_xmlPreview');
+    prev.innerHTML='<span style="color:#2D6640">&lt;recipe&gt;</span>\n  <span style="color:#2D6640">&lt;description&gt;</span>'+genEsc(name)+'<span style="color:#2D6640">&lt;/description&gt;</span>\n'+
+      genRasts.slice(0,4).map(r=>`  <span style="color:#2D6640">&lt;rast&gt;</span> <span style="color:#D4882A">${genEsc(r.name)} · ${r.sollTemp}°C · ${r.time}min</span>`).join('\n')+
+      (genRasts.length>4?'\n  <span style="color:#5A7A5E">… '+(genRasts.length-4)+' weitere</span>':'')+'\n<span style="color:#2D6640">&lt;/recipe&gt;</span>';
+  }
+
+  function genGetPadded() {
+    const r=[...genRasts.map((r,i)=>({...r,nr:i}))];
+    while(r.length<16){const i=r.length;r.push({nr:i,name:'Rast'+(i+1),on:false,halt:false,call:false,sollTemp:0,time:0,minTemp:-0.1,maxTemp:0.1,kp:0,ki:0,kd:0,onPulse:0,offPulse:0,maxGradient:0,info:''});}
+    return r.slice(0,16);
+  }
+
+  function genGenerateBML() {
+    const name=document.getElementById('gen_recipeName').value||'Rezept';
+    const f=v=>{ const n=parseFloat(v); return Number.isInteger(n)?n.toFixed(1):String(n); };
+    const b=v=>v?'true':'false';
+    const x=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+    const rasts=genGetPadded();
+    return `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\n<recipe AppDevice="mikroSikaru.de" AppName="BrausteuerungApp" AppVersion="1.19">\n  <description>${x(name)}</description>\n`+
+      rasts.map(r=>`  <rast>\n    <Nr>${r.nr}</Nr>\n    <Name>${x(r.name)}</Name>\n    <On>${b(r.on)}</On>\n    <Halt>${b(r.halt)}</Halt>\n    <Call>${b(r.call)}</Call>\n    <SollTemp>${f(r.sollTemp)}</SollTemp>\n    <Time>${r.time}</Time>\n    <MinTemp>${f(r.minTemp)}</MinTemp>\n    <MaxTemp>${f(r.maxTemp)}</MaxTemp>\n    <Kp>${f(r.kp)}</Kp>\n    <Ki>${f(r.ki)}</Ki>\n    <Kd>${f(r.kd)}</Kd>\n    <OnTimePulse>${r.onPulse}</OnTimePulse>\n    <OffTimePulse>${r.offPulse}</OffTimePulse>\n    <MaxGradient>${f(r.maxGradient)}</MaxGradient>\n    <Info>${x(r.info)}</Info>\n  </rast>`).join('\n')+'\n</recipe>';
+  }
+
+  function genDownloadBML() {
+    if(!genRasts.length){genShowToast('Bitte zuerst Rasten hinzufügen',true);return;}
+    const bml=genGenerateBML();
+    const name=(document.getElementById('gen_recipeName').value||'rezept').replace(/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/g,'').replace(/\s+/g,'_');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([bml],{type:'application/xml'}));
+    a.download=name+'.bml'; a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  function genClearAll() {
+    if(genRasts.length&&!confirm('Alle Rasten löschen?')) return;
+    genRasts=[]; document.getElementById('gen_recipeName').value='';
+    genRenderRasts(); genUpdateAll();
+  }
+
+  function genShowToast(msg,err=false) {
+    const t=document.getElementById('gen_toast');
+    t.textContent=msg; t.className='gen-toast'+(err?' err':'');
+    t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
+  }
+
+  function genEsc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function genGetXMLText(el,tag) { const n=el.querySelector(tag); return n?n.textContent.trim():''; }
+
+  function genLoadBMLFile(input) {
+    const file=input.files[0]; if(!file) return;
+    const r=new FileReader();
+    r.onload=e=>{ try{genParseBML(e.target.result,file.name);}catch(err){genShowToast('Fehler: '+err.message,true);} input.value=''; };
+    r.readAsText(file,'UTF-8');
+  }
+
+  function genParseBML(xmlStr,filename) {
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(xmlStr,'application/xml');
+    if(doc.querySelector('parsererror')) throw new Error('Ungültiges XML');
+    const recipe=doc.querySelector('recipe');
+    if(!recipe) throw new Error('Kein <recipe> Element');
+    const desc=genGetXMLText(recipe,'description');
+    let name=desc.match(/Name\s*:\s*([^N]+?)(?=\s+(?:Name|Sudmenge|Malz|Hefe)|$)/)?.[1]?.trim()||filename.replace(/\.(bml|xml)$/i,'').replace(/_/g,' ');
+    const rastEls=Array.from(doc.querySelectorAll('rast'));
+    if(!rastEls.length) throw new Error('Keine <rast> Elemente');
+    const pB=s=>s==='true', pF=(s,d)=>{const n=parseFloat(s);return isNaN(n)?d:n;}, pI=(s,d)=>{const n=parseInt(s);return isNaN(n)?d:n;};
+    genRasts=rastEls.filter(el=>pB(genGetXMLText(el,'On'))).map(el=>({
+      id:genNextId++, open:false,
+      name:genGetXMLText(el,'Name'), on:pB(genGetXMLText(el,'On')),
+      halt:pB(genGetXMLText(el,'Halt')), call:pB(genGetXMLText(el,'Call')),
+      sollTemp:pF(genGetXMLText(el,'SollTemp'),67), time:pI(genGetXMLText(el,'Time'),0),
+      minTemp:pF(genGetXMLText(el,'MinTemp'),-0.1), maxTemp:pF(genGetXMLText(el,'MaxTemp'),0.1),
+      kp:pF(genGetXMLText(el,'Kp'),1), ki:pF(genGetXMLText(el,'Ki'),0), kd:pF(genGetXMLText(el,'Kd'),0),
+      onPulse:pI(genGetXMLText(el,'OnTimePulse'),0), offPulse:pI(genGetXMLText(el,'OffTimePulse'),0),
+      maxGradient:pF(genGetXMLText(el,'MaxGradient'),1), info:genGetXMLText(el,'Info')
+    }));
+    document.getElementById('gen_recipeName').value=name;
+    genRenderRasts(); genUpdateAll();
+    genShowToast('✓ '+name+' — '+genRasts.length+' Rasten geladen');
+  }
+
+  function genLoadBeerXMLFile(input) {
+    const file=input.files[0]; if(!file) return;
+    const r=new FileReader();
+    r.onload=e=>{ try{genParseBeerXML(e.target.result,file.name);}catch(err){genShowToast('BeerXML Fehler: '+err.message,true);} input.value=''; };
+    r.readAsText(file,'UTF-8');
+  }
+
+  function genParseBeerXML(xmlStr,filename) {
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(xmlStr,'application/xml');
+    if(doc.querySelector('parsererror')) throw new Error('Ungültiges XML');
+    const recipe=doc.querySelector('RECIPE'); if(!recipe) throw new Error('Kein <RECIPE>');
+    const mash=recipe.querySelector('MASH'); if(!mash) throw new Error('Kein <MASH>');
+    const steps=Array.from(mash.querySelectorAll('MASH_STEP')); if(!steps.length) throw new Error('Keine MASH_STEP');
+    const name=genGetXMLText(recipe,'NAME')||filename.replace(/\.(xml|beerxml)$/i,'');
+    const boilTime=parseInt(genGetXMLText(recipe,'BOIL_TIME')||'60');
+    const hops=Array.from(recipe.querySelectorAll('HOP'));
+    const boilHops=hops.filter(h=>['boil','first wort'].includes(genGetXMLText(h,'USE').toLowerCase()))
+      .sort((a,b)=>parseFloat(genGetXMLText(b,'TIME')||0)-parseFloat(genGetXMLText(a,'TIME')||0));
+    const loaded=[];
+    const firstTemp=parseFloat(genGetXMLText(steps[0],'STEP_TEMP')||'57');
+    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Aufheizen',on:true,halt:true,call:true,sollTemp:firstTemp,time:1,info:'Einmaischtemperatur '+firstTemp+'°C — Malz einschütten!'});
+    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Einmaischen',on:true,halt:true,call:true,sollTemp:firstTemp,time:parseInt(genGetXMLText(steps[0],'STEP_TIME')||'10')});
+    for(let i=1;i<steps.length;i++){
+      const s=steps[i];
+      loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:genGetXMLText(s,'NAME')||'Rast '+i,on:true,halt:false,call:false,
+        sollTemp:parseFloat(genGetXMLText(s,'STEP_TEMP')||'0'),time:parseInt(genGetXMLText(s,'STEP_TIME')||'0')});
+    }
+    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Abmaischen',on:true,halt:true,call:true,sollTemp:78,time:5});
+    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Laeutern',on:true,halt:true,call:true,sollTemp:20,time:1,kp:0,ki:0,kd:0});
+    if(boilHops.length===0){
+      loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Kochen',on:true,halt:true,call:true,sollTemp:99,time:boilTime,kp:0,ki:0,kd:0});
+    } else {
+      loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Kochen',on:true,halt:true,call:true,sollTemp:99,time:1,kp:0,ki:0,kd:0,
+        info:'Hopfen: '+genGetXMLText(boilHops[0],'NAME')+' Alpha:'+genGetXMLText(boilHops[0],'ALPHA')+' Menge:'+Math.round(parseFloat(genGetXMLText(boilHops[0],'AMOUNT')||0)*1000)+'g'});
+      for(let i=0;i<boilHops.length;i++){
+        const h=boilHops[i],ht=parseFloat(genGetXMLText(h,'TIME')||0),nt=i+1<boilHops.length?parseFloat(genGetXMLText(boilHops[i+1],'TIME')||0):0;
+        const ni=i+1<boilHops.length?'Hopfen: '+genGetXMLText(boilHops[i+1],'NAME')+' Alpha:'+genGetXMLText(boilHops[i+1],'ALPHA')+' Menge:'+Math.round(parseFloat(genGetXMLText(boilHops[i+1],'AMOUNT')||0)*1000)+'g':'';
+        loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:i===0?'Bitterhopfen':i===boilHops.length-1?'Aromahopfen':'Hopfengabe '+(i+1),
+          on:true,halt:true,call:true,sollTemp:99,time:Math.max(1,ht-nt),kp:0,ki:0,kd:0,info:ni});
+      }
+    }
+    genRasts=loaded;
+    document.getElementById('gen_recipeName').value=name;
+    genRenderRasts(); genUpdateAll();
+    genShowToast('✓ BeerXML "'+name+'" — '+loaded.length+' Rasten importiert');
+  }
 
   pollStatus();
   setInterval(pollStatus, 2000);
@@ -643,5 +998,51 @@
   setInterval(ladeLog, 10000);
 
 </script>
+
+<!-- ══ TAB: GENERATOR ══════════════════════════════════════ -->
+<div class="panel" id="tab-generator">
+  <div id="gen-main">
+    <!-- Rezeptname -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <span style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:#5A7A5E;white-space:nowrap">Rezeptname</span>
+      <input type="text" class="gen-name-input form-input" id="gen_recipeName" placeholder="z.B. Dunkler Bock" oninput="genUpdateAll()">
+    </div>
+    <!-- Rasten -->
+    <div class="gen-rasts-header">
+      <span class="gen-section-title">Rasten</span>
+      <button class="gen-btn gen-btn-green" onclick="genAddRast()">+ Rast hinzufügen</button>
+    </div>
+    <div class="gen-rasts-list" id="gen_rastsList">
+      <div style="text-align:center;padding:40px 20px;color:#5A7A5E;font-family:IBM Plex Mono,monospace;font-size:0.8rem;border:1px dashed #2A3D2E;border-radius:2px">
+        ⚗ Noch keine Rasten. Füge die erste hinzu.
+      </div>
+    </div>
+  </div>
+  <div id="gen-aside">
+    <div style="margin-bottom:20px">
+      <div class="gen-section-title">Übersicht</div>
+      <div class="gen-stat-row"><span class="gen-stat-label">Aktive Rasten</span><span class="gen-stat-value green" id="gen_statActive">0</span></div>
+      <div class="gen-stat-row"><span class="gen-stat-label">Gesamt Slots</span><span class="gen-stat-value" id="gen_statTotal">0 / 16</span></div>
+      <div class="gen-stat-row"><span class="gen-stat-label">Gesamtzeit</span><span class="gen-stat-value amber" id="gen_statTime">0 min</span></div>
+      <div class="gen-stat-row"><span class="gen-stat-label">Halt-Punkte</span><span class="gen-stat-value" id="gen_statHalt">0</span></div>
+    </div>
+    <div style="margin-bottom:20px">
+      <div class="gen-section-title">Ablauf</div>
+      <div class="gen-timeline" id="gen_timeline"><div style="font-family:IBM Plex Mono,monospace;font-size:0.7rem;color:#5A7A5E">Noch keine Rasten.</div></div>
+    </div>
+    <div style="margin-top:auto">
+      <div class="gen-section-title">Export / Import</div>
+      <div class="gen-xml-preview" id="gen_xmlPreview"><!-- Vorschau --></div>
+      <button class="gen-btn gen-btn-green" style="width:100%;margin-top:8px" onclick="genDownloadBML()">⬇ BML herunterladen</button>
+      <button class="gen-btn gen-btn-secondary" onclick="document.getElementById('gen_bmlFileIn').click()">⬆ BML laden</button>
+      <input type="file" id="gen_bmlFileIn" accept=".bml,.xml" style="display:none" onchange="genLoadBMLFile(this)">
+      <button class="gen-btn gen-btn-secondary" onclick="document.getElementById('gen_beerxmlFileIn').click()">🍺 BeerXML importieren</button>
+      <input type="file" id="gen_beerxmlFileIn" accept=".xml,.beerxml" style="display:none" onchange="genLoadBeerXMLFile(this)">
+      <button class="gen-btn gen-btn-secondary" onclick="genClearAll()">Alles löschen</button>
+    </div>
+  </div>
+  <div class="gen-toast" id="gen_toast"></div>
+</div>
+
 </body>
 </html>

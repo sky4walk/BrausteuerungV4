@@ -297,6 +297,7 @@ double pidInput    = 20.0;
 double pidOutput   = 0.0;
 double pidSetpoint = 67.0;
 double Kp = 5.0, Ki = 0.05, Kd = 10.0;
+double pidSchwellwert = 5.0;  // °C unter Soll → 100% Leistung
 PID myPID(&pidInput, &pidOutput, &pidSetpoint, Kp, Ki, Kd, DIRECT);
 
 unsigned long PID_WINDOW_MS = 30000;  // konfigurierbar über Web-UI (in ms)
@@ -444,6 +445,7 @@ void configLaden() {
     Ki               = doc["Ki"]        | 0.5;
     Kd               = doc["Kd"]        | 1.0;
     PID_WINDOW_MS    = (doc["pidFenster"] | 30) * 1000UL;
+    pidSchwellwert   = doc["pidSchwelle"]  | 5.0;
   }
   f.close();
   myPID.SetTunings(Kp, Ki, Kd);
@@ -466,7 +468,8 @@ void configSpeichern(const String& body) {
   Kp            = doc["Kp"]        | Kp;
   Ki            = doc["Ki"]        | Ki;
   Kd            = doc["Kd"]        | Kd;
-  PID_WINDOW_MS = (doc["pidFenster"] | (int)(PID_WINDOW_MS/1000)) * 1000UL;
+  PID_WINDOW_MS  = (doc["pidFenster"] | (int)(PID_WINDOW_MS/1000)) * 1000UL;
+  pidSchwellwert = doc["pidSchwelle"] | pidSchwellwert;
   myPID.SetTunings(Kp, Ki, Kd);
   rcSwitch.setProtocol(rcProtocol);
   rcSwitch.setPulseLength(rcPulse);
@@ -614,6 +617,11 @@ void rastStarten(int nr) {
   if (r.kp > 0) myPID.SetTunings(r.kp, r.ki, r.kd);
   else           myPID.SetTunings(Kp, Ki, Kd);
   pidWindowStart = millis();
+  // PID zurücksetzen: verhindert eingefrierenen Output
+  myPID.SetMode(MANUAL);
+  pidOutput = 100.0;  // Volle Leistung beim Start
+  myPID.SetMode(AUTOMATIC);
+  myPID.SetOutputLimits(0, 100);
   // Log nur beim allerersten Rast-Start zurücksetzen
   if (logStartMs == 0) logReset();
   Serial.printf("[RAST %d] %s | Soll: %.1f°C | %d min\n",
@@ -684,7 +692,12 @@ void heizungRegeln() {
     }
     return;
   }
-  myPID.Compute();
+  // ── Schwellwert: unter (Soll - Schwellwert) → 100% Leistung
+  if (pidSchwellwert > 0.0 && (pidSetpoint - pidInput) > pidSchwellwert) {
+    pidOutput = 100.0;  // Volle Leistung bis Schwellwert erreicht
+  } else {
+    myPID.Compute();  // PID regelt ab Schwellwert
+  }
 
   // ── MaxGradient berücksichtigen ──────────────────────────
   // Wenn aktive Rast einen MaxGradient > 0 hat, PID-Output begrenzen
@@ -759,7 +772,7 @@ void brauLogik() {
 void apiStatus() {
   Serial.printf("[HTTP] GET /api/status — Client: %s\n",
     server.client().remoteIP().toString().c_str());
-  StaticJsonDocument<768> doc;
+  StaticJsonDocument<1536> doc;  // 16 Rasten × ~70B + Overhead
   doc["temp"]       = tempAktuell;
   doc["soll"]       = pidSetpoint;
   doc["gradient"]   = tempGradient;
@@ -876,7 +889,8 @@ void apiConfigGet() {
   doc["Kp"]         = Kp;
   doc["Ki"]         = Ki;
   doc["Kd"]         = Kd;
-  doc["pidFenster"] = (int)(PID_WINDOW_MS / 1000);
+  doc["pidFenster"]  = (int)(PID_WINDOW_MS / 1000);
+  doc["pidSchwelle"] = pidSchwellwert;
   String json;
   serializeJson(doc, json);
   server.send(200, "application/json", json);
