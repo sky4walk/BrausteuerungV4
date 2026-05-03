@@ -793,6 +793,32 @@
     t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
   }
 
+  async function genUebernehmen() {
+    if (!genRasts.length) { genShowToast("Keine Rasten vorhanden", true); return; }
+    const st = document.getElementById("gen_uebernahmeStatus");
+    st.textContent = "⏳ Übertrage...";
+    const bml  = genGenerateBML();
+    const name = (document.getElementById("gen_recipeName").value || "rezept")
+      .replace(/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/g, "").replace(/\s+/g, "_");
+    const file = new File([bml], name + ".bml", { type: "application/xml" });
+    const form = new FormData();
+    form.append("bml", file);
+    try {
+      const r = await fetch("/upload/bml", { method: "POST", body: form });
+      const j = await r.json();
+      if (j.ok) {
+        st.textContent = "✓ " + j.rasten + " Rasten übernommen";
+        genShowToast("✓ Rezept übernommen — " + j.rasten + " Rasten");
+      } else {
+        st.textContent = "✗ " + (j.error || "Fehler");
+        genShowToast(j.error || "Fehler", true);
+      }
+    } catch(e) {
+      st.textContent = "✗ Verbindungsfehler";
+      genShowToast("Verbindungsfehler", true);
+    }
+  }
+
   function genEsc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
   function genGetXMLText(el,tag) { const n=el.querySelector(tag); return n?n.textContent.trim():''; }
@@ -1034,6 +1060,8 @@
       <div class="gen-section-title">Export / Import</div>
       <div class="gen-xml-preview" id="gen_xmlPreview"><!-- Vorschau --></div>
       <button class="gen-btn gen-btn-green" style="width:100%;margin-top:8px" onclick="genDownloadBML()">⬇ BML herunterladen</button>
+      <button class="gen-btn gen-btn-green" style="width:100%;margin-top:6px;background:#2D6640" onclick="genUebernehmen()">📤 Rezept übernehmen</button>
+      <div id="gen_uebernahmeStatus" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#5A7A5E;margin-top:6px;min-height:16px"></div>
       <button class="gen-btn gen-btn-secondary" onclick="document.getElementById('gen_bmlFileIn').click()">⬆ BML laden</button>
       <input type="file" id="gen_bmlFileIn" accept=".bml,.xml" style="display:none" onchange="genLoadBMLFile(this)">
       <button class="gen-btn gen-btn-secondary" onclick="document.getElementById('gen_beerxmlFileIn').click()">🍺 BeerXML importieren</button>
