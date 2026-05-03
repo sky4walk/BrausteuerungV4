@@ -296,19 +296,19 @@ bool otaLaeuft = false;
 double pidInput    = 20.0;
 double pidOutput   = 0.0;
 double pidSetpoint = 67.0;
-double Kp = 2.0, Ki = 0.5, Kd = 1.0;
+double Kp = 5.0, Ki = 0.05, Kd = 10.0;
 PID myPID(&pidInput, &pidOutput, &pidSetpoint, Kp, Ki, Kd, DIRECT);
 
 unsigned long PID_WINDOW_MS = 30000;  // konfigurierbar über Web-UI (in ms)
 unsigned long pidWindowStart = 0;
 
 // ── RCSWITCH ─────────────────────────────────────────────────
-unsigned long rcCodeOn         = 0;
-unsigned long rcCodeOff        = 0;
+unsigned long rcCodeOn         = 1631343;
+unsigned long rcCodeOff        = 1631342;
 unsigned int  rcProtocol       = 1;
-unsigned int  rcPulse          = 189;
-unsigned int  rcBits           = 24;   // Bits im Code (meist 24)
-unsigned int  rcWiederholungen = 10;   // Sendewiederholungen
+unsigned int  rcPulse          = 315;
+unsigned int  rcBits           = 24;
+unsigned int  rcWiederholungen = 15;
 bool          heizungAn        = false;
 unsigned long letztesSenden    = 0;        // Zeitstempel letztes RC-Signal
 const unsigned long RC_REPEAT_MS = 30000;  // alle 30s Signal wiederholen
@@ -685,13 +685,33 @@ void heizungRegeln() {
     return;
   }
   myPID.Compute();
+
+  // ── MaxGradient berücksichtigen ──────────────────────────
+  // Wenn aktive Rast einen MaxGradient > 0 hat, PID-Output begrenzen
+  double pidOutputBegrenzt = pidOutput;
+  if (aktiveRast >= 0 && aktiveRast < rastAnzahl) {
+    float maxGrad = rasten[aktiveRast].maxGradient;
+    if (maxGrad > 0.0) {
+      // Aktueller Gradient zu hoch → Leistung reduzieren
+      if (tempGradient > maxGrad) {
+        // Linear zurückregeln: je mehr Überschreitung, desto weniger Leistung
+        float ueberschreitung = tempGradient - maxGrad;
+        float reduktion = ueberschreitung / maxGrad * 100.0;
+        pidOutputBegrenzt = max(0.0, pidOutput - reduktion);
+        Serial.printf("[GRAD] Gradient %.1f°C/min > Max %.1f°C/min — PID %0.f%% → %.0f%%\n",
+          tempGradient, maxGrad, pidOutput, pidOutputBegrenzt);
+      }
+    }
+    // maxGradient == 0 → keine Begrenzung, volle Leistung erlaubt
+  }
+
   unsigned long jetzt   = millis();
   unsigned long fenster = jetzt - pidWindowStart;
   if (fenster >= PID_WINDOW_MS) {
     pidWindowStart += PID_WINDOW_MS;
     fenster = 0;
   }
-  unsigned long einschaltMs = (unsigned long)(pidOutput / 100.0 * PID_WINDOW_MS);
+  unsigned long einschaltMs = (unsigned long)(pidOutputBegrenzt / 100.0 * PID_WINDOW_MS);
   if (fenster < einschaltMs) heizungEin();
   else                        heizungAus();
 }

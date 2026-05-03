@@ -236,19 +236,19 @@
 <div class="panel" id="tab-config">
   <div class="section-title">RCSwitch — 433MHz Funksteckdose</div>
   <div class="config-grid">
-    <div class="form-group"><label class="form-label">Code Heizung EIN</label><input type="number" class="form-input" id="cfg_rcOn" placeholder="z.B. 5592371"></div>
-    <div class="form-group"><label class="form-label">Code Heizung AUS</label><input type="number" class="form-input" id="cfg_rcOff" placeholder="z.B. 5592380"></div>
+    <div class="form-group"><label class="form-label">Code Heizung EIN</label><input type="number" class="form-input" id="cfg_rcOn" placeholder="z.B. 1631343"></div>
+    <div class="form-group"><label class="form-label">Code Heizung AUS</label><input type="number" class="form-input" id="cfg_rcOff" placeholder="z.B. 1631342"></div>
     <div class="form-group"><label class="form-label">Protokoll (1–12)</label><input type="number" class="form-input" id="cfg_rcProto" value="1" min="1" max="12"></div>
-    <div class="form-group"><label class="form-label">Pulslänge (µs)</label><input type="number" class="form-input" id="cfg_rcPulse" value="189"></div>
+    <div class="form-group"><label class="form-label">Pulslänge (µs)</label><input type="number" class="form-input" id="cfg_rcPulse" value="315"></div>
     <div class="form-group"><label class="form-label">Bits (meist 24)</label><input type="number" class="form-input" id="cfg_rcBits" value="24" min="1" max="64"></div>
-    <div class="form-group"><label class="form-label">Wiederholungen</label><input type="number" class="form-input" id="cfg_rcWdh" value="10" min="1" max="50"></div>
+    <div class="form-group"><label class="form-label">Wiederholungen</label><input type="number" class="form-input" id="cfg_rcWdh" value="15" min="1" max="50"></div>
   </div>
 
   <div class="section-title">PID-Parameter (globale Standardwerte)</div>
   <div class="config-grid">
-    <div class="form-group"><label class="form-label">Kp (Proportional)</label><input type="number" class="form-input" id="cfg_Kp" value="2.0" step="0.1"></div>
-    <div class="form-group"><label class="form-label">Ki (Integral)</label><input type="number" class="form-input" id="cfg_Ki" value="0.5" step="0.01"></div>
-    <div class="form-group"><label class="form-label">Kd (Differential)</label><input type="number" class="form-input" id="cfg_Kd" value="1.0" step="0.1"></div>
+    <div class="form-group"><label class="form-label">Kp (Proportional)</label><input type="number" class="form-input" id="cfg_Kp" value="5.0" step="0.1"></div>
+    <div class="form-group"><label class="form-label">Ki (Integral)</label><input type="number" class="form-input" id="cfg_Ki" value="0.05" step="0.01"></div>
+    <div class="form-group"><label class="form-label">Kd (Differential)</label><input type="number" class="form-input" id="cfg_Kd" value="10.0" step="0.1"></div>
     <div class="form-group"><label class="form-label">PID-Fenster (Sekunden)</label><input type="number" class="form-input" id="cfg_pidFenster" value="30" min="5" max="120" step="5"></div>
   </div>
 
@@ -448,9 +448,9 @@
       document.getElementById('cfg_rcPulse').value = d.rcPulse || 189;
       document.getElementById('cfg_rcBits').value  = d.rcBits  || 24;
       document.getElementById('cfg_rcWdh').value   = d.rcWdh   || 10;
-      document.getElementById('cfg_Kp').value      = d.Kp      || 2.0;
-      document.getElementById('cfg_Ki').value      = d.Ki      || 0.5;
-      document.getElementById('cfg_Kd').value         = d.Kd         || 1.0;
+      document.getElementById('cfg_Kp').value      = d.Kp  || 5.0;
+      document.getElementById('cfg_Ki').value      = d.Ki  || 0.05;
+      document.getElementById('cfg_Kd').value         = d.Kd  || 10.0;
       document.getElementById('cfg_pidFenster').value = d.pidFenster  || 30;
     } catch(e) { showToast('Config Ladefehler', true); }
   }
@@ -463,9 +463,9 @@
       rcPulse: parseInt(document.getElementById('cfg_rcPulse').value)||189,
       rcBits:  parseInt(document.getElementById('cfg_rcBits').value)||24,
       rcWdh:   parseInt(document.getElementById('cfg_rcWdh').value)||10,
-      Kp: parseFloat(document.getElementById('cfg_Kp').value)||2.0,
-      Ki: parseFloat(document.getElementById('cfg_Ki').value)||0.5,
-      Kd:         parseFloat(document.getElementById('cfg_Kd').value)||1.0,
+      Kp: parseFloat(document.getElementById('cfg_Kp').value)||5.0,
+      Ki: parseFloat(document.getElementById('cfg_Ki').value)||0.05,
+      Kd:         parseFloat(document.getElementById('cfg_Kd').value)||10.0,
       pidFenster: parseInt(document.getElementById('cfg_pidFenster').value)||30,
     };
     const j = await apiPost('/api/config', data);
