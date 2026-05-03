@@ -72,6 +72,8 @@ if [ $? -eq 0 ]; then
   echo "✓ Erfolgreich geflasht!"
   echo "  ESP startet neu — Serial Monitor auf 115200 Baud öffnen"
   echo "  Web-Interface: http://brausteuerung.local"
+  stty -F $PORT 115200 raw
+  cat $PORT
 else
   echo ""
   echo "❌ Flash fehlgeschlagen!"

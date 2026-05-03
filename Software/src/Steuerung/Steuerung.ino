@@ -227,6 +227,10 @@ const char TOOLS_HTML[] PROGMEM =
   "</div>"
   "<div class=\"status\" id=\"fwSt\"></div>"
 
+  "<h2>&#x1F4F6; WLAN zur\u00fccksetzen</h2>"
+  "<p>L\u00f6scht die WLAN-Konfiguration und startet neu im AP-Modus.</p>"
+  "<button class=\"btn btn-amber\" onclick=\"wlanReset()\">&#x1F4F6; WLAN-Config l\u00f6schen</button>"
+  "<div id=\"wlanSt\" class=\"status\" style=\"margin-top:8px\"></div>"
   "<h2>&#x1F4CA; System Info</h2>"
   "<div id=\"sysinfo\" style=\"font-size:0.78rem;color:#5A7A5E;line-height:2\">Lade...</div>"
 
@@ -267,6 +271,13 @@ const char TOOLS_HTML[] PROGMEM =
   "st.className='status ok';st.textContent='✓ ESP startet neu — bitte warten...';"
   "setTimeout(()=>location.href='/',5000);"
   "}"
+  "}"
+  "async function wlanReset(){"
+  "if(!confirm('WLAN-Config wirklich loeschen?')) return;"
+  "const st=document.getElementById('wlanSt');"
+  "st.textContent='Losche...';"
+  "try{ await fetch('/api/wlan/reset',{method:'POST'}); }catch(e){}"
+  "st.textContent='ESP startet neu...';"
   "}"
   "async function ladeSysinfo(){"
   "try{"
@@ -1006,12 +1017,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("\n[BOOT] Brausteuerung startet...");
 
-  // ── GPIO0 / Flash-Knopf: Reset-Check ────────────────────
-  // Kurz als Input lesen BEVOR Buzzer-Mode gesetzt wird
-  pinMode(PIN_BUZZER, INPUT_PULLUP);
-  delay(100);  // Entprellen
-  bool resetGedrueckt = (digitalRead(PIN_BUZZER) == LOW);
-  // Jetzt auf Output umschalten
+  // ── GPIO0 / Flash-Knopf: als Output (Buzzer) ────────────
   pinMode(PIN_BUZZER, OUTPUT);
   digitalWrite(PIN_BUZZER, LOW);
 
@@ -1020,17 +1026,6 @@ void setup() {
     Serial.println("[ERROR] LittleFS Fehler!");
   } else {
     Serial.println("[FS] LittleFS OK");
-
-    // Reset: WLAN-Config löschen
-    if (resetGedrueckt) {
-      Serial.println("[RESET] Flash-Knopf gehalten — lösche WLAN-Config!");
-      wlanConfigLoeschen();
-      // 3x kurz blinken als Bestätigung
-      for (int i = 0; i < 3; i++) {
-        digitalWrite(PIN_BUZZER, HIGH); delay(100);
-        digitalWrite(PIN_BUZZER, LOW);  delay(100);
-      }
-    }
 
     configLaden();
     bmlLaden();
@@ -1126,6 +1121,13 @@ void setup() {
   server.on("/api/heizung-test", HTTP_POST, apiHeizungTest);
   server.on("/api/log",          HTTP_GET,  apiLog);
   server.on("/api/log/reset",    HTTP_POST, apiLogReset);
+  server.on("/api/wlan/reset",   HTTP_POST, []() {
+    Serial.println("[WLAN] Reset per Web-UI — lösche Config und starte neu");
+    server.send(200, "application/json", "{\"ok\":true}");
+    delay(500);
+    wlanConfigLoeschen();
+    ESP.restart();
+  });
   server.on("/tools", HTTP_GET, []() {
     Serial.printf("[HTTP] GET /tools — Client: %s\n",
       server.client().remoteIP().toString().c_str());
