@@ -35,6 +35,12 @@
  *   - /wlan.json    → WLAN Credentials
  *   - /rezept.bml   → aktuell geladenes Braurezept
  *   - /index.html   → optionale Web-UI (überschreibt PROGMEM)
+ *   - /log.csv      → Temperaturlog (wird beim Brauen geschrieben)
+ *
+ * Reset (per /tools → Komplett-Reset):
+ *   Löscht alle LittleFS Dateien → Werksreset
+ *
+ * Version: 4.0.0
  *
  * Reset:
  *   - Flash-Knopf (D3) beim Start gedrückt halten → löscht WLAN-Config
@@ -227,9 +233,21 @@ const char TOOLS_HTML[] PROGMEM =
   "</div>"
   "<div class=\"status\" id=\"fwSt\"></div>"
 
-  "<h2>&#x1F4F6; WLAN zur\u00fccksetzen</h2>"
-  "<p>L\u00f6scht die WLAN-Konfiguration und startet neu im AP-Modus.</p>"
-  "<button class=\"btn btn-amber\" onclick=\"wlanReset()\">&#x1F4F6; WLAN-Config l\u00f6schen</button>"
+  "<h2>&#x1F4BE; Einstellungen Backup / Restore</h2>"
+  "<p>Sichert oder stellt <b>config.json</b> wieder her (RCSwitch, PID, Einstellungen).</p>"
+  "<div class=\"row\">"
+  "<a href=\"/api/settings/backup\" download=\"brewbrick_config.json\" class=\"btn btn-green\">&#x2B07; Backup herunterladen</a>"
+  "</div>"
+  "<div class=\"section-title\" style=\"margin-top:16px\">Einstellungen wiederherstellen</div>"
+  "<div class=\"row\">"
+  "<input type=\"file\" id=\"cfgFile\" accept=\".json\">"
+  "<button class=\"btn btn-amber\" onclick=\"restoreConfig()\">&#x2B06; Restore</button>"
+  "</div>"
+  "<div class=\"status\" id=\"cfgSt\"></div>"
+  "<h2>&#x1F4F6; Komplett-Reset</h2>"
+  "<p>L\u00f6scht <b>alle Dateien</b> im Flash (WLAN, Config, Rezept, Log, HTML) und startet neu im AP-Modus.<br>"
+  "<b style=\"color:#C0504A\">Achtung: Alle Einstellungen gehen verloren!</b></p>"
+  "<button class=\"btn btn-amber\" onclick=\"wlanReset()\">&#x26A0; Alles l\u00f6schen &amp; Neustart</button>"
   "<div id=\"wlanSt\" class=\"status\" style=\"margin-top:8px\"></div>"
   "<h2>&#x1F4CA; System Info</h2>"
   "<div id=\"sysinfo\" style=\"font-size:0.78rem;color:#5A7A5E;line-height:2\">Lade...</div>"
@@ -271,6 +289,19 @@ const char TOOLS_HTML[] PROGMEM =
   "st.className='status ok';st.textContent='✓ ESP startet neu — bitte warten...';"
   "setTimeout(()=>location.href='/',5000);"
   "}"
+  "}"
+  "async function restoreConfig(){"
+  "const f=document.getElementById('cfgFile').files[0];"
+  "if(!f)return;"
+  "const st=document.getElementById('cfgSt');"
+  "st.className='status';st.textContent='⏳ Wiederherstelle...';"
+  "const form=new FormData();form.append('file',f);"
+  "try{"
+  "const r=await fetch('/upload/config',{method:'POST',body:form});"
+  "const j=await r.json();"
+  "if(j.ok){st.className='status ok';st.textContent='✓ Wiederhergestellt — neu laden';}"
+  "else{st.className='status err';st.textContent='✗ Fehler';}"
+  "}catch(e){st.className='status err';st.textContent='✗ Verbindungsfehler';}"
   "}"
   "async function wlanReset(){"
   "if(!confirm('WLAN-Config wirklich loeschen?')) return;"
@@ -359,46 +390,42 @@ bool    sensorFehler = false;       // true = Sensor getrennt
 unsigned long letztesTempRead = 0;
 const unsigned long TEMP_INTERVAL = 2000;
 
-// ── TEMPERATUR RINGBUFFER ─────────────────────────────────────
-// 1 Punkt alle 10s → 720 Punkte = 2h Verlauf
-#define LOG_SIZE     720
+// ── FLASH LOG ────────────────────────────────────────────────
 #define LOG_INTERVAL 10000UL  // ms zwischen Logpunkten
-
-struct LogPunkt {
-  uint16_t sekundenSeitStart;  // Sekunden seit Braustart
-  int16_t  temp100;            // Temperatur * 100 (z.B. 6723 = 67.23°C)
-  int16_t  soll100;            // Solltemperatur * 100
-  uint8_t  pidOut;             // PID Ausgang 0–100%
-  uint8_t  rast;               // Aktive Rast-Nummer
-};
-
-LogPunkt  logBuffer[LOG_SIZE];
-uint16_t  logAnzahl     = 0;
-uint16_t  logKopf       = 0;    // Ringbuffer-Schreibzeiger
-unsigned long logStartMs  = 0;
+unsigned long logStartMs   = 0;
 unsigned long letzterLogMs = 0;
+bool          logAktiv     = false;  // nur wenn Brauvorgang läuft
 
 void logReset() {
-  logAnzahl  = 0;
-  logKopf    = 0;
-  logStartMs = millis();
+  logStartMs   = millis();
   letzterLogMs = 0;
+  logAktiv     = false;
+  LittleFS.remove("/log.csv");
+  Serial.println("[LOG] Flash-Log gelöscht");
+}
+
+void logStart() {
+  logReset();
+  logAktiv = true;
+  File f = LittleFS.open("/log.csv", "w");
+  if (f) { f.println("Zeit_s;Temp_C;Soll_C;PID_Pct;Rast"); f.close(); }
+  Serial.println("[LOG] Flash-Log gestartet");
 }
 
 void logPunkt() {
+  if (!logAktiv) return;
   unsigned long jetzt = millis();
   if (jetzt - letzterLogMs < LOG_INTERVAL) return;
   letzterLogMs = jetzt;
-
-  LogPunkt& p   = logBuffer[logKopf];
-  p.sekundenSeitStart = (uint16_t)((jetzt - logStartMs) / 1000UL);
-  p.temp100     = (int16_t)(tempAktuell * 100.0);
-  p.soll100     = (int16_t)(pidSetpoint * 100.0);
-  p.pidOut      = (uint8_t)constrain(pidOutput, 0, 100);
-  p.rast        = (uint8_t)max(0, aktiveRast);
-
-  logKopf = (logKopf + 1) % LOG_SIZE;
-  if (logAnzahl < LOG_SIZE) logAnzahl++;
+  unsigned long sek = (jetzt - logStartMs) / 1000UL;
+  File f = LittleFS.open("/log.csv", "a");
+  if (f) {
+    f.printf("%lu;%.2f;%.2f;%u;%d\n",
+      sek, tempAktuell, pidSetpoint,
+      (uint8_t)constrain(pidOutput, 0, 100),
+      aktiveRast);
+    f.close();
+  }
 }
 
 // ── BUZZER ───────────────────────────────────────────────────
@@ -628,13 +655,13 @@ void rastStarten(int nr) {
   if (r.kp > 0) myPID.SetTunings(r.kp, r.ki, r.kd);
   else           myPID.SetTunings(Kp, Ki, Kd);
   pidWindowStart = millis();
-  // PID zurücksetzen: verhindert eingefrierenen Output
+  // PID zurücksetzen
   myPID.SetMode(MANUAL);
-  pidOutput = 100.0;  // Volle Leistung beim Start
+  pidOutput = 100.0;
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0, 100);
-  // Log nur beim allerersten Rast-Start zurücksetzen
-  if (logStartMs == 0) logReset();
+  // Log nur beim ersten Rast-Start beginnen
+  if (!logAktiv) logStart();
   Serial.printf("[RAST %d] %s | Soll: %.1f°C | %d min\n",
                 nr, r.name, r.sollTemp, r.time);
 }
@@ -794,6 +821,7 @@ void apiStatus() {
   doc["rastAnzahl"] = rastAnzahl;
   doc["wartHalt"]   = wartendHalt;
   doc["sensorFehler"] = sensorFehler;
+  doc["logAktiv"]   = logAktiv;
   if (aktiveRast >= 0 && aktiveRast < rastAnzahl) {
     Rast& r = rasten[aktiveRast];
     doc["rastName"]  = r.name;
@@ -823,31 +851,112 @@ void apiStatus() {
   server.send(200, "application/json", json);
 }
 
-// ── API: TEMPERATUR LOG ──────────────────────────────────────
+// ── API: LOG (liest Flash-CSV → JSON für Chart) ─────────────
 void apiLog() {
-  // Liefert alle Logpunkte als kompaktes JSON
-  // Ringbuffer chronologisch ausgeben
-  String json = "{\"n\":" + String(logAnzahl) +
-                ",\"interval\":" + String(LOG_INTERVAL/1000) +
-                ",\"d\":[";
-  uint16_t start = (logAnzahl < LOG_SIZE) ? 0 : logKopf;
-  for (uint16_t i = 0; i < logAnzahl; i++) {
-    uint16_t idx = (start + i) % LOG_SIZE;
-    LogPunkt& p = logBuffer[idx];
-    if (i > 0) json += ",";
-    json += "[" + String(p.sekundenSeitStart) + ","
-               + String(p.temp100) + ","
-               + String(p.soll100) + ","
-               + String(p.pidOut)  + ","
-               + String(p.rast)    + "]";
+  if (!LittleFS.exists("/log.csv")) {
+    server.send(200, "application/json", "{\"n\":0,\"interval\":10,\"d\":[]}");
+    return;
   }
+  File f = LittleFS.open("/log.csv", "r");
+  String json = "{\"n\":0,\"interval\":10,\"d\":[";
+  bool first = true;
+  int count = 0;
+  f.readStringUntil('\n');  // Header überspringen
+  while (f.available()) {
+    String line = f.readStringUntil('\n');
+    line.trim();
+    if (!line.length()) continue;
+    int s1=line.indexOf(';'), s2=line.indexOf(';',s1+1);
+    int s3=line.indexOf(';',s2+1), s4=line.indexOf(';',s3+1);
+    if (s4 < 0) continue;
+    long  t   = line.substring(0,s1).toInt();
+    float tmp = line.substring(s1+1,s2).toFloat();
+    float sol = line.substring(s2+1,s3).toFloat();
+    int   pid = line.substring(s3+1,s4).toInt();
+    int   rst = line.substring(s4+1).toInt();
+    if (!first) json += ",";
+    json += "[" + String(t) + "," +
+            String((int)(tmp*100)) + "," +
+            String((int)(sol*100)) + "," +
+            String(pid) + "," +
+            String(rst) + "]";
+    first = false;
+    count++;
+    yield();
+  }
+  f.close();
   json += "]}";
+  json.replace("{\"n\":0,", "{\"n\":" + String(count) + ",");
   server.send(200, "application/json", json);
 }
 
 void apiLogReset() {
   logReset();
   server.send(200, "application/json", "{\"ok\":true}");
+}
+
+// ── API: FLASH LOG DOWNLOAD ──────────────────────────────────
+void apiLogDownload() {
+  if (!LittleFS.exists("/log.csv")) {
+    server.send(404, "text/plain", "Kein Log vorhanden");
+    return;
+  }
+  File f = LittleFS.open("/log.csv", "r");
+  server.sendHeader("Content-Disposition", "attachment; filename=braulog.csv");
+  server.streamFile(f, "text/csv");
+  f.close();
+}
+
+// ── API: TEMPERATUR LOG (RAM) ─────────────────────────────────
+
+
+// ── API: FILE LISTING ────────────────────────────────────────
+void apiFiles() {
+  String json = "[";
+  bool first = true;
+  Dir dir = LittleFS.openDir("/");
+  while (dir.next()) {
+    if (dir.fileName() == "wlan.json") continue;  // geschützt
+    if (!first) json += ",";
+    json += "{\"name\":\"" + dir.fileName() + "\"," +
+            "\"size\":" + String(dir.fileSize()) + "}";
+    first = false;
+  }
+  json += "]";
+  server.send(200, "application/json", json);
+}
+
+// ── API: FILE DELETE ─────────────────────────────────────────
+void apiFileDelete() {
+  if (!server.hasArg("name")) {
+    server.send(400, "application/json", "{\"error\":\"name fehlt\"}");
+    return;
+  }
+  String name = "/" + server.arg("name");
+  // Sicherheit: wlan.json nicht löschbar (würde AP-Modus auslösen)
+  if (name == "/wlan.json") {
+    server.send(403, "application/json", "{\"error\":\"wlan.json geschützt — WLAN-Reset nutzen\"}");
+    return;
+  }
+  if (!LittleFS.exists(name)) {
+    server.send(404, "application/json", "{\"error\":\"Datei nicht gefunden\"}");
+    return;
+  }
+  LittleFS.remove(name);
+  Serial.printf("[FS] Gelöscht: %s\n", name.c_str());
+  server.send(200, "application/json", "{\"ok\":true}");
+}
+
+// ── API: SETTINGS BACKUP ─────────────────────────────────────
+void apiSettingsBackup() {
+  if (!LittleFS.exists("/config.json")) {
+    server.send(404, "text/plain", "Keine Einstellungen vorhanden");
+    return;
+  }
+  File f = LittleFS.open("/config.json", "r");
+  server.sendHeader("Content-Disposition", "attachment; filename=brewbrick_config.json");
+  server.streamFile(f, "application/json");
+  f.close();
 }
 
 // ── API: STEUERUNG ───────────────────────────────────────────
@@ -1119,13 +1228,32 @@ void setup() {
   server.on("/api/config",       HTTP_GET,  apiConfigGet);
   server.on("/api/config",       HTTP_POST, apiConfigPost);
   server.on("/api/heizung-test", HTTP_POST, apiHeizungTest);
-  server.on("/api/log",          HTTP_GET,  apiLog);
-  server.on("/api/log/reset",    HTTP_POST, apiLogReset);
+  server.on("/api/log",             HTTP_GET,  apiLog);
+  server.on("/api/log/reset",       HTTP_POST, apiLogReset);
+  server.on("/api/log/download",    HTTP_GET,  apiLogDownload);
+  server.on("/api/settings/backup", HTTP_GET,  apiSettingsBackup);
+  server.on("/api/files",           HTTP_GET,  apiFiles);
+  server.on("/api/files/delete",    HTTP_POST, apiFileDelete);
+  server.on("/api/rezept/loeschen", HTTP_POST, []() {
+    // Alle Rasten deaktivieren + BML-Datei löschen
+    rastAnzahl = 0;
+    aktiveRast = -1;
+    zustand    = GESTOPPT;
+    heizungAus();
+    LittleFS.remove("/rezept.bml");
+    Serial.println("[REZEPT] Gelöscht");
+    server.send(200, "application/json", "{\"ok\":true}");
+  });
   server.on("/api/wlan/reset",   HTTP_POST, []() {
-    Serial.println("[WLAN] Reset per Web-UI — lösche Config und starte neu");
+    Serial.println("[WLAN] Reset per Web-UI — lösche alle Dateien und starte neu");
     server.send(200, "application/json", "{\"ok\":true}");
     delay(500);
-    wlanConfigLoeschen();
+    // Alle Dateien löschen
+    Dir dir = LittleFS.openDir("/");
+    while (dir.next()) {
+      LittleFS.remove("/" + dir.fileName());
+      Serial.printf("[FS] Gelöscht: %s\n", dir.fileName().c_str());
+    }
     ESP.restart();
   });
   server.on("/tools", HTTP_GET, []() {
@@ -1160,6 +1288,11 @@ void setup() {
     String json;
     serializeJson(doc, json);
     server.send(200, "application/json", json);
+  });
+
+  // wlan.json explizit sperren
+  server.on("/wlan.json", HTTP_GET, []() {
+    server.send(403, "text/plain", "Forbidden");
   });
 
   server.onNotFound([]() {

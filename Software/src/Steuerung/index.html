@@ -198,17 +198,16 @@
 <body>
 
 <header>
-  <div class="logo"><a href="https://itzwieseltal.wordpress.com/2023/12/06/esp8266-brausteuerung/" target="_blank" style="text-decoration:none;color:inherit" title="BrewBrick Projektseite">BREW<span>// Brick</span></a></div>
+  <div class="logo"><a href="https://itzwieseltal.wordpress.com/2023/12/06/esp8266-brausteuerung/" target="_blank" style="text-decoration:none;color:inherit" title="BrewBrick Projektseite">BREW<span>// Brick</span></a><span style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;color:#2D6640;margin-left:8px;letter-spacing:0.05em">v4.0.0</span></div>
   <div class="header-sep"></div>
   <div id="wifiStatus">verbinde...</div>
 </header>
 
 <div class="tabs">
   <div class="tab active" onclick="showTab('steuerung',this)">Steuerung</div>
-  <div class="tab" onclick="showTab('rezept',this)">Rezept</div>
+  <div class="tab" onclick="showTab('generator',this)">📝 Rezept Erstellen</div>
   <div class="tab" onclick="showTab('config',this)">Einstellungen</div>
   <a href="/tools" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#C8DCC8'" onmouseout="this.style.color='#5A7A5E'">⚙ Tools</a>
-  <div class="tab" onclick="showTab('generator',this)">📝 Rezept Erstellen</div>
   <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/bml-generator.html" target="_blank" style="display:none" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">📝 Rezept Erstellen</a>
   <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/braurechner.html" target="_blank" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">🧮 Rechner</a>
 </div>
@@ -255,7 +254,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <span style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-d)">Temperaturverlauf</span>
       <div style="display:flex;gap:6px">
-        <button onclick="downloadLog()" style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;background:transparent;border:1px solid var(--border);color:var(--text-d);padding:4px 10px;border-radius:2px;cursor:pointer" title="Log herunterladen">⬇ Log</button>
+        <a href="/api/log/download" download="braulog.csv" style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;background:transparent;border:1px solid var(--border);color:var(--text-d);padding:4px 10px;border-radius:2px;cursor:pointer;text-decoration:none" title="Log herunterladen">💾 Log</a>
         <button onclick="logReset()" style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;background:transparent;border:1px solid var(--border);color:var(--text-d);padding:4px 10px;border-radius:2px;cursor:pointer" title="Log zurücksetzen">↺ Reset</button>
       </div>
     </div>
@@ -285,6 +284,7 @@
     <button class="btn btn-red" id="btnStop" onclick="apiPost('/api/stop')" disabled>■ Stop</button>
     <button class="btn btn-ghost" onclick="apiPost('/api/heizung-test',{an:true})">🔥 Heizung Test AN</button>
     <button class="btn btn-ghost" onclick="apiPost('/api/heizung-test',{an:false})">❌ Test AUS</button>
+    <button class="btn btn-ghost" onclick="rezeptLoeschen()" style="color:#C0504A;border-color:#5C2420">🗑 Rezept löschen</button>
   </div>
 
   <div id="rastenListeWrap" style="display:none">
@@ -472,6 +472,15 @@
     return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
   }
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  async function rezeptLoeschen() {
+    if (!confirm("Gespeichertes Rezept wirklich loeschen?")) return;
+    const j = await apiPost("/api/rezept/loeschen");
+    if (j && j.ok) {
+      showToast("Rezept geloescht");
+      document.getElementById("rastenListeWrap").style.display = "none";
+    }
+  }
 
   async function startVon(nr) {
     console.log('[startVon] Starte Rast', nr);
@@ -863,84 +872,13 @@
     r.readAsText(file,'UTF-8');
   }
 
-  function genParseBeerXML(xmlStr,filename) {
-    const parser=new DOMParser();
-    const doc=parser.parseFromString(xmlStr,'application/xml');
-    if(doc.querySelector('parsererror')) throw new Error('Ungültiges XML');
-    const recipe=doc.querySelector('RECIPE'); if(!recipe) throw new Error('Kein <RECIPE>');
-    const mash=recipe.querySelector('MASH'); if(!mash) throw new Error('Kein <MASH>');
-    const steps=Array.from(mash.querySelectorAll('MASH_STEP')); if(!steps.length) throw new Error('Keine MASH_STEP');
-    const name=genGetXMLText(recipe,'NAME')||filename.replace(/\.(xml|beerxml)$/i,'');
-    const boilTime=parseInt(genGetXMLText(recipe,'BOIL_TIME')||'60');
-    const hops=Array.from(recipe.querySelectorAll('HOP'));
-    const boilHops=hops.filter(h=>['boil','first wort'].includes(genGetXMLText(h,'USE').toLowerCase()))
-      .sort((a,b)=>parseFloat(genGetXMLText(b,'TIME')||0)-parseFloat(genGetXMLText(a,'TIME')||0));
-    const loaded=[];
-    const firstTemp=parseFloat(genGetXMLText(steps[0],'STEP_TEMP')||'57');
-    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Aufheizen',on:true,halt:true,call:true,sollTemp:firstTemp,time:1,info:'Einmaischtemperatur '+firstTemp+'°C — Malz einschütten!'});
-    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Einmaischen',on:true,halt:true,call:true,sollTemp:firstTemp,time:parseInt(genGetXMLText(steps[0],'STEP_TIME')||'10')});
-    for(let i=1;i<steps.length;i++){
-      const s=steps[i];
-      loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:genGetXMLText(s,'NAME')||'Rast '+i,on:true,halt:false,call:false,
-        sollTemp:parseFloat(genGetXMLText(s,'STEP_TEMP')||'0'),time:parseInt(genGetXMLText(s,'STEP_TIME')||'0')});
-    }
-    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Abmaischen',on:true,halt:true,call:true,sollTemp:78,time:5});
-    loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Laeutern',on:true,halt:true,call:true,sollTemp:20,time:1,kp:0,ki:0,kd:0});
-    if(boilHops.length===0){
-      loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Kochen',on:true,halt:true,call:true,sollTemp:99,time:boilTime,kp:0,ki:0,kd:0});
-    } else {
-      loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:'Kochen',on:true,halt:true,call:true,sollTemp:99,time:1,kp:0,ki:0,kd:0,
-        info:'Hopfen: '+genGetXMLText(boilHops[0],'NAME')+' Alpha:'+genGetXMLText(boilHops[0],'ALPHA')+' Menge:'+Math.round(parseFloat(genGetXMLText(boilHops[0],'AMOUNT')||0)*1000)+'g'});
-      for(let i=0;i<boilHops.length;i++){
-        const h=boilHops[i],ht=parseFloat(genGetXMLText(h,'TIME')||0),nt=i+1<boilHops.length?parseFloat(genGetXMLText(boilHops[i+1],'TIME')||0):0;
-        const ni=i+1<boilHops.length?'Hopfen: '+genGetXMLText(boilHops[i+1],'NAME')+' Alpha:'+genGetXMLText(boilHops[i+1],'ALPHA')+' Menge:'+Math.round(parseFloat(genGetXMLText(boilHops[i+1],'AMOUNT')||0)*1000)+'g':'';
-        loaded.push({...GEN_DEFAULT,id:genNextId++,open:false,name:i===0?'Bitterhopfen':i===boilHops.length-1?'Aromahopfen':'Hopfengabe '+(i+1),
-          on:true,halt:true,call:true,sollTemp:99,time:Math.max(1,ht-nt),kp:0,ki:0,kd:0,info:ni});
-      }
-    }
-    genRasts=loaded;
-    document.getElementById('gen_recipeName').value=name;
-    genRenderRasts(); genUpdateAll();
-    genShowToast('✓ BeerXML "'+name+'" — '+loaded.length+' Rasten importiert');
-  }
+
 
   pollStatus();
   setInterval(pollStatus, 2000);
   ladeRezeptInfo();
   // ── TEMPERATUR CHART ──────────────────────────────────────
   let logDaten = [];
-
-  async function ladeLog() {
-    try {
-      const r = await fetch('/api/log');
-      const d = await r.json();
-      logDaten = d.d || [];
-      zeichneChart();
-    } catch(e) {}
-  }
-
-  function logReset() {
-    fetch('/api/log/reset', {method:'POST'}).then(() => { logDaten = []; zeichneChart(); });
-  }
-
-  function downloadLog() {
-    if (!logDaten.length) { showToast('Keine Daten vorhanden', true); return; }
-    // CSV erstellen
-    const now = new Date();
-    const datum = now.toISOString().slice(0,10);
-    const zeit  = now.toTimeString().slice(0,5).replace(':','-');
-    let csv = 'Zeit_s;Temp_C;Soll_C;PID_Pct;Rast\n';
-    logDaten.forEach(p => {
-      csv += p[0] + ';' + (p[1]/100).toFixed(2) + ';' + (p[2]/100).toFixed(2) + ';' + p[3] + ';' + p[4] + '\n';
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'braulog_' + datum + '_' + zeit + '.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    showToast('✓ Log heruntergeladen');
-  }
 
   function zeichneChart() {
     const cv = document.getElementById('tempChart');
