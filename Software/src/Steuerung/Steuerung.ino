@@ -354,7 +354,8 @@ unsigned int  rcBits           = 24;
 unsigned int  rcWiederholungen = 15;
 bool          heizungAn        = false;
 unsigned long letztesSenden    = 0;        // Zeitstempel letztes RC-Signal
-const unsigned long RC_REPEAT_MS = 30000;  // alle 30s Signal wiederholen
+unsigned long RC_REPEAT_MS     = 10000;  // Wiederholungsintervall in ms
+unsigned long RC_MIN_SCHALT_MS = 200;    // Mindest-Schaltzeit in ms (Relais-Schutz)
 
 // ── RASTEN ───────────────────────────────────────────────────
 #define MAX_RASTEN 16
@@ -362,6 +363,7 @@ const unsigned long RC_REPEAT_MS = 30000;  // alle 30s Signal wiederholen
 struct Rast {
   char  name[32];
   bool  on, halt, call;
+  bool  ownPid;          // true = eigene PID-Werte verwenden
   float sollTemp;
   int   time;
   float minTemp, maxTemp;
@@ -395,13 +397,15 @@ const unsigned long TEMP_INTERVAL = 2000;
 unsigned long logStartMs   = 0;
 unsigned long letzterLogMs = 0;
 bool          logAktiv     = false;  // nur wenn Brauvorgang läuft
+bool          callMuted    = false;  // true = Piepen für diese Rast stumm
+unsigned long letzterCallPiep = 0;  // Zeitstempel letztes Call-Piepen
 
 void logReset() {
-  logStartMs   = millis();
-  letzterLogMs = 0;
   logAktiv     = false;
+  logStartMs   = 0;
+  letzterLogMs = 0;
   LittleFS.remove("/log.csv");
-  Serial.println("[LOG] Flash-Log gelöscht");
+  Serial.println("[LOG] Flash-Log gelöscht und zurückgesetzt");
 }
 
 void logStart() {
@@ -446,6 +450,8 @@ void heizungEin() {
   unsigned long jetzt = millis();
   bool zustandsWechsel = !heizungAn;
   bool wiederholung    = (jetzt - letztesSenden >= RC_REPEAT_MS);
+  // Relais-Schutz: nicht schalten wenn letzte Schaltung zu kurz her
+  if (zustandsWechsel && (jetzt - letztesSenden < RC_MIN_SCHALT_MS)) return;
   if (rcCodeOn != 0 && (zustandsWechsel || wiederholung)) {
     rcSend(rcCodeOn);
     heizungAn    = true;
@@ -458,6 +464,8 @@ void heizungAus() {
   unsigned long jetzt = millis();
   bool zustandsWechsel = heizungAn;
   bool wiederholung    = (jetzt - letztesSenden >= RC_REPEAT_MS);
+  // Relais-Schutz: nicht schalten wenn letzte Schaltung zu kurz her
+  if (zustandsWechsel && (jetzt - letztesSenden < RC_MIN_SCHALT_MS)) return;
   if (rcCodeOff != 0 && (zustandsWechsel || wiederholung)) {
     rcSend(rcCodeOff);
     heizungAn    = false;
@@ -482,8 +490,10 @@ void configLaden() {
     Kp               = doc["Kp"]        | 2.0;
     Ki               = doc["Ki"]        | 0.5;
     Kd               = doc["Kd"]        | 1.0;
-    PID_WINDOW_MS    = (doc["pidFenster"] | 30) * 1000UL;
-    pidSchwellwert   = doc["pidSchwelle"]  | 5.0;
+    PID_WINDOW_MS      = (doc["pidFenster"]   | 30)  * 1000UL;
+    pidSchwellwert     = doc["pidSchwelle"]   | 5.0;
+    RC_REPEAT_MS       = (doc["rcRepeat"]     | 10)  * 1000UL;
+    RC_MIN_SCHALT_MS   = doc["rcMinSchalt"]   | 200UL;
   }
   f.close();
   myPID.SetTunings(Kp, Ki, Kd);
@@ -506,8 +516,10 @@ void configSpeichern(const String& body) {
   Kp            = doc["Kp"]        | Kp;
   Ki            = doc["Ki"]        | Ki;
   Kd            = doc["Kd"]        | Kd;
-  PID_WINDOW_MS  = (doc["pidFenster"] | (int)(PID_WINDOW_MS/1000)) * 1000UL;
-  pidSchwellwert = doc["pidSchwelle"] | pidSchwellwert;
+  PID_WINDOW_MS    = (doc["pidFenster"]  | (int)(PID_WINDOW_MS/1000)) * 1000UL;
+  pidSchwellwert   = doc["pidSchwelle"]  | pidSchwellwert;
+  RC_REPEAT_MS     = (doc["rcRepeat"]    | (int)(RC_REPEAT_MS/1000)) * 1000UL;
+  RC_MIN_SCHALT_MS = doc["rcMinSchalt"]  | (int)RC_MIN_SCHALT_MS;
   myPID.SetTunings(Kp, Ki, Kd);
   rcSwitch.setProtocol(rcProtocol);
   rcSwitch.setPulseLength(rcPulse);
@@ -633,6 +645,7 @@ bool bmlLaden() {
       r.kp          = xmlTagWert(block, "Kp")         .toFloat();
       r.ki          = xmlTagWert(block, "Ki")         .toFloat();
       r.kd          = xmlTagWert(block, "Kd")         .toFloat();
+      r.ownPid      = xmlTagWert(block, "OwnPid")     == "true";
       r.maxGradient = xmlTagWert(block, "MaxGradient").toFloat();
       xmlTagWert(block, "Info").toCharArray(r.info, sizeof(r.info));
       rastAnzahl++;
@@ -651,15 +664,17 @@ void rastStarten(int nr) {
   Rast& r      = rasten[nr];
   pidSetpoint  = r.sollTemp;
   rastDauerMs  = (unsigned long)r.time * 60UL * 1000UL;
-  // Rast-spezifische PID-Parameter wenn gesetzt
-  if (r.kp > 0) myPID.SetTunings(r.kp, r.ki, r.kd);
-  else           myPID.SetTunings(Kp, Ki, Kd);
+  // Rast-spezifische PID-Parameter wenn ownPid gesetzt
+  if (r.ownPid) myPID.SetTunings(r.kp, r.ki, r.kd);
+  else          myPID.SetTunings(Kp, Ki, Kd);
   pidWindowStart = millis();
   // PID zurücksetzen
   myPID.SetMode(MANUAL);
   pidOutput = 100.0;
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0, 100);
+  callMuted = false;  // Stummschaltung für neue Rast zurücksetzen
+  letzterCallPiep = 0;
   // Log nur beim ersten Rast-Start beginnen
   if (!logAktiv) logStart();
   Serial.printf("[RAST %d] %s | Soll: %.1f°C | %d min\n",
@@ -675,6 +690,7 @@ void naechsteRast() {
     zustand    = GESTOPPT;
     aktiveRast = -1;
     heizungAus();
+    logAktiv   = false;  // Log stoppen nach letzter Rast
     buzzerRuf(5);
     Serial.println("[INFO] Brauprogramm abgeschlossen!");
   }
@@ -775,8 +791,8 @@ void brauLogik() {
 
   // ── AUFHEIZEN: Warte bis Solltemperatur erreicht ──────────
   if (zustand == AUFHEIZEN) {
-    if ((pidSetpoint - tempAktuell) <= 0.5) {
-      // Temperatur erreicht → Timer starten, kein Piepen
+    if (tempAktuell >= pidSetpoint) {
+      // Temperatur erreicht → Timer sofort starten
       zustand     = RAST_LAEUFT;
       rastStartMs = jetzt;
       Serial.printf("[START] Rast %d laeuft — %.1f°C erreicht\n",
@@ -786,7 +802,15 @@ void brauLogik() {
   }
 
   // ── WARTEN AUF WEITER (nach Call) ──────────────────────────
-  if (zustand == WARTEN_HALT) return;
+  if (zustand == WARTEN_HALT) {
+    // Alle 30s wiederholen wenn nicht stumm
+    if (!callMuted && (millis() - letzterCallPiep >= 10000)) {
+      buzzerRuf(3);
+      letzterCallPiep = millis();
+      Serial.printf("[CALL] Wiederholung Rast %d\n", aktiveRast);
+    }
+    return;
+  }
 
   // ── RAST LÄUFT: Timer überwachen ───────────────────────────
   if (zustand == RAST_LAEUFT) {
@@ -795,6 +819,7 @@ void brauLogik() {
       if (r.call) {
         // Call=true: Piepen + warten auf Weiter-Bestätigung
         buzzerRuf(3);
+        letzterCallPiep = millis();
         zustand     = WARTEN_HALT;
         wartendHalt = true;
         Serial.printf("[CALL] Rast %d: warte auf Weiter\n", aktiveRast);
@@ -822,6 +847,7 @@ void apiStatus() {
   doc["wartHalt"]   = wartendHalt;
   doc["sensorFehler"] = sensorFehler;
   doc["logAktiv"]   = logAktiv;
+  doc["callMuted"]  = callMuted;
   if (aktiveRast >= 0 && aktiveRast < rastAnzahl) {
     Rast& r = rasten[aktiveRast];
     doc["rastName"]  = r.name;
@@ -839,12 +865,18 @@ void apiStatus() {
   JsonArray liste = doc.createNestedArray("rasten");
   for (int i = 0; i < rastAnzahl; i++) {
     JsonObject o = liste.createNestedObject();
-    o["nr"]   = i;
-    o["name"] = rasten[i].name;
-    o["soll"] = rasten[i].sollTemp;
-    o["time"] = rasten[i].time;
-    o["halt"] = rasten[i].halt;
-    o["call"] = rasten[i].call;
+    o["nr"]          = i;
+    o["name"]        = rasten[i].name;
+    o["soll"]        = rasten[i].sollTemp;
+    o["time"]        = rasten[i].time;
+    o["halt"]        = rasten[i].halt;
+    o["call"]        = rasten[i].call;
+    o["ownPid"]      = rasten[i].ownPid;
+    o["kp"]          = rasten[i].kp;
+    o["ki"]          = rasten[i].ki;
+    o["kd"]          = rasten[i].kd;
+    o["maxGradient"] = rasten[i].maxGradient;
+    o["info"]        = rasten[i].info;
   }
   String json;
   serializeJson(doc, json);
@@ -983,6 +1015,15 @@ void apiStop() {
   zustand    = GESTOPPT;
   aktiveRast = -1;
   heizungAus();
+  logAktiv   = false;  // Log stoppen
+  logStartMs = 0;      // Nächster Start → neues Log
+  Serial.println("[LOG] Log gestoppt");
+  server.send(200, "application/json", "{\"ok\":true}");
+}
+
+void apiCallMute() {
+  callMuted = true;
+  Serial.printf("[CALL] Stumm für Rast %d\n", aktiveRast);
   server.send(200, "application/json", "{\"ok\":true}");
 }
 
@@ -992,7 +1033,7 @@ void apiWeiter() {
   if (wartendHalt) {
     wartendHalt = false;
     Serial.printf("[WEITER] Rast %d bestätigt — nächste Rast\n", aktiveRast);
-    naechsteRast();  // Weiter = nächste Rast starten
+    naechsteRast();
   }
   server.send(200, "application/json", "{\"ok\":true}");
 }
@@ -1009,8 +1050,10 @@ void apiConfigGet() {
   doc["Kp"]         = Kp;
   doc["Ki"]         = Ki;
   doc["Kd"]         = Kd;
-  doc["pidFenster"]  = (int)(PID_WINDOW_MS / 1000);
-  doc["pidSchwelle"] = pidSchwellwert;
+  doc["pidFenster"]   = (int)(PID_WINDOW_MS / 1000);
+  doc["pidSchwelle"]  = pidSchwellwert;
+  doc["rcRepeat"]     = (int)(RC_REPEAT_MS / 1000);
+  doc["rcMinSchalt"]  = (int)RC_MIN_SCHALT_MS;
   String json;
   serializeJson(doc, json);
   server.send(200, "application/json", json);
@@ -1225,6 +1268,7 @@ void setup() {
   server.on("/api/start",        HTTP_POST, apiStart);
   server.on("/api/stop",         HTTP_POST, apiStop);
   server.on("/api/weiter",       HTTP_POST, apiWeiter);
+  server.on("/api/call/mute",    HTTP_POST, apiCallMute);
   server.on("/api/config",       HTTP_GET,  apiConfigGet);
   server.on("/api/config",       HTTP_POST, apiConfigPost);
   server.on("/api/heizung-test", HTTP_POST, apiHeizungTest);

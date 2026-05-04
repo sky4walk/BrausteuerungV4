@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍺</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>BrewBrick</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -267,6 +268,7 @@
       <div class="halt-banner-info" id="haltInfo"></div>
     </div>
     <button class="btn btn-ghost" onclick="browserPiep(3)" style="font-size:0.7rem;padding:8px 12px" title="Ton testen">🔔</button>
+    <button class="btn btn-ghost" id="muteBtn" onclick="callMute()" style="font-size:0.7rem;padding:8px 12px" title="Piepen stumm">🔕 Stumm</button>
     <button class="btn btn-green" onclick="apiPost('/api/weiter')">▶ Weiter</button>
   </div>
 
@@ -334,6 +336,8 @@
     <div class="form-group"><label class="form-label">Kd (Differential)</label><input type="number" class="form-input" id="cfg_Kd" value="10.0" step="0.1"></div>
     <div class="form-group"><label class="form-label">PID-Fenster (Sekunden)</label><input type="number" class="form-input" id="cfg_pidFenster" value="30" min="5" max="120" step="5"></div>
     <div class="form-group"><label class="form-label">PID Schwellwert (°C unter Soll → 100%)</label><input type="number" class="form-input" id="cfg_pidSchwelle" value="5.0" min="0" max="50" step="0.5"></div>
+    <div class="form-group"><label class="form-label">RC Wiederholung (Sekunden)</label><input type="number" class="form-input" id="cfg_rcRepeat" value="10" min="5" max="60" step="1"></div>
+    <div class="form-group"><label class="form-label">Relais Mindest-Schaltzeit (ms)</label><input type="number" class="form-input" id="cfg_rcMinSchalt" value="200" min="0" max="5000" step="100"></div>
   </div>
 
   <div class="btn-row">
@@ -362,6 +366,11 @@
     panel.classList.add('active');
     el.classList.add('active');
     if (id === 'config') configLaden();
+    if (id === 'steuerung') { ladeLog(); setTimeout(zeichneChart, 100); }
+    if (id === 'generator') {
+      if (!genManuelleBearbeitung) genLadeVonEsp();
+      else { genRenderRasts(); genUpdateAll(); }
+    }
   }
 
   async function apiPost(url, data = {}) {
@@ -424,7 +433,7 @@
 
     // Aktive Rast
     const rs = document.getElementById('rastStatus');
-    if (d.rast >= 0 && d.rastName) {
+    if (d.rast >= 0) {  // auch bei leerem Namen anzeigen
       rs.style.display = 'block';
       document.getElementById('rastName').textContent = d.rastName;
       document.getElementById('rastInfo').textContent = d.rastInfo || '';
@@ -441,8 +450,17 @@
     // ── Browser-Ton bei Ereignissen ───────────────────────────
     // Call-Piepen: wartHalt wurde neu true (Timer abgelaufen, Call=true)
     if (d.wartHalt && !letzteWartHalt) {
-      browserPiep(3);  // 3x wie der ESP
+      if (!d.callMuted) browserPiep(3);
+      letzterBrowserPiep = Date.now();
     }
+    // Wiederholung alle 30s wenn nicht stumm
+    if (d.wartHalt && !d.callMuted && (Date.now() - letzterBrowserPiep >= 10000)) {
+      browserPiep(3);
+      letzterBrowserPiep = Date.now();
+    }
+    // Mute-Button aktualisieren
+    const mb = document.getElementById("muteBtn");
+    if (mb) mb.style.opacity = d.callMuted ? "0.4" : "1";
     // Programm abgeschlossen: Zustand wechselt von aktiv → GESTOPPT
     if (letzterZustand > 0 && zi === 0 && d.rast < 0) {
       browserEndPiep();  // 5x wie der ESP
@@ -548,7 +566,9 @@
       document.getElementById('cfg_Ki').value      = d.Ki  || 0.05;
       document.getElementById('cfg_Kd').value         = d.Kd  || 10.0;
       document.getElementById('cfg_pidFenster').value  = d.pidFenster  || 30;
-      document.getElementById('cfg_pidSchwelle').value = d.pidSchwelle || 5.0;
+      document.getElementById('cfg_pidSchwelle').value  = d.pidSchwelle  || 5.0;
+      document.getElementById('cfg_rcRepeat').value     = d.rcRepeat     || 10;
+      document.getElementById('cfg_rcMinSchalt').value  = d.rcMinSchalt  || 200;
     } catch(e) { showToast('Config Ladefehler', true); }
   }
 
@@ -564,7 +584,9 @@
       Ki: parseFloat(document.getElementById('cfg_Ki').value)||0.05,
       Kd:         parseFloat(document.getElementById('cfg_Kd').value)||10.0,
       pidFenster:  parseInt(document.getElementById('cfg_pidFenster').value)||30,
-      pidSchwelle: parseFloat(document.getElementById('cfg_pidSchwelle').value)||5.0,
+      pidSchwelle:  parseFloat(document.getElementById('cfg_pidSchwelle').value)||5.0,
+      rcRepeat:     parseInt(document.getElementById('cfg_rcRepeat').value)||10,
+      rcMinSchalt:  parseInt(document.getElementById('cfg_rcMinSchalt').value)||200,
     };
     const j = await apiPost('/api/config', data);
     if (j && j.ok) showToast('✓ Gespeichert');
@@ -582,6 +604,7 @@
   let audioCtx = null;
   let letzterZustand = -1;
   let letzteWartHalt = false;
+  let letzterBrowserPiep = 0;
 
   function audioInit() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -624,6 +647,7 @@
   // ══════════════════════════════════════════════════════════
   let genRasts = [];
   let genNextId = 0;
+  let genManuelleBearbeitung = false;  // true = Nutzer hat selbst bearbeitet
 
   const GEN_DEFAULT = {
     name:'', on:true, halt:false, call:false,
@@ -632,9 +656,12 @@
     maxGradient:1.0, info:''
   };
 
+  function genSetManuell() { genManuelleBearbeitung = true; }
+
   function genAddRast(data={}) {
     const r = { id:genNextId++, open:true, ...GEN_DEFAULT, ...data };
     genRasts.push(r);
+    genManuelleBearbeitung = true;
     genRenderRasts();
     genUpdateAll();
     setTimeout(()=>{
@@ -653,6 +680,54 @@
   function genToggleCard(id) {
     const r=genRasts.find(r=>r.id===id); if(r) r.open=!r.open; genRenderRasts();
   }
+  async function genLadeVonEsp() {
+    try {
+      const r = await fetch('/api/status');
+      const d = await r.json();
+      if (!d.rasten || !d.rasten.length) {
+        genRenderRasts(); genUpdateAll(); return;
+      }
+      // Rezeptname aus erster Rast Info oder leer
+      const nameEl = document.getElementById('gen_recipeName');
+      if (nameEl && !nameEl.value) nameEl.value = 'Geladenes Rezept';
+      // Rasten importieren
+      genRasts = d.rasten.map(r => ({
+        id: genNextId++,
+        open: false,
+        name:        r.name  || '',
+        on:          true,
+        halt:        r.halt  || false,
+        call:        r.call  || false,
+        sollTemp:    r.soll  || 67,
+        time:        r.time  || 0,
+        minTemp:     -0.1,
+        maxTemp:      0.1,
+        kp:          r.kp   || 0,
+        ki:          r.ki   || 0,
+        kd:          r.kd   || 0,
+        ownPid:      r.ownPid || false,
+        onPulse:     0,
+        offPulse:    0,
+        maxGradient: r.maxGradient || 0,
+        info:        r.info || ''
+      }));
+      genManuelleBearbeitung = false;
+      genRenderRasts();
+      genUpdateAll();
+      genShowToast('✓ ' + genRasts.length + ' Rasten vom ESP geladen');
+    } catch(e) {
+      genRenderRasts(); genUpdateAll();
+    }
+  }
+
+  function genSetHaltCall(id, value) {
+    const r = genRasts.find(r => r.id === id);
+    if (!r) return;
+    r.halt = value;
+    r.call = value;
+    genUpdateAll();
+  }
+
   function genUpdateField(id,field,value) {
     const r=genRasts.find(r=>r.id===id); if(!r) return;
     if(['on','halt','call'].includes(field)) r[field]=value;
@@ -660,10 +735,20 @@
     else r[field]=value;
     genUpdateAll();
   }
-  function genTogglePID(id,el) {
-    const s=document.getElementById('gen_pid_'+id);
-    s.classList.toggle('open');
-    el.textContent=s.classList.contains('open')?'▼ PID ausblenden':'▶ PID anzeigen';
+  function genTogglePID(id, enabled) {
+    const r = genRasts.find(r => r.id === id);
+    if (!r) return;
+    const s = document.getElementById('gen_pid_' + id);
+    if (enabled) {
+      s.classList.add('open');
+      // Globale Standardwerte vorbelegen wenn noch 0
+      if (r.kp === 0) { r.kp = 5.0; r.ki = 0.05; r.kd = 10.0; }
+    } else {
+      s.classList.remove('open');
+      r.kp = 0; r.ki = 0; r.kd = 0;
+    }
+    genUpdateAll();
+    genRenderRasts();
   }
 
   function genRenderRasts() {
@@ -674,6 +759,7 @@
       return;
     }
     c.innerHTML=genRasts.map((r,idx)=>{
+      const dispName = r.name || ('Rast '+(idx+1));
       const pills=(r.halt?'<span style="font-size:0.6rem;padding:2px 6px;border-radius:2px;background:rgba(212,136,42,0.15);color:#D4882A;font-family:IBM Plex Mono,monospace">HALT</span>':'')+
                   (r.call?'<span style="font-size:0.6rem;padding:2px 6px;border-radius:2px;background:rgba(76,175,110,0.15);color:#4CAF6E;font-family:IBM Plex Mono,monospace">CALL</span>':'');
       return `<div class="gen-rast-card ${r.on?'':'disabled'}" id="gen_card_${r.id}">
@@ -712,19 +798,21 @@
               <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Aktiv</span>
             </div>
             <div style="display:flex;align-items:center;gap:10px">
-              <label class="gen-toggle-switch"><input type="checkbox" ${r.halt?'checked':''} onchange="genUpdateField(${r.id},'halt',this.checked)"><span class="gen-toggle-track"></span></label>
-              <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Halt</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <label class="gen-toggle-switch"><input type="checkbox" ${r.call?'checked':''} onchange="genUpdateField(${r.id},'call',this.checked)"><span class="gen-toggle-track"></span></label>
-              <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Call</span>
+              <label class="gen-toggle-switch"><input type="checkbox" ${r.halt?'checked':''} onchange="genSetHaltCall(${r.id},this.checked)"><span class="gen-toggle-track"></span></label>
+              <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Halt / Call</span>
             </div>
           </div>
           <div class="gen-field" style="grid-column:1/-1"><label>Info / Notiz</label>
             <textarea oninput="genUpdateField(${r.id},'info',this.value)">${genEsc(r.info)}</textarea>
           </div>
-          <span class="gen-pid-toggle" onclick="genTogglePID(${r.id},this)">▶ PID anzeigen</span>
-          <div class="gen-pid-section" id="gen_pid_${r.id}">
+          <div style="display:flex;align-items:center;gap:10px;grid-column:1/-1">
+            <label class="gen-toggle-switch" style="width:32px;height:18px">
+              <input type="checkbox" ${r.kp>0?'checked':''} onchange="genTogglePID(${r.id},this.checked)">
+              <span class="gen-toggle-track"></span>
+            </label>
+            <span style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:#C8DCC8">Eigene PID-Werte</span>
+          </div>
+          <div class="gen-pid-section ${r.kp>0?'open':''}" id="gen_pid_${r.id}">
             <div class="gen-field"><label>Kp</label><input type="number" step="0.1" value="${r.kp}" oninput="genUpdateField(${r.id},'kp',this.value)"></div>
             <div class="gen-field"><label>Ki</label><input type="number" step="0.01" value="${r.ki}" oninput="genUpdateField(${r.id},'ki',this.value)"></div>
             <div class="gen-field"><label>Kd</label><input type="number" step="0.01" value="${r.kd}" oninput="genUpdateField(${r.id},'kd',this.value)"></div>
@@ -774,11 +862,13 @@
   function genGenerateBML() {
     const name=document.getElementById('gen_recipeName').value||'Rezept';
     const f=v=>{ const n=parseFloat(v); return Number.isInteger(n)?n.toFixed(1):String(n); };
+    // Leerer Name → Rastnummer
+    const rname=r=>r.name||('Rast '+(r.nr+1));
     const b=v=>v?'true':'false';
     const x=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
     const rasts=genGetPadded();
-    return `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\n<recipe AppDevice="mikroSikaru.de" AppName="BrausteuerungApp" AppVersion="1.19">\n  <description>${x(name)}</description>\n`+
-      rasts.map(r=>`  <rast>\n    <Nr>${r.nr}</Nr>\n    <Name>${x(r.name)}</Name>\n    <On>${b(r.on)}</On>\n    <Halt>${b(r.halt)}</Halt>\n    <Call>${b(r.call)}</Call>\n    <SollTemp>${f(r.sollTemp)}</SollTemp>\n    <Time>${r.time}</Time>\n    <MinTemp>${f(r.minTemp)}</MinTemp>\n    <MaxTemp>${f(r.maxTemp)}</MaxTemp>\n    <Kp>${f(r.kp)}</Kp>\n    <Ki>${f(r.ki)}</Ki>\n    <Kd>${f(r.kd)}</Kd>\n    <OnTimePulse>${r.onPulse}</OnTimePulse>\n    <OffTimePulse>${r.offPulse}</OffTimePulse>\n    <MaxGradient>${f(r.maxGradient)}</MaxGradient>\n    <Info>${x(r.info)}</Info>\n  </rast>`).join('\n')+'\n</recipe>';
+    return `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\n<recipe AppDevice="mikroSikaru.de" AppName="BrewBrickApp" AppVersion="1.19">\n  <description>${x(name)}</description>\n`+
+      rasts.map(r=>`  <rast>\n    <Nr>${r.nr}</Nr>\n    <Name>${x(rname(r))}</Name>\n    <On>${b(r.on)}</On>\n    <Halt>${b(r.halt)}</Halt>\n    <Call>${b(r.call)}</Call>\n    <SollTemp>${f(r.sollTemp)}</SollTemp>\n    <Time>${r.time}</Time>\n    <MinTemp>${f(r.minTemp)}</MinTemp>\n    <MaxTemp>${f(r.maxTemp)}</MaxTemp>\n    <Kp>${f(r.kp)}</Kp>\n    <Ki>${f(r.ki)}</Ki>\n    <Kd>${f(r.kd)}</Kd>\n    <OwnPid>${r.kp>0?'true':'false'}</OwnPid>\n    <OnTimePulse>${r.onPulse}</OnTimePulse>\n    <OffTimePulse>${r.offPulse}</OffTimePulse>\n    <MaxGradient>${f(r.maxGradient)}</MaxGradient>\n    <Info>${x(r.info)}</Info>\n  </rast>`).join('\n')+'\n</recipe>';
   }
 
   function genDownloadBML() {
@@ -792,7 +882,8 @@
 
   function genClearAll() {
     if(genRasts.length&&!confirm('Alle Rasten löschen?')) return;
-    genRasts=[]; document.getElementById('gen_recipeName').value='';
+    genRasts=[]; genManuelleBearbeitung = false;
+    document.getElementById('gen_recipeName').value='';
     genRenderRasts(); genUpdateAll();
   }
 
@@ -879,6 +970,23 @@
   ladeRezeptInfo();
   // ── TEMPERATUR CHART ──────────────────────────────────────
   let logDaten = [];
+
+  function logReset() {
+    fetch('/api/log/reset', {method:'POST'}).then(() => {
+      logDaten = [];
+      zeichneChart();
+      showToast('✓ Log zurückgesetzt');
+    });
+  }
+
+  async function ladeLog() {
+    try {
+      const r = await fetch('/api/log');
+      const d = await r.json();
+      logDaten = d.d || [];
+      zeichneChart();
+    } catch(e) {}
+  }
 
   function zeichneChart() {
     const cv = document.getElementById('tempChart');
