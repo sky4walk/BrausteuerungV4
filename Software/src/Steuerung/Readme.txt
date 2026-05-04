@@ -32,3 +32,18 @@ zeigt WeMo Port: ls /dev/ttyUSB* /dev/ttyACM*
 
 esptool --port /dev/ttyUSB0 --baud 921600 --chip esp8266 write_flash 0x0 deine.bin
 
+curl http://brausteuerung.local/api/files
+
+# index.html hochladen
+curl -X POST http://brausteuerung.local/upload/html -F "file=@index.html"
+
+# BML Rezept hochladen
+curl -X POST http://brausteuerung.local/upload/bml -F "file=@rezept.bml"
+
+# config.json hochladen (Settings Restore)
+curl -X POST http://brausteuerung.local/upload/config -F "file=@config.json"
+
+# Datei herunterladen
+curl http://brausteuerung.local/api/log/download -o braulog.csv
+curl http://brausteuerung.local/api/settings/backup -o config.json
+

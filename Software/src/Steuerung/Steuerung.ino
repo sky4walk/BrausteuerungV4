@@ -1,6 +1,6 @@
 /*
  * ╔══════════════════════════════════════════════════════════╗
- * ║           BRAUSTEUERUNG — Wemos D1 Mini                 ║
+ * ║              BREWBRICK — Wemos D1 Mini                  ║
  * ║  DS18B20 → D2 | Buzzer → D3 | RCSwitch → D8            ║
  * ╚══════════════════════════════════════════════════════════╝
  *
@@ -44,7 +44,7 @@
  *
  * Reset:
  *   - Flash-Knopf (D3) beim Start gedrückt halten → löscht WLAN-Config
- *   - ESP startet dann im AP-Modus: SSID "Brausteuerung" (offen)
+ *   - ESP startet dann im AP-Modus: SSID "BrewBrick" (offen)
  */
 
 #include <ESP8266WiFi.h>
@@ -66,7 +66,7 @@
 // ── WLAN ────────────────────────────────────────────────────
 // Credentials werden aus wlan.json geladen (LittleFS)
 // Hardcoded nur Fallback-Hostname
-const char* HOSTNAME = "brausteuerung";
+const char* HOSTNAME = "brewbrick";
 
 // WLAN-Modus
 bool apModus = false;  // true = Access Point für WLAN-Einrichtung
@@ -91,7 +91,7 @@ const char AP_HTML[] PROGMEM =
   "#status{margin-top:16px;color:#D4882A;font-size:0.8rem;min-height:20px}"
   "</style></head><body>"
   "<h2>🍺 WLAN Einrichtung</h2>"
-  "<p class=\"hint\">Wähle dein WLAN-Netz oder gib die SSID manuell ein.<br>Erreichbar unter: <b style=\"color:#7DDB9A\">http://brausteuerung.local</b></p>"
+  "<p class=\"hint\">Wähle dein WLAN-Netz oder gib die SSID manuell ein.<br>Erreichbar unter: <b style=\"color:#7DDB9A\">http://brewbrick.local</b></p>"
   "<div id=\"nets\"><p style=\"color:#5A7A5E\">Suche Netzwerke...</p></div>"
   "<br>"
   "<label>SSID</label>"
@@ -118,7 +118,7 @@ const char AP_HTML[] PROGMEM =
   "    body:JSON.stringify({ssid,pw})})"
   "  .then(r=>r.json()).then(d=>{"
   "    document.getElementById('status').textContent='✓ Gespeichert — Neustart...';"
-  "    setTimeout(()=>location.href='http://brausteuerung.local',4000);"
+  "    setTimeout(()=>location.href='http://brewbrick.local',4000);"
   "  }).catch(()=>document.getElementById('status').textContent='Fehler');"
   "}"
   "</script></body></html>";
@@ -148,7 +148,7 @@ const char SETUP_HTML[] PROGMEM =
   ".status.ok{color:#7DDB9A}"
   ".status.err{color:#C0504A}"
   "</style></head><body>"
-  "<h1>&#x1F37A; BRAUSTEUERUNG</h1>"
+  "<h1>&#x1F37A; BREWBRICK</h1>"
   "<div class=\"sub\">Ersteinrichtung</div>"
   "<div class=\"box\">"
   "<h2>&#x2B06; index.html hochladen</h2>"
@@ -212,7 +212,7 @@ const char TOOLS_HTML[] PROGMEM =
   ".back:hover{color:#C8DCC8;border-color:#3D5C42}"
   "</style></head><body>"
   "<h1>&#9881; TOOLS</h1>"
-  "<div class=\"sub\">brausteuerung.local/tools</div>"
+  "<div class=\"sub\">brewbrick.local/tools</div>"
 
   "<h2>&#x2B06; index.html aktualisieren</h2>"
   "<p>Neue Web-Oberfl&auml;che hochladen ohne USB. Wird in LittleFS gespeichert "
@@ -1187,8 +1187,8 @@ void setup() {
   // AP-Modus starten falls nötig
   if (apModus) {
     WiFi.mode(WIFI_AP);
-    WiFi.softAP("Brausteuerung");  // Offen, kein Passwort
-    Serial.printf("[AP] SSID: Brausteuerung (offen) | IP: %s\n",
+    WiFi.softAP("BrewBrick");  // Offen, kein Passwort
+    Serial.printf("[AP] SSID: BrewBrick (offen) | IP: %s\n",
                   WiFi.softAPIP().toString().c_str());
     // mDNS auch im AP-Modus starten
     MDNS.begin(HOSTNAME);
