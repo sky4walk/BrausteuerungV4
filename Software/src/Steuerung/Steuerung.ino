@@ -365,7 +365,7 @@ struct Rast {
   bool  on, halt, call;
   bool  ownPid;          // true = eigene PID-Werte verwenden
   float sollTemp;
-  int   time;
+  float time;   // Minuten, auch Dezimalwerte z.B. 0.5 = 30s
   float minTemp, maxTemp;
   float kp, ki, kd;
   float maxGradient;
@@ -639,7 +639,7 @@ bool bmlLaden() {
       r.halt        = xmlTagWert(block, "Halt")       == "true";
       r.call        = xmlTagWert(block, "Call")       == "true";
       r.sollTemp    = xmlTagWert(block, "SollTemp")   .toFloat();
-      r.time        = xmlTagWert(block, "Time")       .toInt();
+      r.time        = xmlTagWert(block, "Time")       .toFloat();
       r.minTemp     = xmlTagWert(block, "MinTemp")    .toFloat();
       r.maxTemp     = xmlTagWert(block, "MaxTemp")    .toFloat();
       r.kp          = xmlTagWert(block, "Kp")         .toFloat();
@@ -663,7 +663,7 @@ void rastStarten(int nr) {
   zustand      = AUFHEIZEN;
   Rast& r      = rasten[nr];
   pidSetpoint  = r.sollTemp;
-  rastDauerMs  = (unsigned long)r.time * 60UL * 1000UL;
+  rastDauerMs  = (unsigned long)(r.time * 60.0f * 1000.0f);
   // Rast-spezifische PID-Parameter wenn ownPid gesetzt
   if (r.ownPid) myPID.SetTunings(r.kp, r.ki, r.kd);
   else          myPID.SetTunings(Kp, Ki, Kd);
@@ -868,7 +868,7 @@ void apiStatus() {
     o["nr"]          = i;
     o["name"]        = rasten[i].name;
     o["soll"]        = rasten[i].sollTemp;
-    o["time"]        = rasten[i].time;
+    o["time"]        = rasten[i].time;  // float, z.B. 0.5 = 30s
     o["halt"]        = rasten[i].halt;
     o["call"]        = rasten[i].call;
     o["ownPid"]      = rasten[i].ownPid;

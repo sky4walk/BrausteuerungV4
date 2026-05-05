@@ -652,7 +652,7 @@
   const GEN_DEFAULT = {
     name:'', on:true, halt:false, call:false,
     sollTemp:67, time:20, minTemp:-0.1, maxTemp:0.1,
-    kp:1.0, ki:0.0, kd:0.0, onPulse:0, offPulse:0,
+    kp:0, ki:0, kd:0, onPulse:0, offPulse:0,
     maxGradient:1.0, info:''
   };
 
@@ -780,8 +780,8 @@
           <div class="gen-field"><label>Solltemperatur (°C)</label>
             <input type="number" step="0.5" value="${r.sollTemp}" oninput="genUpdateField(${r.id},'sollTemp',this.value)">
           </div>
-          <div class="gen-field"><label>Zeit (min)</label>
-            <input type="number" step="1" min="0" value="${r.time}" oninput="genUpdateField(${r.id},'time',this.value)">
+          <div class="gen-field"><label>Zeit (min, z.B. 0.5=30s)</label>
+            <input type="number" step="0.5" min="0" value="${r.time}" oninput="genUpdateField(${r.id},'time',this.value)">
           </div>
           <div class="gen-field"><label>MinTemp (°C)</label>
             <input type="number" step="0.1" value="${r.minTemp}" oninput="genUpdateField(${r.id},'minTemp',this.value)">
@@ -970,6 +970,12 @@
   ladeRezeptInfo();
   // ── TEMPERATUR CHART ──────────────────────────────────────
   let logDaten = [];
+
+  function callMute() {
+    apiPost('/api/call/mute');
+    const mb = document.getElementById("muteBtn");
+    if (mb) mb.style.opacity = "0.4";
+  }
 
   function logReset() {
     fetch('/api/log/reset', {method:'POST'}).then(() => {
