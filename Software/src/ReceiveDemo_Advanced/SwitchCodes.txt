@@ -1,3 +1,31 @@
+Bearware
+1 ON:  Value: 13488751 Bits: 24 Delay: 311 Protocol: 1
+1 OFF: Value: 13488750 Bits: 24 Delay: 311 Protocol: 1
+2 ON:  Value: 13488749 Bits: 24 Delay: 311 Protocol: 1
+2 Off: Value: 13488748 Bits: 24 Delay: 312 Protocol: 1
+3 On:  Value: 13488747 Bits: 24 Delay: 312 Protocol: 1
+3 Off: Value: 13488746 Bits: 24 Delay: 312 Protocol: 1
+4 On:  Value: 13488743 Bits: 24 Delay: 312 Protocol: 1
+4 Off: Value: 13488742 Bits: 24 Delay: 312 Protocol: 1
+A On:  Value: 13488738 Bits: 24 Delay: 312 Protocol: 1
+A Off: Value: 13488737 Bits: 24 Delay: 312 Protocol: 1
+
+
+Clevenwils:
+1 ON:  Value: 910432256  Bits: 32 Delay: 708 Protocol: 2
+1 Off: Value: 1044649984 Bits: 32 Delay: 707 Protocol: 2
+2 ON:  Value: 373561344  Bits: 32 Delay: 699 Protocol: 2
+2 Off: Value: 507779072  Bits: 32 Delay: 708 Protocol: 2
+3 ON:  Value: 239343616  Bits: 32 Delay: 698 Protocol: 2
+3 Off: Value: 21239808   Bits: 32 Delay: 699 Protocol: 2
+4 ON:  Value: 641996800  Bits: 32 Delay: 699 Protocol: 2
+4 Off: Value: 776214528  Bits: 32 Delay: 699 Protocol: 2
+A ON:  Value: 323229696  Bits: 32 Delay: 698 Protocol: 2
+A Off: Value: 591665152  Bits: 32 Delay: 698 Protocol: 2
+
+
+
+
 On 1:
 Decimal: 1631343 (24Bit) Binary: 000110001110010001101111 Tri-State: not applicable PulseLength: 315 microseconds Protocol: 1
 Raw data: 9793,307,904,307,901,311,900,905,304,903,310,301,906,306,903,307,902,908,306,904,305,905,303,313,897,308,901,911,303,303,907,302,908,302,907,904,307,903,308,304,902,907,307,903,308,900,311,899,308,
