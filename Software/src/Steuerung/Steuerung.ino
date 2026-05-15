@@ -314,7 +314,9 @@ const char TOOLS_HTML[] PROGMEM =
   "try{"
   "const r=await fetch('/api/sysinfo');const d=await r.json();"
   "document.getElementById('sysinfo').innerHTML="
-  "'Heap frei: <b style=\"color:#7DDB9A\">'+( d.freeHeap/1024).toFixed(1)+' KB</b><br>'"
+  "'IP: <b style=\"color:#7DDB9A\">'+d.ip+'</b> &nbsp; <a href=\"http://'+d.ip+'\" style=\"color:#2D6640;font-size:0.65rem\">öffnen</a><br>'"
+  "+('Hostname: <b>'+d.hostname+'.local</b><br>')"
+  "+('Heap frei: <b style=\"color:#7DDB9A\">'+( d.freeHeap/1024).toFixed(1)+' KB</b><br>')"
   "+'LittleFS: <b>'+d.fsUsed+' / '+d.fsTotal+' B</b><br>'"
   "+'Sketch: <b>'+(d.sketchSize/1024).toFixed(0)+' KB (frei: '+(d.freeSketch/1024).toFixed(0)+' KB)</b><br>'"
   "+'Uptime: <b>'+Math.floor(d.uptime/60)+' min</b><br>'"
@@ -1323,7 +1325,9 @@ void setup() {
     doc["sketchSize"]    = ESP.getSketchSize();
     doc["freeSketch"]    = ESP.getFreeSketchSpace();
     doc["uptime"]        = millis() / 1000;
-    doc["version"]       = "1.0.0";
+    doc["version"]       = "4.0.0";
+    doc["ip"]            = WiFi.localIP().toString();
+    doc["hostname"]      = HOSTNAME;
     doc["htmlLittleFS"]  = LittleFS.exists("/index.html");
     FSInfo fs;
     LittleFS.info(fs);
