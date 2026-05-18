@@ -396,10 +396,15 @@ unsigned long letztesTempRead = 0;
 const unsigned long TEMP_INTERVAL = 2000;
 
 // ── FLASH LOG ────────────────────────────────────────────────
-#define LOG_INTERVAL 10000UL  // ms zwischen Logpunkten
+#define LOG_INTERVAL     10000UL   // ms: Mindest-Abstand zwischen Punkten
+#define LOG_MAX_INTERVAL 60000UL   // ms: Spätestens alle 60s loggen
+#define LOG_TEMP_DELTA   0.5f      // °C: Schwellwert für Speicherung
+#define LOG_RAST_CHANGE  true      // bei Rast-Wechsel immer loggen
 unsigned long logStartMs   = 0;
-unsigned long letzterLogMs = 0;
-bool          logAktiv     = false;  // nur wenn Brauvorgang läuft
+unsigned long letzterLogMs    = 0;
+bool          logAktiv        = false;
+float         letzteLogTemp   = -999.0f;  // letzter gelogter Temperaturwert
+int           letzteLogRast   = -1;       // letzte gelogte Rast  // nur wenn Brauvorgang läuft
 
 // ── LED STATUS ───────────────────────────────────────────────
 unsigned long ledLetzteAktion = 0;
@@ -432,9 +437,11 @@ bool          callMuted    = false;  // true = Piepen für diese Rast stumm
 unsigned long letzterCallPiep = 0;  // Zeitstempel letztes Call-Piepen
 
 void logReset() {
-  logAktiv     = false;
-  logStartMs   = 0;
-  letzterLogMs = 0;
+  logAktiv      = false;
+  logStartMs    = 0;
+  letzterLogMs  = 0;
+  letzteLogTemp = -999.0f;
+  letzteLogRast = -1;
   LittleFS.remove("/log.csv");
   Serial.println("[LOG] Flash-Log gelöscht und zurückgesetzt");
 }
@@ -450,8 +457,19 @@ void logStart() {
 void logPunkt() {
   if (!logAktiv) return;
   unsigned long jetzt = millis();
+  // Mindestabstand zwischen Punkten
   if (jetzt - letzterLogMs < LOG_INTERVAL) return;
-  letzterLogMs = jetzt;
+  // Speichern wenn:
+  //   - Temperatur sich um mindestens LOG_TEMP_DELTA geändert hat
+  //   - Rast gewechselt hat
+  //   - Spätestens nach LOG_MAX_INTERVAL
+  bool aenderung = fabs(tempAktuell - letzteLogTemp) >= LOG_TEMP_DELTA;
+  bool rastWechsel = (aktiveRast != letzteLogRast);
+  bool timeout = (jetzt - letzterLogMs >= LOG_MAX_INTERVAL);
+  if (!aenderung && !rastWechsel && !timeout) return;
+  letzterLogMs  = jetzt;
+  letzteLogTemp = tempAktuell;
+  letzteLogRast = aktiveRast;
   unsigned long sek = (jetzt - logStartMs) / 1000UL;
   File f = LittleFS.open("/log.csv", "a");
   if (f) {
@@ -466,8 +484,9 @@ void logPunkt() {
 // ── BUZZER ───────────────────────────────────────────────────
 void buzzerRuf(int n = 3) {
   for (int i = 0; i < n; i++) {
-    digitalWrite(PIN_BUZZER, HIGH); delay(200);
-    digitalWrite(PIN_BUZZER, LOW);  delay(200);
+    digitalWrite(PIN_BUZZER, HIGH); delay(80);
+    digitalWrite(PIN_BUZZER, LOW);  delay(120);
+    yield();
   }
 }
 
@@ -682,6 +701,7 @@ bool bmlLaden() {
       rastAnzahl++;
     }
     pos = end + 7;
+    yield();  // BML-Parsing kann lange dauern
   }
   return rastAnzahl > 0;
 }
@@ -869,7 +889,7 @@ void brauLogik() {
 void apiStatus() {
   Serial.printf("[HTTP] GET /api/status — Client: %s\n",
     server.client().remoteIP().toString().c_str());
-  StaticJsonDocument<1536> doc;  // 16 Rasten × ~70B + Overhead
+  DynamicJsonDocument doc(3072);  // Heap-Allokation, sicher für 16 Rasten
   doc["temp"]       = tempAktuell;
   doc["soll"]       = pidSetpoint;
   doc["gradient"]   = tempGradient;
@@ -902,7 +922,7 @@ void apiStatus() {
     o["nr"]          = i;
     o["name"]        = rasten[i].name;
     o["soll"]        = rasten[i].sollTemp;
-    o["time"]        = rasten[i].time;  // float, z.B. 0.5 = 30s
+    o["time"]        = rasten[i].time;
     o["halt"]        = rasten[i].halt;
     o["call"]        = rasten[i].call;
     o["ownPid"]      = rasten[i].ownPid;
@@ -910,7 +930,6 @@ void apiStatus() {
     o["ki"]          = rasten[i].ki;
     o["kd"]          = rasten[i].kd;
     o["maxGradient"] = rasten[i].maxGradient;
-    o["info"]        = rasten[i].info;
   }
   String json;
   serializeJson(doc, json);
@@ -927,7 +946,7 @@ void apiLog() {
   String json = "{\"n\":0,\"interval\":10,\"d\":[";
   bool first = true;
   int count = 0;
-  f.readStringUntil('\n');  // Header überspringen
+  f.readStringUntil('\n');  // Header
   while (f.available()) {
     String line = f.readStringUntil('\n');
     line.trim();
@@ -982,6 +1001,7 @@ void apiFiles() {
   bool first = true;
   Dir dir = LittleFS.openDir("/");
   while (dir.next()) {
+    yield();
     if (dir.fileName() == "wlan.json") continue;  // geschützt
     if (!first) json += ",";
     json += "{\"name\":\"" + dir.fileName() + "\"," +
@@ -1247,7 +1267,10 @@ void setup() {
 
     int tries = 0;
     while (WiFi.status() != WL_CONNECTED && tries < 30) {
-      delay(500); Serial.print("."); tries++;
+      digitalWrite(PIN_LED, LOW);  delay(100);
+      digitalWrite(PIN_LED, HIGH); delay(400);
+      Serial.print("."); tries++;
+      yield();
     }
     Serial.println();
 
@@ -1279,7 +1302,7 @@ void setup() {
     server.begin();
     Serial.println("[HTTP] AP-Server gestartet — warte auf WLAN-Einrichtung");
     // Buzzer: langes Summen = AP-Modus
-    digitalWrite(PIN_BUZZER, HIGH); delay(800); digitalWrite(PIN_BUZZER, LOW);
+    digitalWrite(PIN_BUZZER, HIGH); delay(300); digitalWrite(PIN_BUZZER, LOW);
     return;  // Normales Setup überspringen
   }
 
@@ -1335,6 +1358,7 @@ void setup() {
     while (dir.next()) {
       LittleFS.remove("/" + dir.fileName());
       Serial.printf("[FS] Gelöscht: %s\n", dir.fileName().c_str());
+      yield();
     }
     ESP.restart();
   });
