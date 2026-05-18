@@ -62,6 +62,7 @@
 #define PIN_DS18B20   4   // D2
 #define PIN_BUZZER    0   // D3
 #define PIN_RCSWITCH  15  // D8
+#define PIN_LED        2  // D4 — onboard LED (active-low)
 
 // ── WLAN ────────────────────────────────────────────────────
 // Credentials werden aus wlan.json geladen (LittleFS)
@@ -399,6 +400,34 @@ const unsigned long TEMP_INTERVAL = 2000;
 unsigned long logStartMs   = 0;
 unsigned long letzterLogMs = 0;
 bool          logAktiv     = false;  // nur wenn Brauvorgang läuft
+
+// ── LED STATUS ───────────────────────────────────────────────
+unsigned long ledLetzteAktion = 0;
+int           ledPhase        = 0;
+
+void ledUpdate() {
+  unsigned long jetzt = millis();
+  if (sensorFehler) {
+    // Sensor-Fehler: sehr schnell blinken (100ms)
+    if (jetzt - ledLetzteAktion >= 100) {
+      ledPhase = !ledPhase;
+      digitalWrite(PIN_LED, ledPhase ? LOW : HIGH);
+      ledLetzteAktion = jetzt;
+    }
+  } else if (apModus) {
+    // AP-Modus: langsam blinken (1s)
+    if (jetzt - ledLetzteAktion >= 1000) {
+      ledPhase = !ledPhase;
+      digitalWrite(PIN_LED, ledPhase ? LOW : HIGH);
+      ledLetzteAktion = jetzt;
+    }
+  } else {
+    // Bereit: kurzes Blinken alle 3s
+    unsigned long t = jetzt % 3000;
+    if (t < 80) digitalWrite(PIN_LED, LOW);   // kurz an
+    else        digitalWrite(PIN_LED, HIGH);   // meist aus
+  }
+}
 bool          callMuted    = false;  // true = Piepen für diese Rast stumm
 unsigned long letzterCallPiep = 0;  // Zeitstempel letztes Call-Piepen
 
@@ -1177,6 +1206,8 @@ void setup() {
   // ── GPIO0 / Flash-Knopf: als Output (Buzzer) ────────────
   pinMode(PIN_BUZZER, OUTPUT);
   digitalWrite(PIN_BUZZER, LOW);
+  pinMode(PIN_LED, OUTPUT);
+  digitalWrite(PIN_LED, HIGH);  // aus (active-low)
 
   // ── LittleFS ────────────────────────────────────────────
   if (!LittleFS.begin()) {
@@ -1368,6 +1399,7 @@ void loop() {
   tempLesen();
   heizungRegeln();
   brauLogik();
+  ledUpdate();
   // Temperatur alle 30s ins Serial loggen
   if (millis() - letztesTempLog >= 30000) {
     letztesTempLog = millis();
