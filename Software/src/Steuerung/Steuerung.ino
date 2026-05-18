@@ -703,10 +703,13 @@ float tempHistorie[6] = {0};  // letzte 6 Messungen à 2s = 12s Fenster
 uint8_t tempHistIdx = 0;
 
 void tempLesen() {
-  if (millis() - letztesTempRead < TEMP_INTERVAL) return;
-  letztesTempRead = millis();
-  sensors.requestTemperatures();
+  unsigned long jetzt = millis();
+  if (jetzt - letztesTempRead < TEMP_INTERVAL) return;
+  letztesTempRead = jetzt;
+  // Letztes Ergebnis lesen (non-blocking)
   float t = sensors.getTempCByIndex(0);
+  // Neue Messung starten für nächsten Aufruf
+  sensors.requestTemperatures();
   if (t != DEVICE_DISCONNECTED_C) {
     // Sensor OK
     if (sensorFehler) {
@@ -1189,6 +1192,8 @@ void setup() {
 
   // ── Sensoren & Hardware ──────────────────────────────────
   sensors.begin();
+  sensors.setWaitForConversion(false);  // Nicht blockieren!
+  sensors.setResolution(10);            // 10-bit = ~188ms statt 750ms
   Serial.printf("[TEMP] %d Sensor(en)\n", sensors.getDeviceCount());
 
   rcSwitch.enableTransmit(PIN_RCSWITCH);
