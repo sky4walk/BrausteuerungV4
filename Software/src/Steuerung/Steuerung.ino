@@ -887,8 +887,6 @@ void brauLogik() {
 
 // ── API: STATUS ──────────────────────────────────────────────
 void apiStatus() {
-  Serial.printf("[HTTP] GET /api/status — Client: %s\n",
-    server.client().remoteIP().toString().c_str());
   DynamicJsonDocument doc(3072);  // Heap-Allokation, sicher für 16 Rasten
   doc["temp"]       = tempAktuell;
   doc["soll"]       = pidSetpoint;
