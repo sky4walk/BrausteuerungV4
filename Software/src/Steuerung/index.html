@@ -956,6 +956,40 @@
     genShowToast('✓ '+name+' — '+genRasts.length+' Rasten geladen');
   }
 
+  function genParseBeerXML(xmlStr, filename) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlStr, 'application/xml');
+    if (doc.querySelector('parsererror')) throw new Error('Ungültiges XML');
+    // BeerXML verwendet GROSSGESCHRIEBENE Tags
+    const recipe = doc.querySelector('RECIPE');
+    if (!recipe) throw new Error('Kein <RECIPE> Element');
+    const name = recipe.querySelector('NAME')?.textContent?.trim() ||
+                 filename.replace(/\.xml$/i, '').replace(/_/g, ' ');
+    // MASH_STEPs sind die Rasten
+    const steps = Array.from(doc.querySelectorAll('MASH_STEP'));
+    if (!steps.length) throw new Error('Keine MASH_STEPs gefunden');
+    genRasts = steps.map((el, idx) => {
+      const stepName = el.querySelector('NAME')?.textContent?.trim() || ('Rast ' + (idx + 1));
+      const temp = parseFloat(el.querySelector('STEP_TEMP')?.textContent || '67');
+      const time = parseFloat(el.querySelector('STEP_TIME')?.textContent || '0');
+      return {
+        id: genNextId++, open: false,
+        name: stepName, on: true,
+        halt: false, call: false,
+        sollTemp: temp, time: time,
+        minTemp: -0.1, maxTemp: 0.1,
+        kp: 0, ki: 0, kd: 0,
+        onPulse: 0, offPulse: 0,
+        maxGradient: 0,
+        info: ''
+      };
+    });
+    document.getElementById('gen_recipeName').value = name;
+    genManuelleBearbeitung = true;
+    genRenderRasts(); genUpdateAll();
+    genShowToast('✓ ' + name + ' — ' + genRasts.length + ' Rasten aus BeerXML geladen');
+  }
+
   function genLoadBeerXMLFile(input) {
     const file=input.files[0]; if(!file) return;
     const r=new FileReader();
