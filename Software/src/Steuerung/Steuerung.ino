@@ -342,7 +342,8 @@ double pidInput    = 20.0;
 double pidOutput   = 0.0;
 double pidSetpoint = 67.0;
 double Kp = 5.0, Ki = 0.05, Kd = 10.0;
-double pidSchwellwert = 5.0;  // °C unter Soll → 100% Leistung
+double pidSchwellwert    = 5.0;  // °C unter Soll → 100% Leistung
+double pidUeberschreitung = 0.5;  // °C über Soll → Notabschaltung
 PID myPID(&pidInput, &pidOutput, &pidSetpoint, Kp, Ki, Kd, DIRECT);
 
 unsigned long PID_WINDOW_MS = 30000;  // konfigurierbar über Web-UI (in ms)
@@ -542,6 +543,7 @@ void configLaden() {
     Kd               = doc["Kd"]        | 1.0;
     PID_WINDOW_MS      = (doc["pidFenster"]   | 30)  * 1000UL;
     pidSchwellwert     = doc["pidSchwelle"]   | 5.0;
+    pidUeberschreitung = doc["pidUeberschreitung"] | 0.5;
     RC_REPEAT_MS       = (doc["rcRepeat"]     | 10)  * 1000UL;
     RC_MIN_SCHALT_MS   = doc["rcMinSchalt"]   | 200UL;
   }
@@ -567,7 +569,8 @@ void configSpeichern(const String& body) {
   Ki            = doc["Ki"]        | Ki;
   Kd            = doc["Kd"]        | Kd;
   PID_WINDOW_MS    = (doc["pidFenster"]  | (int)(PID_WINDOW_MS/1000)) * 1000UL;
-  pidSchwellwert   = doc["pidSchwelle"]  | pidSchwellwert;
+  pidSchwellwert     = doc["pidSchwelle"]        | pidSchwellwert;
+  pidUeberschreitung = doc["pidUeberschreitung"] | pidUeberschreitung;
   RC_REPEAT_MS     = (doc["rcRepeat"]    | (int)(RC_REPEAT_MS/1000)) * 1000UL;
   RC_MIN_SCHALT_MS = doc["rcMinSchalt"]  | (int)RC_MIN_SCHALT_MS;
   myPID.SetTunings(Kp, Ki, Kd);
@@ -800,11 +803,23 @@ void heizungRegeln() {
     }
     return;
   }
-  // ── Schwellwert: unter (Soll - Schwellwert) → 100% Leistung
-  if (pidSchwellwert > 0.0 && (pidSetpoint - pidInput) > pidSchwellwert) {
-    pidOutput = 100.0;  // Volle Leistung bis Schwellwert erreicht
+  // ── Temperaturregelung ─────────────────────────────────
+  double diff = pidSetpoint - pidInput;
+
+  if (pidUeberschreitung > 0.0 && diff < -pidUeberschreitung) {
+    // ÜBERSCHRITTEN → AUS, Integral einfrieren
+    pidOutput = 0;
+    myPID.SetMode(MANUAL);
+  } else if (pidSchwellwert > 0.0 && diff > pidSchwellwert) {
+    // WEIT UNTER SOLL → 100%, Integral einfrieren (kein Windup)
+    pidOutput = 100.0;
+    myPID.SetMode(MANUAL);
   } else {
-    myPID.Compute();  // PID regelt ab Schwellwert
+    // IM REGELBEREICH → PID übernimmt (sanfter Übergang)
+    if (myPID.GetMode() == MANUAL) {
+      myPID.SetMode(AUTOMATIC);
+    }
+    myPID.Compute();
   }
 
   // ── MaxGradient berücksichtigen ──────────────────────────
@@ -1103,7 +1118,8 @@ void apiConfigGet() {
   doc["Ki"]         = Ki;
   doc["Kd"]         = Kd;
   doc["pidFenster"]   = (int)(PID_WINDOW_MS / 1000);
-  doc["pidSchwelle"]  = pidSchwellwert;
+  doc["pidSchwelle"]        = pidSchwellwert;
+  doc["pidUeberschreitung"] = pidUeberschreitung;
   doc["rcRepeat"]     = (int)(RC_REPEAT_MS / 1000);
   doc["rcMinSchalt"]  = (int)RC_MIN_SCHALT_MS;
   String json;
