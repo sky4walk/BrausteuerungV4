@@ -319,6 +319,33 @@
 
 <!-- ══ TAB: EINSTELLUNGEN ══════════════════════════════════ -->
 <div class="panel" id="tab-config">
+  <div class="section-title">Schaltmodus</div>
+  <div class="config-grid">
+    <div class="form-group">
+      <label class="form-label">Heizung schalten über</label>
+      <select class="form-input" id="cfg_schaltModus" onchange="updateSchaltModus()">
+        <option value="0">433MHz Funksteckdose</option>
+        <option value="1">REST-Steckdose (Shelly etc.)</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="restSection" style="display:none">
+    <div class="section-title">REST-Steckdosen (HTTP GET URLs)</div>
+    <p style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:var(--text-d);line-height:1.6;margin-bottom:12px">
+      Für Shelly Gen3: <code>http://SHELLY-IP/rpc/Switch.Set?id=0&amp;on=true</code> (EIN)
+      und <code>...on=false</code> (AUS). Leere URLs werden ignoriert.
+    </p>
+    <div id="restDosenContainer"></div>
+    <div class="form-group" style="margin-top:8px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+        <input type="checkbox" id="cfg_restStrikt200" style="width:auto">
+        <span class="form-label" style="margin:0">Nur HTTP 200 als Erfolg werten (strikt)</span>
+      </label>
+    </div>
+  </div>
+
+  <div id="rcSection">
   <div class="section-title">RCSwitch — 433MHz Funksteckdose</div>
   <div class="config-grid">
     <div class="form-group"><label class="form-label">Code Heizung EIN</label><input type="number" class="form-input" id="cfg_rcOn" placeholder="z.B. 1631343"></div>
@@ -327,6 +354,7 @@
     <div class="form-group"><label class="form-label">Pulslänge (µs)</label><input type="number" class="form-input" id="cfg_rcPulse" value="315"></div>
     <div class="form-group"><label class="form-label">Bits (meist 24)</label><input type="number" class="form-input" id="cfg_rcBits" value="24" min="1" max="64"></div>
     <div class="form-group"><label class="form-label">Wiederholungen</label><input type="number" class="form-input" id="cfg_rcWdh" value="15" min="1" max="50"></div>
+  </div>
   </div>
 
   <div class="section-title">PID-Parameter (globale Standardwerte)</div>
@@ -346,11 +374,13 @@
     <button class="btn btn-ghost" onclick="configLaden()">↺ Laden</button>
   </div>
 
+  <div id="rcSection2">
   <div class="section-title" style="margin-top:8px">RCSwitch Codes ermitteln</div>
   <p style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:var(--text-d);line-height:1.7">
     Einen 433MHz Empfänger an einem zweiten Arduino anschließen und das RCSwitch ReceiveDemo Beispiel ausführen.
     Die angezeigte Dezimalzahl beim Drücken der Fernbedienung als Code oben eintragen.
   </p>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -571,6 +601,10 @@
       document.getElementById('cfg_pidUeberschreitung').value  = d.pidUeberschreitung || 0.5;
       document.getElementById('cfg_rcRepeat').value     = d.rcRepeat     || 10;
       document.getElementById('cfg_rcMinSchalt').value  = d.rcMinSchalt  || 200;
+      document.getElementById('cfg_schaltModus').value  = d.schaltModus  || 0;
+      document.getElementById('cfg_restStrikt200').checked = d.restStrikt200 || false;
+      updateSchaltModus();
+      await restLaden();
     } catch(e) { showToast('Config Ladefehler', true); }
   }
 
@@ -590,9 +624,118 @@
       pidUeberschreitung: parseFloat(document.getElementById('cfg_pidUeberschreitung').value)||0.5,
       rcRepeat:     parseInt(document.getElementById('cfg_rcRepeat').value)||10,
       rcMinSchalt:  parseInt(document.getElementById('cfg_rcMinSchalt').value)||200,
+      schaltModus:  parseInt(document.getElementById('cfg_schaltModus').value)||0,
+      restStrikt200: document.getElementById('cfg_restStrikt200').checked,
     };
+    for (let i = 0; i < REST_MAX; i++) data['restEn'+i] = restEnabled[i] || false;
     const j = await apiPost('/api/config', data);
+    await restSpeichern();
     if (j && j.ok) showToast('✓ Gespeichert');
+  }
+
+  function updateSchaltModus() {
+    const modus = parseInt(document.getElementById('cfg_schaltModus').value);
+    const restSection = document.getElementById('restSection');
+    const rcSection = document.getElementById('rcSection');
+    const rcSection2 = document.getElementById('rcSection2');
+    if (modus === 1) {
+      restSection.style.display = 'block';
+      if (rcSection) rcSection.style.display = 'none';
+      if (rcSection2) rcSection2.style.display = 'none';
+      const c = document.getElementById('restDosenContainer');
+      if (c && !c.innerHTML.trim()) restRender();
+    } else {
+      restSection.style.display = 'none';
+      if (rcSection) rcSection.style.display = 'block';
+      if (rcSection2) rcSection2.style.display = 'block';
+    }
+  }
+
+  const REST_MAX = 6;
+  let restDosen = [{name:'Steckdose 1',urlOn:'',urlOff:''}];
+  let restEnabled = [true];
+
+  async function restLaden() {
+    try {
+      const r = await fetch('/api/rest');
+      const d = await r.json();
+      if (d.dosen && d.dosen.length) {
+        // Nur Dosen mit Inhalt übernehmen, mindestens 1
+        restDosen = d.dosen;
+        restEnabled = [];
+        for (let i = 0; i < restDosen.length; i++) {
+          restEnabled[i] = d['restEn'+i] === true;
+        }
+        if (!restDosen.length) { restDosen=[{name:'Steckdose 1',urlOn:'',urlOff:''}]; restEnabled=[true]; }
+      }
+      restRender();
+    } catch(e) {}
+  }
+
+  function restRender() {
+    const c = document.getElementById('restDosenContainer');
+    c.innerHTML = restDosen.map((dose, i) => `
+      <div style="border:1px solid var(--border);border-radius:4px;padding:12px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+            <input type="checkbox" style="width:auto" ${restEnabled[i]?'checked':''} onchange="restEnabled[${i}]=this.checked">
+            <span class="form-label" style="margin:0;color:var(--green-b)">Steckdose ${i+1} aktiv</span>
+          </label>
+          <button class="btn btn-ghost" style="font-size:0.65rem;padding:4px 10px;color:#C0504A;border-color:#5C2420" onclick="restRemove(${i})">🗑 Entfernen</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-input" value="${(dose.name||'').replace(/"/g,'&quot;')}" oninput="restDosen[${i}].name=this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL EIN</label>
+          <input type="text" class="form-input" placeholder="http://192.168.x.x/rpc/Switch.Set?id=0&on=true" value="${(dose.urlOn||'').replace(/"/g,'&quot;')}" oninput="restDosen[${i}].urlOn=this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL AUS</label>
+          <input type="text" class="form-input" placeholder="http://192.168.x.x/rpc/Switch.Set?id=0&on=false" value="${(dose.urlOff||'').replace(/"/g,'&quot;')}" oninput="restDosen[${i}].urlOff=this.value">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" style="font-size:0.7rem;padding:6px 12px" onclick="restTest(${i},true)">🔌 Test EIN</button>
+          <button class="btn btn-ghost" style="font-size:0.7rem;padding:6px 12px" onclick="restTest(${i},false)">⭘ Test AUS</button>
+        </div>
+      </div>
+    `).join('') + (restDosen.length < REST_MAX ?
+      `<button class="btn btn-green" style="width:100%" onclick="restAdd()">➕ Steckdose hinzufügen (${restDosen.length}/${REST_MAX})</button>` :
+      `<p style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:var(--text-d);text-align:center">Maximum ${REST_MAX} Steckdosen erreicht</p>`);
+  }
+
+  function restAdd() {
+    if (restDosen.length >= REST_MAX) return;
+    restDosen.push({name:'Steckdose '+(restDosen.length+1), urlOn:'', urlOff:''});
+    restEnabled.push(false);
+    restRender();
+  }
+
+  function restRemove(i) {
+    if (restDosen.length <= 1) { showToast('Mindestens eine Steckdose nötig', true); return; }
+    restDosen.splice(i, 1);
+    restEnabled.splice(i, 1);
+    restRender();
+  }
+
+  async function restSpeichern() {
+    const data = {
+      schaltModus: parseInt(document.getElementById('cfg_schaltModus').value)||0,
+      restStrikt200: document.getElementById('cfg_restStrikt200').checked,
+      dosen: restDosen
+    };
+    for (let i = 0; i < REST_MAX; i++) data['restEn'+i] = restEnabled[i] || false;
+    try { await fetch('/api/rest', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}); } catch(e){}
+  }
+
+  async function restTest(dose, an) {
+    showToast('Teste Steckdose ' + (dose+1) + '...');
+    try {
+      const r = await fetch('/api/rest/test?dose=' + dose + '&an=' + an, {method:'POST'});
+      const d = await r.json();
+      showToast(d.ok ? '✓ Steckdose ' + (dose+1) + (an?' EIN':' AUS') : '✗ Fehler — URL prüfen', !d.ok);
+    } catch(e) { showToast('✗ Verbindungsfehler', true); }
   }
 
   function showToast(msg, err=false) {

@@ -57,6 +57,7 @@
 #include <RCSwitch.h>
 #include <ArduinoJson.h>
 #include <ESP8266HTTPUpdateServer.h>  // OTA Firmware Update
+#include <ESP8266HTTPClient.h>        // REST-Steckdosen (Shelly etc.)
 
 // ── PINS ────────────────────────────────────────────────────
 #define PIN_DS18B20   4   // D2
@@ -361,6 +362,18 @@ unsigned long letztesSenden    = 0;        // Zeitstempel letztes RC-Signal
 unsigned long RC_REPEAT_MS     = 10000;  // Wiederholungsintervall in ms
 unsigned long RC_MIN_SCHALT_MS = 200;    // Mindest-Schaltzeit in ms (Relais-Schutz)
 
+// ── SCHALT-MODUS & REST-STECKDOSEN ───────────────────────────
+#define MAX_REST 6
+int  schaltModus  = 0;   // 0 = RC433 Funk, 1 = REST-Steckdose
+bool restEnabled[MAX_REST] = {true, false, false, false, false, false};
+bool restStrikt200 = false;  // true = nur HTTP 200 gilt als Erfolg
+struct RestDose {
+  char name[24];
+  char urlOn[128];
+  char urlOff[128];
+};
+RestDose restDosen[MAX_REST];
+
 // ── RASTEN ───────────────────────────────────────────────────
 #define MAX_RASTEN 16
 
@@ -497,18 +510,59 @@ void rcSend(unsigned long code) {
   rcSwitch.send(code, rcBits);
 }
 
+// REST-URL aufrufen (non-blocking-ish, kurzes Timeout)
+bool restCall(const char* url) {
+  if (!url || strlen(url) < 8) return false;  // leere URL
+  if (WiFi.status() != WL_CONNECTED) return false;
+  WiFiClient client;
+  HTTPClient http;
+  http.setTimeout(2000);  // 2s Timeout — nicht zu lange blockieren
+  if (!http.begin(client, url)) return false;
+  int code = http.GET();
+  http.end();
+  yield();
+  // Erfolg: entweder nur 200 (strikt) oder alle 2xx/3xx (generisch)
+  bool erfolg = restStrikt200 ? (code == 200) : (code > 0 && code < 400);
+  if (erfolg) {
+    Serial.printf("[REST] %s → HTTP %d OK\n", url, code);
+    return true;
+  }
+  Serial.printf("[REST] FEHLER %s → HTTP %d\n", url, code);
+  return false;
+}
+
+// Schaltet EIN — je nach Modus RC433 oder alle aktiven REST-Dosen
+void schalteEin() {
+  if (schaltModus == 1) {
+    for (int i = 0; i < MAX_REST; i++) {
+      if (restEnabled[i]) restCall(restDosen[i].urlOn);
+    }
+  } else {
+    rcSend(rcCodeOn);
+  }
+}
+
+// Schaltet AUS — je nach Modus RC433 oder alle aktiven REST-Dosen
+void schalteAus() {
+  if (schaltModus == 1) {
+    for (int i = 0; i < MAX_REST; i++) {
+      if (restEnabled[i]) restCall(restDosen[i].urlOff);
+    }
+  } else {
+    rcSend(rcCodeOff);
+  }
+}
+
 void heizungEin() {
   unsigned long jetzt = millis();
   bool zustandsWechsel = !heizungAn;
   bool wiederholung    = (jetzt - letztesSenden >= RC_REPEAT_MS);
   // Relais-Schutz: nicht schalten wenn letzte Schaltung zu kurz her
   if (zustandsWechsel && (jetzt - letztesSenden < RC_MIN_SCHALT_MS)) return;
-  if (rcCodeOn != 0 && (zustandsWechsel || wiederholung)) {
-    rcSend(rcCodeOn);
+  if (zustandsWechsel || wiederholung) {
+    schalteEin();
     heizungAn    = true;
     letztesSenden = jetzt;
-    Serial.printf("[RC] EIN  code=%lu bits=%d wdh=%d %s\n",
-      rcCodeOn, rcBits, rcWiederholungen, wiederholung ? "(wdh)" : "");
   }
 }
 void heizungAus() {
@@ -517,13 +571,61 @@ void heizungAus() {
   bool wiederholung    = (jetzt - letztesSenden >= RC_REPEAT_MS);
   // Relais-Schutz: nicht schalten wenn letzte Schaltung zu kurz her
   if (zustandsWechsel && (jetzt - letztesSenden < RC_MIN_SCHALT_MS)) return;
-  if (rcCodeOff != 0 && (zustandsWechsel || wiederholung)) {
-    rcSend(rcCodeOff);
+  if (zustandsWechsel || wiederholung) {
+    schalteAus();
     heizungAn    = false;
     letztesSenden = jetzt;
-    Serial.printf("[RC] AUS  code=%lu bits=%d wdh=%d %s\n",
-      rcCodeOff, rcBits, rcWiederholungen, wiederholung ? "(wdh)" : "");
   }
+}
+
+// ── REST-STECKDOSEN ──────────────────────────────────────────
+void restDosenLaden() {
+  // Defaults
+  for (int i = 0; i < MAX_REST; i++) {
+    snprintf(restDosen[i].name, sizeof(restDosen[i].name), "Steckdose %d", i+1);
+    restDosen[i].urlOn[0]  = 0;
+    restDosen[i].urlOff[0] = 0;
+  }
+  File f = LittleFS.open("/rest.json", "r");
+  if (!f) return;
+  DynamicJsonDocument doc(3072);
+  if (deserializeJson(doc, f) == DeserializationError::Ok) {
+    JsonArray arr = doc["dosen"];
+    int i = 0;
+    for (JsonObject o : arr) {
+      if (i >= MAX_REST) break;
+      strlcpy(restDosen[i].name,   o["name"]   | "", sizeof(restDosen[i].name));
+      strlcpy(restDosen[i].urlOn,  o["urlOn"]  | "", sizeof(restDosen[i].urlOn));
+      strlcpy(restDosen[i].urlOff, o["urlOff"] | "", sizeof(restDosen[i].urlOff));
+      i++;
+    }
+  }
+  f.close();
+  Serial.println("[REST] Steckdosen geladen");
+}
+
+void restDosenSpeichern(const String& body) {
+  DynamicJsonDocument doc(3072);
+  if (deserializeJson(doc, body) != DeserializationError::Ok) return;
+  JsonArray arr = doc["dosen"];
+  int i = 0;
+  for (JsonObject o : arr) {
+    if (i >= MAX_REST) break;
+    strlcpy(restDosen[i].name,   o["name"]   | "", sizeof(restDosen[i].name));
+    strlcpy(restDosen[i].urlOn,  o["urlOn"]  | "", sizeof(restDosen[i].urlOn));
+    strlcpy(restDosen[i].urlOff, o["urlOff"] | "", sizeof(restDosen[i].urlOff));
+    i++;
+  }
+  // Restliche Slots leeren (falls Dosen entfernt wurden)
+  for (; i < MAX_REST; i++) {
+    snprintf(restDosen[i].name, sizeof(restDosen[i].name), "Steckdose %d", i+1);
+    restDosen[i].urlOn[0]  = 0;
+    restDosen[i].urlOff[0] = 0;
+    restEnabled[i] = false;
+  }
+  File f = LittleFS.open("/rest.json", "w");
+  if (f) { serializeJson(doc, f); f.close(); }
+  Serial.println("[REST] Steckdosen gespeichert");
 }
 
 // ── CONFIG ───────────────────────────────────────────────────
@@ -546,8 +648,16 @@ void configLaden() {
     pidUeberschreitung = doc["pidUeberschreitung"] | 0.5;
     RC_REPEAT_MS       = (doc["rcRepeat"]     | 10)  * 1000UL;
     RC_MIN_SCHALT_MS   = doc["rcMinSchalt"]   | 200UL;
+    schaltModus        = doc["schaltModus"]   | 0;
+    restStrikt200      = doc["restStrikt200"] | false;
+    for (int i = 0; i < MAX_REST; i++) {
+      char key[10];
+      snprintf(key, sizeof(key), "restEn%d", i);
+      restEnabled[i] = doc[key] | (i == 0);
+    }
   }
   f.close();
+  restDosenLaden();  // REST-Steckdosen aus separater Datei
   myPID.SetTunings(Kp, Ki, Kd);
   rcSwitch.setProtocol(rcProtocol);
   rcSwitch.setPulseLength(rcPulse);
@@ -573,6 +683,13 @@ void configSpeichern(const String& body) {
   pidUeberschreitung = doc["pidUeberschreitung"] | pidUeberschreitung;
   RC_REPEAT_MS     = (doc["rcRepeat"]    | (int)(RC_REPEAT_MS/1000)) * 1000UL;
   RC_MIN_SCHALT_MS = doc["rcMinSchalt"]  | (int)RC_MIN_SCHALT_MS;
+  schaltModus      = doc["schaltModus"]   | schaltModus;
+  restStrikt200    = doc["restStrikt200"] | restStrikt200;
+  for (int i = 0; i < MAX_REST; i++) {
+    char key[10];
+    snprintf(key, sizeof(key), "restEn%d", i);
+    if (doc.containsKey(key)) restEnabled[i] = doc[key];
+  }
   myPID.SetTunings(Kp, Ki, Kd);
   rcSwitch.setProtocol(rcProtocol);
   rcSwitch.setPulseLength(rcPulse);
@@ -731,7 +848,7 @@ void rastStarten(int nr) {
   letzterCallPiep = 0;
   // Log nur beim ersten Rast-Start beginnen
   if (!logAktiv) logStart();
-  Serial.printf("[RAST %d] %s | Soll: %.1f°C | %d min\n",
+  Serial.printf("[RAST %d] %s | Soll: %.1f°C | %.1f min\n",
                 nr, r.name, r.sollTemp, r.time);
 }
 
@@ -792,14 +909,21 @@ void tempLesen() {
 
 // ── PID / HEIZUNG ────────────────────────────────────────────
 void heizungRegeln() {
+  // SICHERHEIT: Bei Sensorfehler NIEMALS heizen —
+  // pidInput wäre veraltet, PID würde blind mit 100% weiterheizen
+  if (sensorFehler) {
+    pidOutput = 0;
+    myPID.SetMode(MANUAL);
+    heizungAus();
+    return;
+  }
   if (zustand == GESTOPPT) {
     // Auch im Stopp-Zustand alle 30s AUS senden
     unsigned long jetzt = millis();
-    if (rcCodeOff != 0 && (jetzt - letztesSenden >= RC_REPEAT_MS)) {
-      rcSend(rcCodeOff);
+    if (jetzt - letztesSenden >= RC_REPEAT_MS) {
+      schalteAus();
       heizungAn     = false;
       letztesSenden = jetzt;
-      Serial.printf("[RC] AUS (Standby) code=%lu\n", rcCodeOff);
     }
     return;
   }
@@ -844,7 +968,9 @@ void heizungRegeln() {
   unsigned long jetzt   = millis();
   unsigned long fenster = jetzt - pidWindowStart;
   if (fenster >= PID_WINDOW_MS) {
-    pidWindowStart += PID_WINDOW_MS;
+    // Auf aktuelle Zeit setzen — verhindert Fenster-Springen
+    // falls der Loop mal länger blockiert war
+    pidWindowStart = jetzt;
     fenster = 0;
   }
   unsigned long einschaltMs = (unsigned long)(pidOutputBegrenzt / 100.0 * PID_WINDOW_MS);
@@ -1122,6 +1248,13 @@ void apiConfigGet() {
   doc["pidUeberschreitung"] = pidUeberschreitung;
   doc["rcRepeat"]     = (int)(RC_REPEAT_MS / 1000);
   doc["rcMinSchalt"]  = (int)RC_MIN_SCHALT_MS;
+  doc["schaltModus"]   = schaltModus;
+  doc["restStrikt200"] = restStrikt200;
+  for (int i = 0; i < MAX_REST; i++) {
+    char key[10];
+    snprintf(key, sizeof(key), "restEn%d", i);
+    doc[key] = restEnabled[i];
+  }
   String json;
   serializeJson(doc, json);
   server.send(200, "application/json", json);
@@ -1142,6 +1275,71 @@ void apiHeizungTest() {
     if (an) heizungEin(); else heizungAus();
   }
   server.send(200, "application/json", "{\"ok\":true}");
+}
+
+// REST-Steckdosen Config lesen
+void apiRestGet() {
+  DynamicJsonDocument doc(3072);
+  doc["schaltModus"] = schaltModus;
+  for (int i = 0; i < MAX_REST; i++) {
+    char key[10];
+    snprintf(key, sizeof(key), "restEn%d", i);
+    doc[key] = restEnabled[i];
+  }
+  JsonArray arr = doc.createNestedArray("dosen");
+  for (int i = 0; i < MAX_REST; i++) {
+    JsonObject o = arr.createNestedObject();
+    o["name"]   = restDosen[i].name;
+    o["urlOn"]  = restDosen[i].urlOn;
+    o["urlOff"] = restDosen[i].urlOff;
+  }
+  String json;
+  serializeJson(doc, json);
+  server.send(200, "application/json", json);
+}
+
+// REST-Steckdosen Config speichern
+void apiRestPost() {
+  String body = server.arg("plain");
+  restDosenSpeichern(body);
+  // schaltModus + restEnabled aus dem Body übernehmen
+  DynamicJsonDocument doc(3072);
+  if (deserializeJson(doc, body) == DeserializationError::Ok) {
+    schaltModus   = doc["schaltModus"]   | schaltModus;
+    restStrikt200 = doc["restStrikt200"] | restStrikt200;
+    for (int i = 0; i < MAX_REST; i++) {
+      char key[10];
+      snprintf(key, sizeof(key), "restEn%d", i);
+      if (doc.containsKey(key)) restEnabled[i] = doc[key];
+    }
+    // In config.json persistieren
+    StaticJsonDocument<768> cfg;
+    File cf = LittleFS.open("/config.json", "r");
+    if (cf) { deserializeJson(cfg, cf); cf.close(); }
+    cfg["schaltModus"]   = schaltModus;
+    cfg["restStrikt200"] = restStrikt200;
+    for (int i = 0; i < MAX_REST; i++) {
+      char key[10];
+      snprintf(key, sizeof(key), "restEn%d", i);
+      cfg[key] = restEnabled[i];
+    }
+    cf = LittleFS.open("/config.json", "w");
+    if (cf) { serializeJson(cfg, cf); cf.close(); }
+  }
+  server.send(200, "application/json", "{\"ok\":true}");
+}
+
+// REST-Steckdose testen (?dose=0&an=true)
+void apiRestTest() {
+  int dose = server.hasArg("dose") ? server.arg("dose").toInt() : 0;
+  bool an  = server.hasArg("an") ? (server.arg("an") == "true") : true;
+  if (dose < 0 || dose >= MAX_REST) {
+    server.send(400, "application/json", "{\"error\":\"ungültige Dose\"}");
+    return;
+  }
+  bool ok = restCall(an ? restDosen[dose].urlOn : restDosen[dose].urlOff);
+  String r = "{\"ok\":" + String(ok ? "true" : "false") + "}";
+  server.send(200, "application/json", r);
 }
 
 // ── UPLOAD: BML ──────────────────────────────────────────────
@@ -1347,6 +1545,9 @@ void setup() {
   server.on("/api/config",       HTTP_GET,  apiConfigGet);
   server.on("/api/config",       HTTP_POST, apiConfigPost);
   server.on("/api/heizung-test", HTTP_POST, apiHeizungTest);
+  server.on("/api/rest",         HTTP_GET,  apiRestGet);
+  server.on("/api/rest",         HTTP_POST, apiRestPost);
+  server.on("/api/rest/test",    HTTP_POST, apiRestTest);
   server.on("/api/log",             HTTP_GET,  apiLog);
   server.on("/api/log/reset",       HTTP_POST, apiLogReset);
   server.on("/api/log/download",    HTTP_GET,  apiLogDownload);
