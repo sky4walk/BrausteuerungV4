@@ -26,21 +26,26 @@
  *   - ArduinoJson       v6.21.5 (Benoit Blanchon) ← unbedingt v6.x!
  *
  * Web-Interface:
- *   - index.html  → PROGMEM (eingebettet) oder LittleFS (/index.html)
+ *   - index.html  → LittleFS (/index.html), sonst Setup-Seite
  *   - /tools      → Upload von index.html und Firmware OTA
  *   - /update     → ESP8266HTTPUpdateServer OTA (admin/brau2024)
  *
  * LittleFS Dateien:
  *   - /config.json  → RCSwitch Codes, PID-Parameter
  *   - /wlan.json    → WLAN Credentials
- *   - /rezept.bml   → aktuell geladenes Braurezept
+ *   - /rezept.json  → aktuell geladenes Braurezept (vom Browser geparst)
  *   - /index.html   → optionale Web-UI (überschreibt PROGMEM)
  *   - /log.csv      → Temperaturlog (wird beim Brauen geschrieben)
  *
  * Reset (per /tools → Komplett-Reset):
  *   Löscht alle LittleFS Dateien → Werksreset
  *
- * Version: 4.0.0
+ * Version: 4.1.0
+ *
+ * API-Version 2 (index.html prüft "api" im Status):
+ *   - BML wird im Browser geparst → POST /api/rezept (JSON)
+ *   - Rasten-Liste nicht mehr im Status, sondern GET /api/rezept
+ *   - Log-Chart liest /api/log/download (CSV) direkt
  *
  * Reset:
  *   - Flash-Knopf (D3) beim Start gedrückt halten → löscht WLAN-Config
@@ -391,6 +396,8 @@ struct Rast {
 
 Rast  rasten[MAX_RASTEN];
 int   rastAnzahl   = 0;
+uint16_t rezeptVersion = 1;   // wird bei jeder Rezeptänderung erhöht → Browser lädt neu
+#define API_VERSION 2
 int   aktiveRast   = -1;
 bool  wartendHalt  = false;
 
@@ -777,53 +784,67 @@ void apRoutenSetup() {
   });
 }
 
-// ── BML PARSER ───────────────────────────────────────────────
-String xmlTagWert(const String& xml, const String& tag) {
-  String open  = "<" + tag + ">";
-  String close = "</" + tag + ">";
-  int s = xml.indexOf(open);
-  if (s < 0) return "";
-  s += open.length();
-  int e = xml.indexOf(close, s);
-  if (e < 0) return "";
-  return xml.substring(s, e);
+// ── REZEPT (JSON, vom Browser geparst) ───────────────────────
+// Format: {"rasten":[{"name","halt","call","soll","time","ownPid",
+//                     "kp","ki","kd","maxGradient","info"}, ...]}
+bool rezeptAusJson(JsonDocument& doc) {
+  JsonArray arr = doc["rasten"];
+  if (arr.isNull()) return false;
+  rastAnzahl = 0;
+  for (JsonObject o : arr) {
+    if (rastAnzahl >= MAX_RASTEN) break;
+    Rast& r = rasten[rastAnzahl];
+    strlcpy(r.name, o["name"] | "", sizeof(r.name));
+    strlcpy(r.info, o["info"] | "", sizeof(r.info));
+    r.on          = true;
+    r.halt        = o["halt"]        | false;
+    r.call        = o["call"]        | false;
+    r.ownPid      = o["ownPid"]      | false;
+    r.sollTemp    = o["soll"]        | 0.0f;
+    r.time        = o["time"]        | 0.0f;
+    r.minTemp     = o["minTemp"]     | 0.0f;
+    r.maxTemp     = o["maxTemp"]     | 0.0f;
+    r.kp          = o["kp"]          | 0.0f;
+    r.ki          = o["ki"]          | 0.0f;
+    r.kd          = o["kd"]          | 0.0f;
+    r.maxGradient = o["maxGradient"] | 0.0f;
+    rastAnzahl++;
+    yield();
+  }
+  rezeptVersion++;
+  return rastAnzahl > 0;
 }
 
-bool bmlLaden() {
-  File f = LittleFS.open("/rezept.bml", "r");
+bool rezeptLaden() {
+  LittleFS.remove("/rezept.bml");  // Altlast aus Firmware < 4.1
+  File f = LittleFS.open("/rezept.json", "r");
   if (!f) return false;
-  String xml = f.readString();
+  DynamicJsonDocument doc(4096);
+  bool ok = (deserializeJson(doc, f) == DeserializationError::Ok);
   f.close();
+  if (!ok) { Serial.println("[REZEPT] rezept.json ungültig"); return false; }
+  return rezeptAusJson(doc);
+}
+
+// Speichert den Body 1:1 als /rezept.json und übernimmt ihn in den RAM
+bool rezeptSpeichern(const String& body) {
+  DynamicJsonDocument doc(4096);
+  if (deserializeJson(doc, body) != DeserializationError::Ok) return false;
+  if (!rezeptAusJson(doc)) return false;
+  File f = LittleFS.open("/rezept.json", "w");
+  if (f) { serializeJson(doc, f); f.close(); }
+  Serial.printf("[REZEPT] Gespeichert: %d Rasten\n", rastAnzahl);
+  return true;
+}
+
+void rezeptLoeschen() {
   rastAnzahl = 0;
-  int pos = 0;
-  while (rastAnzahl < MAX_RASTEN) {
-    int start = xml.indexOf("<rast>", pos);
-    if (start < 0) break;
-    int end = xml.indexOf("</rast>", start);
-    if (end < 0) break;
-    String block = xml.substring(start, end + 7);
-    Rast& r = rasten[rastAnzahl];
-    r.on = (xmlTagWert(block, "On") == "true");
-    if (r.on) {
-      xmlTagWert(block, "Name").toCharArray(r.name, sizeof(r.name));
-      r.halt        = xmlTagWert(block, "Halt")       == "true";
-      r.call        = xmlTagWert(block, "Call")       == "true";
-      r.sollTemp    = xmlTagWert(block, "SollTemp")   .toFloat();
-      r.time        = xmlTagWert(block, "Time")       .toFloat();
-      r.minTemp     = xmlTagWert(block, "MinTemp")    .toFloat();
-      r.maxTemp     = xmlTagWert(block, "MaxTemp")    .toFloat();
-      r.kp          = xmlTagWert(block, "Kp")         .toFloat();
-      r.ki          = xmlTagWert(block, "Ki")         .toFloat();
-      r.kd          = xmlTagWert(block, "Kd")         .toFloat();
-      r.ownPid      = xmlTagWert(block, "OwnPid")     == "true";
-      r.maxGradient = xmlTagWert(block, "MaxGradient").toFloat();
-      xmlTagWert(block, "Info").toCharArray(r.info, sizeof(r.info));
-      rastAnzahl++;
-    }
-    pos = end + 7;
-    yield();  // BML-Parsing kann lange dauern
-  }
-  return rastAnzahl > 0;
+  aktiveRast = -1;
+  zustand    = GESTOPPT;
+  heizungAus();
+  LittleFS.remove("/rezept.json");
+  rezeptVersion++;
+  Serial.println("[REZEPT] Gelöscht");
 }
 
 // ── RAST STARTEN ─────────────────────────────────────────────
@@ -1027,8 +1048,13 @@ void brauLogik() {
 }
 
 // ── API: STATUS ──────────────────────────────────────────────
+// Bewusst klein: wird alle 2s gepollt. Die Rasten-Liste gibt es
+// separat unter /api/rezept; "rezeptVersion" sagt dem Browser,
+// wann er sie neu laden muss.
 void apiStatus() {
-  DynamicJsonDocument doc(3072);  // Heap-Allokation, sicher für 16 Rasten
+  StaticJsonDocument<640> doc;
+  doc["api"]          = API_VERSION;
+  doc["rezeptVersion"] = rezeptVersion;
   doc["temp"]       = tempAktuell;
   doc["soll"]       = pidSetpoint;
   doc["gradient"]   = tempGradient;
@@ -1055,6 +1081,15 @@ void apiStatus() {
       doc["timerRest"]      = (gesamt > verg) ? (gesamt - verg) : 0;
     }
   }
+  String json;
+  serializeJson(doc, json);
+  server.send(200, "application/json", json);
+}
+
+// ── API: REZEPT ──────────────────────────────────────────────
+void apiRezeptGet() {
+  DynamicJsonDocument doc(4096);
+  doc["version"] = rezeptVersion;
   JsonArray liste = doc.createNestedArray("rasten");
   for (int i = 0; i < rastAnzahl; i++) {
     JsonObject o = liste.createNestedObject();
@@ -1069,51 +1104,31 @@ void apiStatus() {
     o["ki"]          = rasten[i].ki;
     o["kd"]          = rasten[i].kd;
     o["maxGradient"] = rasten[i].maxGradient;
+    o["info"]        = rasten[i].info;
+    yield();
   }
   String json;
   serializeJson(doc, json);
   server.send(200, "application/json", json);
 }
 
-// ── API: LOG (liest Flash-CSV → JSON für Chart) ─────────────
-void apiLog() {
-  if (!LittleFS.exists("/log.csv")) {
-    server.send(200, "application/json", "{\"n\":0,\"interval\":10,\"d\":[]}");
+void apiRezeptPost() {
+  Serial.printf("[HTTP] POST /api/rezept — Client: %s\n",
+    server.client().remoteIP().toString().c_str());
+  if (zustand != GESTOPPT) {
+    server.send(409, "application/json", "{\"error\":\"Brauvorgang läuft — erst stoppen\"}");
     return;
   }
-  File f = LittleFS.open("/log.csv", "r");
-  String json = "{\"n\":0,\"interval\":10,\"d\":[";
-  bool first = true;
-  int count = 0;
-  f.readStringUntil('\n');  // Header
-  while (f.available()) {
-    String line = f.readStringUntil('\n');
-    line.trim();
-    if (!line.length()) continue;
-    int s1=line.indexOf(';'), s2=line.indexOf(';',s1+1);
-    int s3=line.indexOf(';',s2+1), s4=line.indexOf(';',s3+1);
-    if (s4 < 0) continue;
-    long  t   = line.substring(0,s1).toInt();
-    float tmp = line.substring(s1+1,s2).toFloat();
-    float sol = line.substring(s2+1,s3).toFloat();
-    int   pid = line.substring(s3+1,s4).toInt();
-    int   rst = line.substring(s4+1).toInt();
-    if (!first) json += ",";
-    json += "[" + String(t) + "," +
-            String((int)(tmp*100)) + "," +
-            String((int)(sol*100)) + "," +
-            String(pid) + "," +
-            String(rst) + "]";
-    first = false;
-    count++;
-    yield();
+  if (!server.hasArg("plain") || !rezeptSpeichern(server.arg("plain"))) {
+    server.send(400, "application/json", "{\"error\":\"Rezept-JSON ungültig oder leer\"}");
+    return;
   }
-  f.close();
-  json += "]}";
-  json.replace("{\"n\":0,", "{\"n\":" + String(count) + ",");
-  server.send(200, "application/json", json);
+  server.send(200, "application/json",
+    "{\"ok\":true,\"rasten\":" + String(rastAnzahl) + "}");
 }
 
+// ── API: LOG ────────────────────────────────────────────────
+// Das Chart liest /api/log/download (CSV-Stream) direkt — kein JSON im RAM.
 void apiLogReset() {
   logReset();
   server.send(200, "application/json", "{\"ok\":true}");
@@ -1130,9 +1145,6 @@ void apiLogDownload() {
   server.streamFile(f, "text/csv");
   f.close();
 }
-
-// ── API: TEMPERATUR LOG (RAM) ─────────────────────────────────
-
 
 // ── API: FILE LISTING ────────────────────────────────────────
 void apiFiles() {
@@ -1342,35 +1354,7 @@ void apiRestTest() {
   server.send(200, "application/json", r);
 }
 
-// ── UPLOAD: BML ──────────────────────────────────────────────
 File uploadFile;
-
-void handleBMLUpload() {
-  HTTPUpload& upload = server.upload();
-  if (upload.status == UPLOAD_FILE_START) {
-    Serial.println("[UPLOAD] BML Start");
-    LittleFS.remove("/rezept.bml");
-    uploadFile = LittleFS.open("/rezept.bml", "w");
-  }
-  else if (upload.status == UPLOAD_FILE_WRITE) {
-    if (uploadFile) uploadFile.write(upload.buf, upload.currentSize);
-  }
-  else if (upload.status == UPLOAD_FILE_END) {
-    if (uploadFile) uploadFile.close();
-    Serial.printf("[UPLOAD] BML Ende: %u Bytes\n", upload.totalSize);
-    bmlLaden();
-    Serial.printf("[BML] %d Rasten geladen\n", rastAnzahl);
-  }
-}
-
-void handleBMLUploadEnd() {
-  if (rastAnzahl > 0)
-    server.send(200, "application/json",
-      "{\"ok\":true,\"rasten\":" + String(rastAnzahl) + "}");
-  else
-    server.send(500, "application/json",
-      "{\"error\":\"BML konnte nicht geparst werden\"}");
-}
 
 // ── UPLOAD: CONFIG JSON ───────────────────────────────────────
 void handleConfigUpload() {
@@ -1448,9 +1432,8 @@ void setup() {
     Serial.println("[FS] LittleFS OK");
 
     configLaden();
-    bmlLaden();
-    if (rastAnzahl > 0)
-      Serial.printf("[BML] %d Rasten geladen\n", rastAnzahl);
+    if (rezeptLaden())
+      Serial.printf("[REZEPT] %d Rasten geladen\n", rastAnzahl);
   }
 
   // ── Sensoren & Hardware ──────────────────────────────────
@@ -1545,23 +1528,18 @@ void setup() {
   server.on("/api/config",       HTTP_GET,  apiConfigGet);
   server.on("/api/config",       HTTP_POST, apiConfigPost);
   server.on("/api/heizung-test", HTTP_POST, apiHeizungTest);
+  server.on("/api/rezept",       HTTP_GET,  apiRezeptGet);
+  server.on("/api/rezept",       HTTP_POST, apiRezeptPost);
   server.on("/api/rest",         HTTP_GET,  apiRestGet);
   server.on("/api/rest",         HTTP_POST, apiRestPost);
   server.on("/api/rest/test",    HTTP_POST, apiRestTest);
-  server.on("/api/log",             HTTP_GET,  apiLog);
   server.on("/api/log/reset",       HTTP_POST, apiLogReset);
   server.on("/api/log/download",    HTTP_GET,  apiLogDownload);
   server.on("/api/settings/backup", HTTP_GET,  apiSettingsBackup);
   server.on("/api/files",           HTTP_GET,  apiFiles);
   server.on("/api/files/delete",    HTTP_POST, apiFileDelete);
   server.on("/api/rezept/loeschen", HTTP_POST, []() {
-    // Alle Rasten deaktivieren + BML-Datei löschen
-    rastAnzahl = 0;
-    aktiveRast = -1;
-    zustand    = GESTOPPT;
-    heizungAus();
-    LittleFS.remove("/rezept.bml");
-    Serial.println("[REZEPT] Gelöscht");
+    rezeptLoeschen();
     server.send(200, "application/json", "{\"ok\":true}");
   });
   server.on("/api/wlan/reset",   HTTP_POST, []() {
@@ -1583,7 +1561,6 @@ void setup() {
     server.send_P(200, "text/html", TOOLS_HTML);
   });
 
-  server.on("/upload/bml",    HTTP_POST, handleBMLUploadEnd,    handleBMLUpload);
   server.on("/upload/config", HTTP_POST, handleConfigUploadEnd, handleConfigUpload);
   server.on("/upload/html",   HTTP_POST, handleHtmlUploadEnd,   handleHtmlUpload);
   server.on("/upload/html-reset", HTTP_GET, handleHtmlReset);
@@ -1600,7 +1577,8 @@ void setup() {
     doc["sketchSize"]    = ESP.getSketchSize();
     doc["freeSketch"]    = ESP.getFreeSketchSpace();
     doc["uptime"]        = millis() / 1000;
-    doc["version"]       = "4.0.0";
+    doc["version"]       = "4.1.0";
+    doc["api"]           = API_VERSION;
     doc["ip"]            = WiFi.localIP().toString();
     doc["hostname"]      = HOSTNAME;
     doc["htmlLittleFS"]  = LittleFS.exists("/index.html");
