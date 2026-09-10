@@ -395,6 +395,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  const API_VERSION = 2;          // muss zur Firmware passen (Status-Feld "api")
+  let   apiWarnungGezeigt = false;
   const ZUSTAND_LABEL = ['Gestoppt','Aufheizen','Rast läuft','Warte — HALT'];
   const ZUSTAND_COLOR = ['var(--text-d)','var(--amber)','var(--green-b)','var(--amber)'];
 
@@ -434,6 +436,14 @@
   }
 
   function updateUI(d) {
+    // Firmware/HTML zusammenpassend?
+    if (d.api !== API_VERSION && !apiWarnungGezeigt) {
+      apiWarnungGezeigt = true;
+      showToast('⚠ Firmware (API ' + (d.api||1) + ') passt nicht zu dieser index.html (API ' + API_VERSION + ') — bitte beides aktualisieren', true);
+    }
+    // Rezept nur neu laden, wenn sich die Version auf dem ESP geändert hat
+    if (d.rezeptVersion !== undefined && d.rezeptVersion !== rezeptCache.version) ladeRezept();
+
     document.getElementById('tempIst').textContent  = parseFloat(d.temp||0).toFixed(1);
     // Sensor-Fehler Banner
     const sb = document.getElementById('sensorBanner');
@@ -508,21 +518,79 @@
     letzterZustand = zi;
     letzteWartHalt = d.wartHalt || false;
 
-    // Rasten-Liste
-    if (d.rasten && d.rasten.length > 0) {
-      document.getElementById('rastenListeWrap').style.display = 'block';
-      document.getElementById('rastenListe').innerHTML = d.rasten.map(r => {
-        const isCurrent = r.nr === d.rast;
-        const isDone    = d.rast > r.nr;
-        return `<div class="rast-item ${isCurrent?'aktiv':''} ${isDone?'erledigt':''}" onclick="startVon(${r.nr})">
-          <span class="rast-nr">${String(r.nr).padStart(2,'0')}</span>
-          <span class="rast-item-name">${esc(r.name)}</span>
-          <span class="rast-item-detail">${r.soll}°C · ${r.time} min</span>
-          ${r.halt?'<span class="rast-pill pill-halt">HALT</span>':''}
-          ${r.call?'<span class="rast-pill pill-call">CALL</span>':''}
-        </div>`;
-      }).join('');
+    // Rasten-Liste (aus Cache, nur bei Wechsel der aktiven Rast neu rendern)
+    if (d.rast !== letzteRenderRast) {
+      letzteRenderRast = d.rast;
+      renderRastenListe();
     }
+  }
+
+  // ── Rezept-Cache: Rasten-Liste kommt von /api/rezept, nicht mehr aus dem Status
+  let rezeptCache = { version: -1, rasten: [] };
+  let letzteRenderRast = -2;
+
+  async function ladeRezept() {
+    try {
+      const r = await fetch('/api/rezept');
+      // Kein ESP (Vorschau/Datei) oder alte Firmware → keine JSON-Antwort, still ignorieren
+      if (!r.ok || !(r.headers.get('content-type')||'').includes('json')) return;
+      const d = await r.json();
+      rezeptCache = { version: d.version, rasten: d.rasten || [] };
+      renderRastenListe();
+      ladeRezeptInfo();
+    } catch(e) {}
+  }
+
+  function rastZeile(r, aktiv, erledigt, klick) {
+    return `<div class="rast-item ${aktiv?'aktiv':''} ${erledigt?'erledigt':''}"${klick?` onclick="startVon(${r.nr})"`:''}>
+      <span class="rast-nr">${String(r.nr).padStart(2,'0')}</span>
+      <span class="rast-item-name">${esc(r.name)}</span>
+      <span class="rast-item-detail">${r.soll}°C · ${r.time} min</span>
+      ${r.halt?'<span class="rast-pill pill-halt">HALT</span>':''}
+      ${r.call?'<span class="rast-pill pill-call">CALL</span>':''}
+    </div>`;
+  }
+
+  function renderRastenListe() {
+    const wrap = document.getElementById('rastenListeWrap');
+    if (!rezeptCache.rasten.length) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    const akt = letzteRenderRast;
+    document.getElementById('rastenListe').innerHTML =
+      rezeptCache.rasten.map(r => rastZeile(r, r.nr === akt, akt > r.nr, true)).join('');
+  }
+
+  // ── BML → Rasten-Array (gemeinsamer Parser für Upload und Generator)
+  function bmlZuRasten(xmlStr) {
+    const doc = new DOMParser().parseFromString(xmlStr, 'application/xml');
+    if (doc.querySelector('parsererror')) throw new Error('Ungültiges XML');
+    if (!doc.querySelector('recipe')) throw new Error('Kein <recipe> Element');
+    const els = Array.from(doc.querySelectorAll('rast'));
+    if (!els.length) throw new Error('Keine <rast> Elemente');
+    const g  = (el,t) => { const n=el.querySelector(t); return n?n.textContent.trim():''; };
+    const pB = s => s === 'true';
+    const pF = (s,d) => { const n=parseFloat(s); return isNaN(n)?d:n; };
+    const pI = (s,d) => { const n=parseInt(s);   return isNaN(n)?d:n; };
+    return els.map(el => ({
+      on: pB(g(el,'On')), name: g(el,'Name'), halt: pB(g(el,'Halt')), call: pB(g(el,'Call')),
+      soll: pF(g(el,'SollTemp'),67), time: pF(g(el,'Time'),0),
+      minTemp: pF(g(el,'MinTemp'),-0.1), maxTemp: pF(g(el,'MaxTemp'),0.1),
+      kp: pF(g(el,'Kp'),0), ki: pF(g(el,'Ki'),0), kd: pF(g(el,'Kd'),0),
+      ownPid: pB(g(el,'OwnPid')), onPulse: pI(g(el,'OnTimePulse'),0), offPulse: pI(g(el,'OffTimePulse'),0),
+      maxGradient: pF(g(el,'MaxGradient'),0), info: g(el,'Info')
+    }));
+  }
+
+  // Aktive Rasten als JSON an den ESP schicken (ersetzt den BML-Upload)
+  async function rezeptAnEsp(rasten) {
+    const aktiv = rasten.filter(r => r.on !== false).slice(0, 16).map(r => ({
+      name: r.name, halt: !!r.halt, call: !!r.call, soll: +r.soll, time: +r.time,
+      minTemp: +r.minTemp, maxTemp: +r.maxTemp, ownPid: !!r.ownPid,
+      kp: +r.kp, ki: +r.ki, kd: +r.kd, maxGradient: +r.maxGradient, info: r.info || ''
+    }));
+    if (!aktiv.length) return { error: 'Keine aktiven Rasten im Rezept' };
+    const r = await fetch('/api/rezept', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ rasten: aktiv }) });
+    return r.json();
   }
 
   function fmt(sek) {
@@ -536,7 +604,8 @@
     const j = await apiPost("/api/rezept/loeschen");
     if (j && j.ok) {
       showToast("Rezept geloescht");
-      document.getElementById("rastenListeWrap").style.display = "none";
+      rezeptCache = { version: -1, rasten: [] };
+      renderRastenListe(); ladeRezeptInfo();
     }
   }
 
@@ -558,38 +627,32 @@
   async function uploadBML(file) {
     if (!file) return;
     const st = document.getElementById('uploadStatus');
-    st.textContent = '⏳ Lade hoch...';
-    const form = new FormData();
-    form.append('bml', file);
+    st.textContent = '⏳ Lese BML...';
     try {
-      const r = await fetch('/upload/bml', { method:'POST', body:form });
-      const j = await r.json();
+      const xml = await file.text();
+      const rasten = bmlZuRasten(xml);       // Parsing im Browser, nicht auf dem ESP
+      st.textContent = '⏳ Übertrage...';
+      const j = await rezeptAnEsp(rasten);
       if (j.ok) {
         st.textContent = '✓ ' + j.rasten + ' Rasten geladen';
         showToast('✓ BML geladen — ' + j.rasten + ' Rasten');
-        ladeRezeptInfo();
+        ladeRezept();
       } else {
         st.textContent = '✗ ' + (j.error||'Fehler');
         showToast(j.error||'Upload Fehler', true);
       }
-    } catch(e) { st.textContent = '✗ Verbindungsfehler'; showToast('Verbindungsfehler', true); }
+    } catch(e) {
+      const msg = e instanceof TypeError ? 'Verbindungsfehler' : e.message;
+      st.textContent = '✗ ' + msg; showToast(msg, true);
+    }
   }
 
-  async function ladeRezeptInfo() {
-    try {
-      const r = await fetch('/api/status');
-      const d = await r.json();
-      if (!d.rasten || !d.rasten.length) return;
-      document.getElementById('rezeptInfo').style.display = 'block';
-      document.getElementById('rezeptRastenListe').innerHTML = d.rasten.map(r =>
-        `<div class="rast-item">
-          <span class="rast-nr">${String(r.nr).padStart(2,'0')}</span>
-          <span class="rast-item-name">${esc(r.name)}</span>
-          <span class="rast-item-detail">${r.soll}°C · ${r.time} min</span>
-          ${r.halt?'<span class="rast-pill pill-halt">HALT</span>':''}
-          ${r.call?'<span class="rast-pill pill-call">CALL</span>':''}
-        </div>`).join('');
-    } catch(e) {}
+  function ladeRezeptInfo() {
+    const info = document.getElementById('rezeptInfo');
+    if (!rezeptCache.rasten.length) { info.style.display = 'none'; return; }
+    info.style.display = 'block';
+    document.getElementById('rezeptRastenListe').innerHTML =
+      rezeptCache.rasten.map(r => rastZeile(r, false, false, false)).join('');
   }
 
   async function configLaden() {
@@ -837,7 +900,7 @@
   }
   async function genLadeVonEsp() {
     try {
-      const r = await fetch('/api/status');
+      const r = await fetch('/api/rezept');
       const d = await r.json();
       if (!d.rasten || !d.rasten.length) {
         genRenderRasts(); genUpdateAll(); return;
@@ -1052,18 +1115,15 @@
     if (!genRasts.length) { genShowToast("Keine Rasten vorhanden", true); return; }
     const st = document.getElementById("gen_uebernahmeStatus");
     st.textContent = "⏳ Übertrage...";
-    const bml  = genGenerateBML();
-    const name = (document.getElementById("gen_recipeName").value || "rezept")
-      .replace(/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/g, "").replace(/\s+/g, "_");
-    const file = new File([bml], name + ".bml", { type: "application/xml" });
-    const form = new FormData();
-    form.append("bml", file);
     try {
-      const r = await fetch("/upload/bml", { method: "POST", body: form });
-      const j = await r.json();
+      // gleiche Semantik wie genGenerateBML: OwnPid = Kp > 0, leerer Name → "Rast n"
+      const rasten = genRasts.map((r, i) => ({ ...r, name: r.name || ('Rast ' + (i + 1)),
+        soll: r.sollTemp, ownPid: r.kp > 0, on: true }));
+      const j = await rezeptAnEsp(rasten);
       if (j.ok) {
         st.textContent = "✓ " + j.rasten + " Rasten übernommen";
         genShowToast("✓ Rezept übernommen — " + j.rasten + " Rasten");
+        ladeRezept();
       } else {
         st.textContent = "✗ " + (j.error || "Fehler");
         genShowToast(j.error || "Fehler", true);
@@ -1093,18 +1153,8 @@
     if(!recipe) throw new Error('Kein <recipe> Element');
     const desc=genGetXMLText(recipe,'description');
     let name=desc.match(/Name\s*:\s*([^N]+?)(?=\s+(?:Name|Sudmenge|Malz|Hefe)|$)/)?.[1]?.trim()||filename.replace(/\.(bml|xml)$/i,'').replace(/_/g,' ');
-    const rastEls=Array.from(doc.querySelectorAll('rast'));
-    if(!rastEls.length) throw new Error('Keine <rast> Elemente');
-    const pB=s=>s==='true', pF=(s,d)=>{const n=parseFloat(s);return isNaN(n)?d:n;}, pI=(s,d)=>{const n=parseInt(s);return isNaN(n)?d:n;};
-    genRasts=rastEls.filter(el=>pB(genGetXMLText(el,'On'))).map(el=>({
-      id:genNextId++, open:false,
-      name:genGetXMLText(el,'Name'), on:pB(genGetXMLText(el,'On')),
-      halt:pB(genGetXMLText(el,'Halt')), call:pB(genGetXMLText(el,'Call')),
-      sollTemp:pF(genGetXMLText(el,'SollTemp'),67), time:pI(genGetXMLText(el,'Time'),0),
-      minTemp:pF(genGetXMLText(el,'MinTemp'),-0.1), maxTemp:pF(genGetXMLText(el,'MaxTemp'),0.1),
-      kp:pF(genGetXMLText(el,'Kp'),1), ki:pF(genGetXMLText(el,'Ki'),0), kd:pF(genGetXMLText(el,'Kd'),0),
-      onPulse:pI(genGetXMLText(el,'OnTimePulse'),0), offPulse:pI(genGetXMLText(el,'OffTimePulse'),0),
-      maxGradient:pF(genGetXMLText(el,'MaxGradient'),1), info:genGetXMLText(el,'Info')
+    genRasts=bmlZuRasten(xmlStr).filter(r=>r.on).map(r=>({
+      id:genNextId++, open:false, sollTemp:r.soll, ...r
     }));
     document.getElementById('gen_recipeName').value=name;
     genRenderRasts(); genUpdateAll();
@@ -1154,6 +1204,7 @@
 
 
 
+  ladeRezept();
   pollStatus();
   setInterval(pollStatus, 2000);
   ladeRezeptInfo();
@@ -1174,11 +1225,19 @@
     });
   }
 
+  // Liest die Log-CSV direkt aus dem Flash-Stream (/api/log/download) und
+  // parst sie hier — der ESP muss kein JSON mehr im RAM aufbauen.
+  // Zeilenformat: Zeit_s;Temp_C;Soll_C;PID_Pct;Rast
   async function ladeLog() {
     try {
-      const r = await fetch('/api/log');
-      const d = await r.json();
-      logDaten = d.d || [];
+      const r = await fetch('/api/log/download');
+      if (r.status === 404) { logDaten = []; zeichneChart(); return; }
+      const txt = await r.text();
+      logDaten = txt.split('\n').slice(1).map(z => z.trim().split(';'))
+        .filter(f => f.length >= 5)
+        .map(f => [parseInt(f[0]), Math.round(parseFloat(f[1])*100),
+                   Math.round(parseFloat(f[2])*100), parseInt(f[3]), parseInt(f[4])])
+        .filter(p => !p.some(isNaN));
       zeichneChart();
     } catch(e) {}
   }
