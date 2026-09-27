@@ -595,9 +595,9 @@ Discarded input sections
                 0x0000000000000000        0x0 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
  .literal._ZN8RCSwitch18getReceivedRawdataEv
                 0x0000000000000000        0x0 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
- .iram.text.RCSwitch.cpp.613.10.literal
+ .iram.text.RCSwitch.cpp.612.10.literal
                 0x0000000000000000        0x0 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
- .iram.text.RCSwitch.cpp.672.11.literal
+ .iram.text.RCSwitch.cpp.671.11.literal
                 0x0000000000000000        0x0 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
  .text          0x0000000000000000        0x0 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
  .data          0x0000000000000000        0x0 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
@@ -9777,8 +9777,8 @@ END GROUP
  *(.dtors)
                 0x0000000040204788                . = ALIGN (0x4)
                 0x0000000040204788                _bss_table_start = ABSOLUTE (.)
-                0x0000000040204788        0x4 LONG 0x3ffe8a88 _bss_start
-                0x000000004020478c        0x4 LONG 0x3ffef120 _bss_end
+                0x0000000040204788        0x4 LONG 0x3ffe8a80 _bss_start
+                0x000000004020478c        0x4 LONG 0x3ffef110 _bss_end
                 0x0000000040204790                _bss_table_end = ABSOLUTE (.)
  *libgcc.a:unwind-dw2.o(.literal .text .rodata .literal.* .text.* .rodata.*)
  *libgcc.a:unwind-dw2-fde.o(.literal .text .rodata .literal.* .text.* .rodata.*)
@@ -14195,12 +14195,12 @@ END GROUP
 
 .text1          0x00000000401000e8     0x6bb1
  *(.literal .text .iram.literal .iram.text .iram.text.* .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
- .iram.text.RCSwitch.cpp.613.10
+ .iram.text.RCSwitch.cpp.612.10
                 0x00000000401000e8      0x12d /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
                                         0x131 (size before relaxing)
                 0x0000000040100108                _ZN8RCSwitch15receiveProtocolEij
  *fill*         0x0000000040100215        0x3 
- .iram.text.RCSwitch.cpp.672.11
+ .iram.text.RCSwitch.cpp.671.11
                 0x0000000040100218       0xac /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
                                          0xbc (size before relaxing)
                 0x0000000040100224                _ZN8RCSwitch15handleInterruptEv
@@ -15218,7 +15218,7 @@ END GROUP
                 0x0000000040106c99                _text_end = ABSOLUTE (.)
                 0x0000000040106c99                _etext = .
 
-.rodata         0x000000003ffe8620      0x464
+.rodata         0x000000003ffe8620      0x45c
                 0x000000003ffe8620                _rodata_start = ABSOLUTE (.)
  *(.sdk.version)
  .sdk.version   0x000000003ffe8620       0x13 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(app_main.o)
@@ -15248,180 +15248,180 @@ END GROUP
                 0x000000003ffe87da       0x25 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/sketch/ReceiveDemo_Advanced.ino.cpp.o
  *fill*         0x000000003ffe87ff        0x1 
  .rodata._ZL5proto
-                0x000000003ffe8800       0x82 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffe8800       0x78 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
  .rodata._ZN5Print7printlnEv.str1.1
-                0x000000003ffe8882        0x3 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Print.cpp.o)
+                0x000000003ffe8878        0x3 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Print.cpp.o)
  .rodata.__attachInterruptFunctionalArg.str1.1
-                0x000000003ffe8885       0x12 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
+                0x000000003ffe887b       0x12 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
  .rodata.CSWTCH$10
-                0x000000003ffe8897       0x10 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_flash_quirks.cpp.o)
- *fill*         0x000000003ffe88a7        0x1 
+                0x000000003ffe888d       0x10 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_flash_quirks.cpp.o)
+ *fill*         0x000000003ffe889d        0x3 
  .rodata.str1.4
-                0x000000003ffe88a8        0xb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm.o)
- *fill*         0x000000003ffe88b3        0x1 
+                0x000000003ffe88a0        0xb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm.o)
+ *fill*         0x000000003ffe88ab        0x1 
  .rodata.str1.4
-                0x000000003ffe88b4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm_for_bcn_only_mode.o)
+                0x000000003ffe88ac        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm_for_bcn_only_mode.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe88b8        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pp.o)
+                0x000000003ffe88b0        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pp.o)
                                          0x10 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe88c0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(wdev.o)
+                0x000000003ffe88b8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(wdev.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe88c4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(lmac.o)
+                0x000000003ffe88bc        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(lmac.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe88c8        0x3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_hostap.o)
+                0x000000003ffe88c0        0x3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_hostap.o)
                                           0x8 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe88cb        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_sta.o)
+                0x000000003ffe88c3        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_sta.o)
  .rodata.str1.4
-                0x000000003ffe88cb        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_ie_vendor.o)
+                0x000000003ffe88c3        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_ie_vendor.o)
  .rodata.str1.1
-                0x000000003ffe88cb       0x41 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffe88c3       0x41 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
  .rodata.dhcp_cleanup.str1.1
-                0x000000003ffe890c       0x13 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffe8904       0x13 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
  .rodata.dhcp_release.str1.1
-                0x000000003ffe891f       0x13 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffe8917       0x13 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
  .rodata.CSWTCH$34
-                0x000000003ffe8932       0x10 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffe892a       0x10 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
  .rodata.CSWTCH$31
-                0x000000003ffe8942       0x11 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffe893a       0x11 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
  .rodata.ethbroadcast
-                0x000000003ffe8953        0x6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
-                0x000000003ffe8953                ethbroadcast
+                0x000000003ffe894b        0x6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffe894b                ethbroadcast
  .rodata.ethzero
-                0x000000003ffe8959        0x6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
-                0x000000003ffe8959                ethzero
+                0x000000003ffe8951        0x6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
+                0x000000003ffe8951                ethzero
  .rodata.ethbroadcast_LWIP2
-                0x000000003ffe895f        0x6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
-                0x000000003ffe895f                ethbroadcast_LWIP2
- *fill*         0x000000003ffe8965        0x3 
+                0x000000003ffe8957        0x6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
+                0x000000003ffe8957                ethbroadcast_LWIP2
+ *fill*         0x000000003ffe895d        0x3 
  .rodata.memp_pools
-                0x000000003ffe8968       0x2c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe8968                memp_pools
+                0x000000003ffe8960       0x2c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe8960                memp_pools
  .rodata.memp_PBUF_POOL
-                0x000000003ffe8994        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe8994                memp_PBUF_POOL
+                0x000000003ffe898c        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe898c                memp_PBUF_POOL
  .rodata.memp_PBUF
-                0x000000003ffe8996        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe8996                memp_PBUF
+                0x000000003ffe898e        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe898e                memp_PBUF
  .rodata.memp_SYS_TIMEOUT
-                0x000000003ffe8998        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe8998                memp_SYS_TIMEOUT
+                0x000000003ffe8990        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe8990                memp_SYS_TIMEOUT
  .rodata.memp_IGMP_GROUP
-                0x000000003ffe899a        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe899a                memp_IGMP_GROUP
+                0x000000003ffe8992        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe8992                memp_IGMP_GROUP
  .rodata.memp_ARP_QUEUE
-                0x000000003ffe899c        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe899c                memp_ARP_QUEUE
+                0x000000003ffe8994        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe8994                memp_ARP_QUEUE
  .rodata.memp_REASSDATA
-                0x000000003ffe899e        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe899e                memp_REASSDATA
+                0x000000003ffe8996        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe8996                memp_REASSDATA
  .rodata.memp_TCP_SEG
-                0x000000003ffe89a0        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe89a0                memp_TCP_SEG
+                0x000000003ffe8998        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe8998                memp_TCP_SEG
  .rodata.memp_TCP_PCB_LISTEN
-                0x000000003ffe89a2        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe89a2                memp_TCP_PCB_LISTEN
+                0x000000003ffe899a        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe899a                memp_TCP_PCB_LISTEN
  .rodata.memp_TCP_PCB
-                0x000000003ffe89a4        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe89a4                memp_TCP_PCB
+                0x000000003ffe899c        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe899c                memp_TCP_PCB
  .rodata.memp_UDP_PCB
-                0x000000003ffe89a6        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe89a6                memp_UDP_PCB
+                0x000000003ffe899e        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe899e                memp_UDP_PCB
  .rodata.memp_RAW_PCB
-                0x000000003ffe89a8        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
-                0x000000003ffe89a8                memp_RAW_PCB
- *fill*         0x000000003ffe89aa        0x2 
+                0x000000003ffe89a0        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+                0x000000003ffe89a0                memp_RAW_PCB
+ *fill*         0x000000003ffe89a2        0x2 
  .rodata.tcp_pcb_lists
-                0x000000003ffe89ac       0x10 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
-                0x000000003ffe89ac                tcp_pcb_lists
+                0x000000003ffe89a4       0x10 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffe89a4                tcp_pcb_lists
  .rodata.tcp_persist_backoff
-                0x000000003ffe89bc        0x7 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffe89b4        0x7 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
  .rodata.tcp_backoff
-                0x000000003ffe89c3        0xd /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffe89bb        0xd /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
  .rodata.dhcp_discover_request_options
-                0x000000003ffe89d0        0x5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
- *fill*         0x000000003ffe89d5        0x3 
+                0x000000003ffe89c8        0x5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+ *fill*         0x000000003ffe89cd        0x3 
  .rodata.ip_addr_broadcast
-                0x000000003ffe89d8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
-                0x000000003ffe89d8                ip_addr_broadcast
+                0x000000003ffe89d0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
+                0x000000003ffe89d0                ip_addr_broadcast
  .rodata.ip_addr_any
-                0x000000003ffe89dc        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
-                0x000000003ffe89dc                ip_addr_any
+                0x000000003ffe89d4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
+                0x000000003ffe89d4                ip_addr_any
  .rodata.memp_PPP_PCB
-                0x000000003ffe89e0        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ppp.o)
-                0x000000003ffe89e0                memp_PPP_PCB
+                0x000000003ffe89d8        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ppp.o)
+                0x000000003ffe89d8                memp_PPP_PCB
  .rodata.memp_PPPOS_PCB
-                0x000000003ffe89e2        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pppos.o)
-                0x000000003ffe89e2                memp_PPPOS_PCB
+                0x000000003ffe89da        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pppos.o)
+                0x000000003ffe89da                memp_PPPOS_PCB
  .rodata.dns_gethostbyname_addrtype.str1.1
-                0x000000003ffe89e4        0x7 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
- *fill*         0x000000003ffe89eb        0x1 
+                0x000000003ffe89dc        0x7 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+ *fill*         0x000000003ffe89e3        0x1 
  .rodata.dns_mquery_v4group
-                0x000000003ffe89ec        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
-                0x000000003ffe89ec                dns_mquery_v4group
+                0x000000003ffe89e4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+                0x000000003ffe89e4                dns_mquery_v4group
  .rodata.str1.4
-                0x000000003ffe89f0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(app_main.o)
+                0x000000003ffe89e8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(app_main.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe89f4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(ets_timer.o)
+                0x000000003ffe89ec        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(ets_timer.o)
                                           0xc (size before relaxing)
  .rodata._ZSt7nothrow
-                0x000000003ffe89f8        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(new_handler.o)
-                0x000000003ffe89f8                _ZSt7nothrow
+                0x000000003ffe89f0        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(new_handler.o)
+                0x000000003ffe89f0                _ZSt7nothrow
  .rodata.str1.1
-                0x000000003ffe89f9       0x12 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_float.o)
+                0x000000003ffe89f1       0x12 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_float.o)
  .rodata.str1.1
-                0x000000003ffe8a0b        0x5 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfscanf_float.o)
+                0x000000003ffe8a03        0x5 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfscanf_float.o)
                                           0x6 (size before relaxing)
  .rodata.str1.1
-                0x000000003ffe8a10        0x5 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtod.o)
+                0x000000003ffe8a08        0x5 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtod.o)
                                           0xd (size before relaxing)
  .rodata.str1.1
-                0x000000003ffe8a10       0x3c /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-dtoa.o)
+                0x000000003ffe8a08       0x3c /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-dtoa.o)
                                          0x3e (size before relaxing)
  .rodata.str1.1
-                0x000000003ffe8a4c        0xf /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-gethex.o)
+                0x000000003ffe8a44        0xf /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-gethex.o)
                                          0x20 (size before relaxing)
  .rodata.str1.1
-                0x000000003ffe8a5b        0x2 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-lnumeric.o)
+                0x000000003ffe8a53        0x2 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-lnumeric.o)
                                           0x3 (size before relaxing)
  .rodata.str1.1
-                0x000000003ffe8a5d        0x8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-locale.o)
+                0x000000003ffe8a55        0x8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-locale.o)
                                           0xb (size before relaxing)
  .rodata.str1.1
-                0x000000003ffe8a65        0x8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mprec.o)
+                0x000000003ffe8a5d        0x8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mprec.o)
                                          0x30 (size before relaxing)
  .rodata.str1.1
-                0x000000003ffe8a6d       0x11 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-svfprintf.o)
- *fill*         0x000000003ffe8a7e        0x2 
+                0x000000003ffe8a65       0x11 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-svfprintf.o)
+ *fill*         0x000000003ffe8a76        0x2 
  .rodata._ZN10DhcpServer11MagicCookieE
-                0x000000003ffe8a80        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer.cpp.o)
-                0x000000003ffe8a80                _ZN10DhcpServer11MagicCookieE
+                0x000000003ffe8a78        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer.cpp.o)
+                0x000000003ffe8a78                _ZN10DhcpServer11MagicCookieE
  *(.gnu.linkonce.r.*)
  *(.rodata1)
-                0x000000003ffe8a84                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
+                0x000000003ffe8a7c                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
  *(.xt_except_table)
  *(.gcc_except_table)
  *(.gnu.linkonce.e.*)
  *(.gnu.version_r)
  *(.eh_frame)
-                0x000000003ffe8a84                . = ALIGN (0x4)
-                0x000000003ffe8a84                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
+                0x000000003ffe8a7c                . = ALIGN (0x4)
+                0x000000003ffe8a7c                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
  *(.xt_except_desc)
  *(.gnu.linkonce.h.*)
-                0x000000003ffe8a84                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
+                0x000000003ffe8a7c                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
  *(.xt_except_desc_end)
  *(.dynamic)
  *(.gnu.version_d)
-                0x000000003ffe8a84                _rodata_end = ABSOLUTE (.)
+                0x000000003ffe8a7c                _rodata_end = ABSOLUTE (.)
 
-.bss            0x000000003ffe8a88     0x6698
-                0x000000003ffe8a88                . = ALIGN (0x8)
-                0x000000003ffe8a88                _bss_start = ABSOLUTE (.)
+.bss            0x000000003ffe8a80     0x6690
+                0x000000003ffe8a80                . = ALIGN (0x8)
+                0x000000003ffe8a80                _bss_start = ABSOLUTE (.)
  *(.dynsbss)
  *(.sbss)
  *(.sbss.*)
@@ -15432,456 +15432,456 @@ END GROUP
  *(.gnu.linkonce.sb2.*)
  *(.dynbss)
  *(.bss)
- .bss           0x000000003ffe8a88        0x7 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_sleep.o)
-                0x000000003ffe8a88                periodic_cal_sat
-                0x000000003ffe8a89                rtc_cali_trig_en
-                0x000000003ffe8a8a                lslp_mem_opt_8266
-                0x000000003ffe8a8c                software_slp_reject
-                0x000000003ffe8a8d                SDIO_slp_reject
-                0x000000003ffe8a8e                hardware_reject
- *fill*         0x000000003ffe8a8f        0x1 
- .bss           0x000000003ffe8a90        0x3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_chip_v6_ana.o)
-                0x000000003ffe8a90                or_pll_cap_last
-                0x000000003ffe8a91                tout_dis_txpwr_track
-                0x000000003ffe8a92                sleep_mode_flag
- *fill*         0x000000003ffe8a93        0x5 
- .bss           0x000000003ffe8a98      0x15b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_chip_v6.o)
-                0x000000003ffe8a98                g_phyFuns
-                0x000000003ffe8a9c                rxiq_compute_num
-                0x000000003ffe8aa0                rx_table_renew_en
-                0x000000003ffe8aa4                check_result
-                0x000000003ffe8aa8                chip6_sleep_params
-                0x000000003ffe8b3c                chip6_phy_init_ctrl
-                0x000000003ffe8bb0                phy_freq_offset
-                0x000000003ffe8bb2                do_pwctrl_flag
-                0x000000003ffe8bb3                txbk_dpdby_flag
-                0x000000003ffe8bb5                sw_scan_mode
-                0x000000003ffe8bb6                rxmax_ext_level
-                0x000000003ffe8bb8                phy_rx_gain_dc_table
-                0x000000003ffe8bbc                tx_data1
-                0x000000003ffe8bc0                tx_data2
-                0x000000003ffe8bc4                tx_data3
-                0x000000003ffe8bc8                tx_data4
-                0x000000003ffe8bcc                periodic_cal_flag
-                0x000000003ffe8bcd                bbpll_cal_flag
-                0x000000003ffe8bce                phy_in_most_power
-                0x000000003ffe8bcf                init_rf_no_cal
-                0x000000003ffe8bd0                test_print_time
-                0x000000003ffe8bd4                phy_in_vdd33_offset
-                0x000000003ffe8bd5                phy_set_most_tpw_disbg
-                0x000000003ffe8bd6                phy_set_most_tpw_index
-                0x000000003ffe8bd8                adc_rand_noise
-                0x000000003ffe8bdc                chan14_mic_en
-                0x000000003ffe8bdd                chan14_mic_flag
-                0x000000003ffe8bde                phy_in_most_power_bk
-                0x000000003ffe8bdf                phy_rx_gain_dc_flag
-                0x000000003ffe8be0                dpd_bypass_original
-                0x000000003ffe8be2                phy_txpwr_diff_flash
-                0x000000003ffe8be8                noise_array
- *fill*         0x000000003ffe8bf3        0x1 
- .bss           0x000000003ffe8bf4        0x9 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_chip_v6_cal.o)
-                0x000000003ffe8bf4                phy_tx_power_out
-                0x000000003ffe8bf6                phy_tx_pwr_error
-                0x000000003ffe8bf8                tx_pwctrl_track_num
-                0x000000003ffe8bf9                rxiq_cover_fail_num
-                0x000000003ffe8bfa                phy_meas_freq_offset
-                0x000000003ffe8bfc                tx_pwctrl_pk_num
- *fill*         0x000000003ffe8bfd        0x3 
- .bss           0x000000003ffe8c00        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy.o)
- *fill*         0x000000003ffe8c04        0xc 
- .bss           0x000000003ffe8c10      0x13a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm.o)
-                0x000000003ffe8c10                pmc
- *fill*         0x000000003ffe8d4a        0x2 
- .bss           0x000000003ffe8d4c       0x38 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm_for_bcn_only_mode.o)
- *fill*         0x000000003ffe8d84        0xc 
- .bss           0x000000003ffe8d90      0x342 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pp.o)
-                0x000000003ffe8da8                pend_flag_noise_check
-                0x000000003ffe8db0                pend_flag_periodic_cal
-                0x000000003ffe8dc8                idle_timer_reopen_flag
-                0x000000003ffe8dca                dbg_stop_sw_wdt
-                0x000000003ffe8dcb                dbg_stop_hw_wdt
-                0x000000003ffe8dcd                total_buffed_eb_num
-                0x000000003ffe8dd0                freq_change_sta_scan
-                0x000000003ffe8de4                test_freq_val_force_flag
-                0x000000003ffe8de6                TestStaFreqCalValFilter
-                0x000000003ffe8de8                PktsNumInOneChk
-                0x000000003ffe8dec                AllFreqOffsetInOneChk
-                0x000000003ffe8df0                AvgFreqOffsetInOneChk
-                0x000000003ffe8df2                HighestFreqOffsetInOneChk
-                0x000000003ffe8df4                LowestFreqOffsetInOneChk
-                0x000000003ffe8df6                pktnum_sta_freqcal
-                0x000000003ffe8df8                all_freqoffset_sta_freqcal
-                0x000000003ffe8dfa                avg_freqoffset_sta_freqcal
-                0x000000003ffe8dfc                DefFreqCalTimer
-                0x000000003ffe8e10                PktNumInOneChk
-                0x000000003ffe8f90                buffed_eb_arr
- *fill*         0x000000003ffe90d2        0xe 
- .bss           0x000000003ffe90e0      0x100 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(rate_control.o)
- .bss           0x000000003ffe91e0      0x46c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(trc.o)
- *fill*         0x000000003ffe964c        0x4 
- .bss           0x000000003ffe9650     0x2f88 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(wdev.o)
-                0x000000003ffe9650                wDevCtrl
-                0x000000003ffe97f8                WdevTimOffSet
- *fill*         0x000000003ffec5d8        0x8 
- .bss           0x000000003ffec5e0      0xaa4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(esf_buf.o)
- *fill*         0x000000003ffed084        0xc 
- .bss           0x000000003ffed090       0x40 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(if_hwctrl.o)
-                0x000000003ffed090                interface_mask
-                0x000000003ffed0b0                if_ctrl
- .bss           0x000000003ffed0d0      0x150 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(lmac.o)
-                0x000000003ffed0d4                lmacConfMib
-                0x000000003ffed0f8                our_tx_eb
- .bss           0x000000003ffed220      0x6a8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211.o)
-                0x000000003ffed220                g_ic
- .bss           0x000000003ffed8c8       0x49 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_hostap.o)
-                0x000000003ffed8c8                BcnEb_update
-                0x000000003ffed8d5                BcnWithMcastSendStart
-                0x000000003ffed8d6                BcnWithMcastSendCnt
-                0x000000003ffed8f0                PendFreeBcnEb
-                0x000000003ffed8f2                ap_freq_force_to_scan
-                0x000000003ffed8f4                ApFreqCalTimer
-                0x000000003ffed908                APRecvBcnStartTick
- *fill*         0x000000003ffed911        0x3 
- .bss           0x000000003ffed914        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_output.o)
- .bss           0x000000003ffed918       0xcc /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_scan.o)
-                0x000000003ffed918                gScanStruct
-                0x000000003ffed9c4                freq_change_check_softap_link_enable
-                0x000000003ffed9c5                FreqCalCntForScan
-                0x000000003ffed9c6                TestStaFreqCalValInput
-                0x000000003ffed9c8                TestStaFreqCalValDev
-                0x000000003ffed9ca                connect_scan_flag
-                0x000000003ffed9cb                auth_type
-                0x000000003ffed9cc                scannum
- *fill*         0x000000003ffed9e4        0x4 
- .bss           0x000000003ffed9e8       0x28 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_sta.o)
- .bss           0x000000003ffeda10       0x54 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(wl_chm.o)
- *fill*         0x000000003ffeda64        0x4 
- .bss           0x000000003ffeda68      0x3ac /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(wl_cnx.o)
-                0x000000003ffedde0                sta_con_timer
-                0x000000003ffeddf4                backup_ni_connect_status
-                0x000000003ffeddf8                g_cnx_probe_rc_list_cb
-                0x000000003ffeddfc                reconnect_flag
-                0x000000003ffeddfd                no_ap_found_index
- *fill*         0x000000003ffede14        0x4 
- .bss           0x000000003ffede18       0x18 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_action_vendor.o)
- .bss           0x000000003ffede30       0x60 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libwpa.a(wpa_auth.o)
-                0x000000003ffede34                resend_eapol
- .bss           0x000000003ffede90      0x26a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libwpa.a(wpa.o)
- *fill*         0x000000003ffee0fa        0x2 
- .bss           0x000000003ffee0fc       0x45 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(app_main.o)
-                0x000000003ffee100                info
-                0x000000003ffee124                freq_trace_enable
-                0x000000003ffee126                lwip_timer_interval
-                0x000000003ffee128                check_timeouts_timer
-                0x000000003ffee13c                rf_cal_sec
-                0x000000003ffee140                user_init_flag
- *fill*         0x000000003ffee141        0x3 
- .bss           0x000000003ffee144        0xc /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(eagle_lwip_if.o)
-                0x000000003ffee144                wifi_station_hostname
- .bss           0x000000003ffee150       0x30 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(ets_timer.o)
-                0x000000003ffee150                dbg_timer_flag
-                0x000000003ffee154                timer_list
-                0x000000003ffee158                debug_timer
-                0x000000003ffee15c                debug_timerfn
- .bss           0x000000003ffee180      0x252 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(user_interface.o)
-                0x000000003ffee27e                protect_flag
-                0x000000003ffee288                deep_sleep_flag
-                0x000000003ffee289                cpu_overclock
-                0x000000003ffee28c                event_cb
-                0x000000003ffee290                status_led_output_level
-                0x000000003ffee294                done_cb
-                0x000000003ffee298                rst_if
-                0x000000003ffee2b4                default_interface
-                0x000000003ffee2b5                OpmodChgIsOnGoing
-                0x000000003ffee2b8                promiscuous_cb
-                0x000000003ffee2d0                event_TaskQueue
- *fill*         0x000000003ffee3d2        0xe 
- .bss           0x000000003ffee3e0      0x1c0 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(nmi-vector.o)
- .bss           0x000000003ffee5a0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(spi_flash.o)
-                0x000000003ffee5a0                flash_read
- .bss           0x000000003ffee5a4        0xc /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(unwind-dw2-fde.o)
- .bss           0x000000003ffee5b0        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_crypto_tkip.o)
+ .bss           0x000000003ffe8a80        0x7 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_sleep.o)
+                0x000000003ffe8a80                periodic_cal_sat
+                0x000000003ffe8a81                rtc_cali_trig_en
+                0x000000003ffe8a82                lslp_mem_opt_8266
+                0x000000003ffe8a84                software_slp_reject
+                0x000000003ffe8a85                SDIO_slp_reject
+                0x000000003ffe8a86                hardware_reject
+ *fill*         0x000000003ffe8a87        0x1 
+ .bss           0x000000003ffe8a88        0x3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_chip_v6_ana.o)
+                0x000000003ffe8a88                or_pll_cap_last
+                0x000000003ffe8a89                tout_dis_txpwr_track
+                0x000000003ffe8a8a                sleep_mode_flag
+ *fill*         0x000000003ffe8a8b        0x5 
+ .bss           0x000000003ffe8a90      0x15b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_chip_v6.o)
+                0x000000003ffe8a90                g_phyFuns
+                0x000000003ffe8a94                rxiq_compute_num
+                0x000000003ffe8a98                rx_table_renew_en
+                0x000000003ffe8a9c                check_result
+                0x000000003ffe8aa0                chip6_sleep_params
+                0x000000003ffe8b34                chip6_phy_init_ctrl
+                0x000000003ffe8ba8                phy_freq_offset
+                0x000000003ffe8baa                do_pwctrl_flag
+                0x000000003ffe8bab                txbk_dpdby_flag
+                0x000000003ffe8bad                sw_scan_mode
+                0x000000003ffe8bae                rxmax_ext_level
+                0x000000003ffe8bb0                phy_rx_gain_dc_table
+                0x000000003ffe8bb4                tx_data1
+                0x000000003ffe8bb8                tx_data2
+                0x000000003ffe8bbc                tx_data3
+                0x000000003ffe8bc0                tx_data4
+                0x000000003ffe8bc4                periodic_cal_flag
+                0x000000003ffe8bc5                bbpll_cal_flag
+                0x000000003ffe8bc6                phy_in_most_power
+                0x000000003ffe8bc7                init_rf_no_cal
+                0x000000003ffe8bc8                test_print_time
+                0x000000003ffe8bcc                phy_in_vdd33_offset
+                0x000000003ffe8bcd                phy_set_most_tpw_disbg
+                0x000000003ffe8bce                phy_set_most_tpw_index
+                0x000000003ffe8bd0                adc_rand_noise
+                0x000000003ffe8bd4                chan14_mic_en
+                0x000000003ffe8bd5                chan14_mic_flag
+                0x000000003ffe8bd6                phy_in_most_power_bk
+                0x000000003ffe8bd7                phy_rx_gain_dc_flag
+                0x000000003ffe8bd8                dpd_bypass_original
+                0x000000003ffe8bda                phy_txpwr_diff_flash
+                0x000000003ffe8be0                noise_array
+ *fill*         0x000000003ffe8beb        0x1 
+ .bss           0x000000003ffe8bec        0x9 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy_chip_v6_cal.o)
+                0x000000003ffe8bec                phy_tx_power_out
+                0x000000003ffe8bee                phy_tx_pwr_error
+                0x000000003ffe8bf0                tx_pwctrl_track_num
+                0x000000003ffe8bf1                rxiq_cover_fail_num
+                0x000000003ffe8bf2                phy_meas_freq_offset
+                0x000000003ffe8bf4                tx_pwctrl_pk_num
+ *fill*         0x000000003ffe8bf5        0x3 
+ .bss           0x000000003ffe8bf8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libphy.a(phy.o)
+ *fill*         0x000000003ffe8bfc        0x4 
+ .bss           0x000000003ffe8c00      0x13a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm.o)
+                0x000000003ffe8c00                pmc
+ *fill*         0x000000003ffe8d3a        0x2 
+ .bss           0x000000003ffe8d3c       0x38 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pm_for_bcn_only_mode.o)
+ *fill*         0x000000003ffe8d74        0xc 
+ .bss           0x000000003ffe8d80      0x342 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(pp.o)
+                0x000000003ffe8d98                pend_flag_noise_check
+                0x000000003ffe8da0                pend_flag_periodic_cal
+                0x000000003ffe8db8                idle_timer_reopen_flag
+                0x000000003ffe8dba                dbg_stop_sw_wdt
+                0x000000003ffe8dbb                dbg_stop_hw_wdt
+                0x000000003ffe8dbd                total_buffed_eb_num
+                0x000000003ffe8dc0                freq_change_sta_scan
+                0x000000003ffe8dd4                test_freq_val_force_flag
+                0x000000003ffe8dd6                TestStaFreqCalValFilter
+                0x000000003ffe8dd8                PktsNumInOneChk
+                0x000000003ffe8ddc                AllFreqOffsetInOneChk
+                0x000000003ffe8de0                AvgFreqOffsetInOneChk
+                0x000000003ffe8de2                HighestFreqOffsetInOneChk
+                0x000000003ffe8de4                LowestFreqOffsetInOneChk
+                0x000000003ffe8de6                pktnum_sta_freqcal
+                0x000000003ffe8de8                all_freqoffset_sta_freqcal
+                0x000000003ffe8dea                avg_freqoffset_sta_freqcal
+                0x000000003ffe8dec                DefFreqCalTimer
+                0x000000003ffe8e00                PktNumInOneChk
+                0x000000003ffe8f80                buffed_eb_arr
+ *fill*         0x000000003ffe90c2        0xe 
+ .bss           0x000000003ffe90d0      0x100 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(rate_control.o)
+ .bss           0x000000003ffe91d0      0x46c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(trc.o)
+ *fill*         0x000000003ffe963c        0x4 
+ .bss           0x000000003ffe9640     0x2f88 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(wdev.o)
+                0x000000003ffe9640                wDevCtrl
+                0x000000003ffe97e8                WdevTimOffSet
+ *fill*         0x000000003ffec5c8        0x8 
+ .bss           0x000000003ffec5d0      0xaa4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(esf_buf.o)
+ *fill*         0x000000003ffed074        0xc 
+ .bss           0x000000003ffed080       0x40 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(if_hwctrl.o)
+                0x000000003ffed080                interface_mask
+                0x000000003ffed0a0                if_ctrl
+ .bss           0x000000003ffed0c0      0x150 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libpp.a(lmac.o)
+                0x000000003ffed0c4                lmacConfMib
+                0x000000003ffed0e8                our_tx_eb
+ .bss           0x000000003ffed210      0x6a8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211.o)
+                0x000000003ffed210                g_ic
+ .bss           0x000000003ffed8b8       0x49 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_hostap.o)
+                0x000000003ffed8b8                BcnEb_update
+                0x000000003ffed8c5                BcnWithMcastSendStart
+                0x000000003ffed8c6                BcnWithMcastSendCnt
+                0x000000003ffed8e0                PendFreeBcnEb
+                0x000000003ffed8e2                ap_freq_force_to_scan
+                0x000000003ffed8e4                ApFreqCalTimer
+                0x000000003ffed8f8                APRecvBcnStartTick
+ *fill*         0x000000003ffed901        0x3 
+ .bss           0x000000003ffed904        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_output.o)
+ .bss           0x000000003ffed908       0xcc /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_scan.o)
+                0x000000003ffed908                gScanStruct
+                0x000000003ffed9b4                freq_change_check_softap_link_enable
+                0x000000003ffed9b5                FreqCalCntForScan
+                0x000000003ffed9b6                TestStaFreqCalValInput
+                0x000000003ffed9b8                TestStaFreqCalValDev
+                0x000000003ffed9ba                connect_scan_flag
+                0x000000003ffed9bb                auth_type
+                0x000000003ffed9bc                scannum
+ *fill*         0x000000003ffed9d4        0x4 
+ .bss           0x000000003ffed9d8       0x28 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_sta.o)
+ .bss           0x000000003ffeda00       0x54 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(wl_chm.o)
+ *fill*         0x000000003ffeda54        0x4 
+ .bss           0x000000003ffeda58      0x3ac /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(wl_cnx.o)
+                0x000000003ffeddd0                sta_con_timer
+                0x000000003ffedde4                backup_ni_connect_status
+                0x000000003ffedde8                g_cnx_probe_rc_list_cb
+                0x000000003ffeddec                reconnect_flag
+                0x000000003ffedded                no_ap_found_index
+ *fill*         0x000000003ffede04        0x4 
+ .bss           0x000000003ffede08       0x18 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_action_vendor.o)
+ .bss           0x000000003ffede20       0x60 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libwpa.a(wpa_auth.o)
+                0x000000003ffede24                resend_eapol
+ .bss           0x000000003ffede80      0x26a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libwpa.a(wpa.o)
+ *fill*         0x000000003ffee0ea        0x2 
+ .bss           0x000000003ffee0ec       0x45 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(app_main.o)
+                0x000000003ffee0f0                info
+                0x000000003ffee114                freq_trace_enable
+                0x000000003ffee116                lwip_timer_interval
+                0x000000003ffee118                check_timeouts_timer
+                0x000000003ffee12c                rf_cal_sec
+                0x000000003ffee130                user_init_flag
+ *fill*         0x000000003ffee131        0x3 
+ .bss           0x000000003ffee134        0xc /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(eagle_lwip_if.o)
+                0x000000003ffee134                wifi_station_hostname
+ .bss           0x000000003ffee140       0x30 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(ets_timer.o)
+                0x000000003ffee140                dbg_timer_flag
+                0x000000003ffee144                timer_list
+                0x000000003ffee148                debug_timer
+                0x000000003ffee14c                debug_timerfn
+ .bss           0x000000003ffee170      0x252 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(user_interface.o)
+                0x000000003ffee26e                protect_flag
+                0x000000003ffee278                deep_sleep_flag
+                0x000000003ffee279                cpu_overclock
+                0x000000003ffee27c                event_cb
+                0x000000003ffee280                status_led_output_level
+                0x000000003ffee284                done_cb
+                0x000000003ffee288                rst_if
+                0x000000003ffee2a4                default_interface
+                0x000000003ffee2a5                OpmodChgIsOnGoing
+                0x000000003ffee2a8                promiscuous_cb
+                0x000000003ffee2c0                event_TaskQueue
+ *fill*         0x000000003ffee3c2        0xe 
+ .bss           0x000000003ffee3d0      0x1c0 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(nmi-vector.o)
+ .bss           0x000000003ffee590        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libmain.a(spi_flash.o)
+                0x000000003ffee590                flash_read
+ .bss           0x000000003ffee594        0xc /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(unwind-dw2-fde.o)
+ .bss           0x000000003ffee5a0        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/NONOSDK22x_190703/libnet80211.a(ieee80211_crypto_tkip.o)
  *(.bss.*)
- .bss.mySwitch  0x000000003ffee5b8       0x18 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/sketch/ReceiveDemo_Advanced.ino.cpp.o
-                0x000000003ffee5b8                mySwitch
+ .bss.mySwitch  0x000000003ffee5a8       0x18 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/sketch/ReceiveDemo_Advanced.ino.cpp.o
+                0x000000003ffee5a8                mySwitch
  .bss._ZZN8RCSwitch15handleInterruptEvE11repeatCount
-                0x000000003ffee5d0        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee5c0        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
  .bss._ZZN8RCSwitch15handleInterruptEvE8lastTime
-                0x000000003ffee5d4        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee5c4        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
  .bss._ZZN8RCSwitch15handleInterruptEvE11changeCount
-                0x000000003ffee5d8        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee5c8        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
  .bss._ZN8RCSwitch7timingsE
-                0x000000003ffee5dc      0x10c /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
-                0x000000003ffee5dc                _ZN8RCSwitch7timingsE
+                0x000000003ffee5cc      0x10c /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee5cc                _ZN8RCSwitch7timingsE
  .bss._ZN8RCSwitch17nReceivedProtocolE
-                0x000000003ffee6e8        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
-                0x000000003ffee6e8                _ZN8RCSwitch17nReceivedProtocolE
+                0x000000003ffee6d8        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee6d8                _ZN8RCSwitch17nReceivedProtocolE
  .bss._ZN8RCSwitch14nReceivedDelayE
-                0x000000003ffee6ec        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
-                0x000000003ffee6ec                _ZN8RCSwitch14nReceivedDelayE
+                0x000000003ffee6dc        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee6dc                _ZN8RCSwitch14nReceivedDelayE
  .bss._ZN8RCSwitch18nReceivedBitlengthE
-                0x000000003ffee6f0        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
-                0x000000003ffee6f0                _ZN8RCSwitch18nReceivedBitlengthE
+                0x000000003ffee6e0        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee6e0                _ZN8RCSwitch18nReceivedBitlengthE
  .bss._ZN8RCSwitch14nReceivedValueE
-                0x000000003ffee6f4        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
-                0x000000003ffee6f4                _ZN8RCSwitch14nReceivedValueE
- .bss.Serial1   0x000000003ffee6f8       0x20 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
-                0x000000003ffee6f8                Serial1
- .bss.Serial    0x000000003ffee718       0x20 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
-                0x000000003ffee718                Serial
+                0x000000003ffee6e4        0x4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+                0x000000003ffee6e4                _ZN8RCSwitch14nReceivedValueE
+ .bss.Serial1   0x000000003ffee6e8       0x20 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
+                0x000000003ffee6e8                Serial1
+ .bss.Serial    0x000000003ffee708       0x20 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
+                0x000000003ffee708                Serial
  .bss.emptyString
-                0x000000003ffee738        0xc /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(WString.cpp.o)
-                0x000000003ffee738                emptyString
+                0x000000003ffee728        0xc /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(WString.cpp.o)
+                0x000000003ffee728                emptyString
  .bss._ZZL15do_global_ctorsvE2ob
-                0x000000003ffee744       0x28 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+                0x000000003ffee734       0x28 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
  .bss._ZZL12loop_wrappervE10setup_done
-                0x000000003ffee76c        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
- *fill*         0x000000003ffee76d        0x3 
+                0x000000003ffee75c        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+ *fill*         0x000000003ffee75d        0x3 
  .bss._ZL11delay_timer
-                0x000000003ffee770       0x14 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+                0x000000003ffee760       0x14 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
  .bss._ZL23ets_intr_lock_stack_ptr
-                0x000000003ffee784        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
- *fill*         0x000000003ffee785        0x1 
+                0x000000003ffee774        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+ *fill*         0x000000003ffee775        0x1 
  .bss._ZL19ets_intr_lock_stack
-                0x000000003ffee786        0xe /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+                0x000000003ffee776        0xe /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
  .bss._ZL18s_cycles_at_resume
-                0x000000003ffee794        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+                0x000000003ffee784        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
  .bss._ZL12s_loop_queue
-                0x000000003ffee798        0x8 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+                0x000000003ffee788        0x8 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
  .bss.resetInfo
-                0x000000003ffee7a0       0x1c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
-                0x000000003ffee7a0                resetInfo
+                0x000000003ffee790       0x1c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+                0x000000003ffee790                resetInfo
  .bss.__stack_chk_guard
-                0x000000003ffee7bc        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
-                0x000000003ffee7bc                __stack_chk_guard
+                0x000000003ffee7ac        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7ac                __stack_chk_guard
  .bss._ZL19s_user_reset_reason
-                0x000000003ffee7c0        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7b0        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
  .bss._ZL17s_stacksmash_addr
-                0x000000003ffee7c4        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7b4        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
  .bss._ZL21s_unhandled_exception
-                0x000000003ffee7c8        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7b8        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
  .bss._ZL14s_abort_called
-                0x000000003ffee7cc        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
- *fill*         0x000000003ffee7cd        0x3 
+                0x000000003ffee7bc        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+ *fill*         0x000000003ffee7bd        0x3 
  .bss._ZL12s_panic_what
-                0x000000003ffee7d0        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7c0        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
  .bss._ZL12s_panic_func
-                0x000000003ffee7d4        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7c4        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
  .bss._ZL12s_panic_line
-                0x000000003ffee7d8        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7c8        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
  .bss._ZL12s_panic_file
-                0x000000003ffee7dc        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+                0x000000003ffee7cc        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
  .bss._ZL21micros_overflow_count
-                0x000000003ffee7e0        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
+                0x000000003ffee7d0        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
  .bss._ZL28micros_at_last_overflow_tick
-                0x000000003ffee7e4        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
+                0x000000003ffee7d4        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
  .bss._ZL21micros_overflow_timer
-                0x000000003ffee7e8       0x14 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
+                0x000000003ffee7d8       0x14 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
  .bss._ZL13interrupt_reg
-                0x000000003ffee7fc        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
+                0x000000003ffee7ec        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
  .bss._ZL18interrupt_handlers
-                0x000000003ffee800      0x100 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
+                0x000000003ffee7f0      0x100 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
  .bss.umm_last_fail_alloc_size
-                0x000000003ffee900        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
-                0x000000003ffee900                umm_last_fail_alloc_size
+                0x000000003ffee8f0        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
+                0x000000003ffee8f0                umm_last_fail_alloc_size
  .bss.umm_last_fail_alloc_addr
-                0x000000003ffee904        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
-                0x000000003ffee904                umm_last_fail_alloc_addr
+                0x000000003ffee8f4        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
+                0x000000003ffee8f4                umm_last_fail_alloc_addr
  .bss._ZL15s_uart_debug_nr
-                0x000000003ffee908        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(uart.cpp.o)
+                0x000000003ffee8f8        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(uart.cpp.o)
  .bss._ZZ33run_scheduled_recurrent_functionsvE5fence
-                0x000000003ffee90c        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
- *fill*         0x000000003ffee90d        0x3 
+                0x000000003ffee8fc        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+ *fill*         0x000000003ffee8fd        0x3 
  .bss._ZL5rLast
-                0x000000003ffee910        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+                0x000000003ffee900        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
  .bss._ZL6rFirst
-                0x000000003ffee914        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+                0x000000003ffee904        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
  .bss._ZL22recurrent_max_grain_mS
-                0x000000003ffee918        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+                0x000000003ffee908        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
  .bss._ZL7sUnused
-                0x000000003ffee91c        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+                0x000000003ffee90c        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
  .bss._ZL5sLast
-                0x000000003ffee920        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+                0x000000003ffee910        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
  .bss._ZL6sFirst
-                0x000000003ffee924        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+                0x000000003ffee914        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
  .bss.stack_thunk_save
-                0x000000003ffee928        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
-                0x000000003ffee928                stack_thunk_save
+                0x000000003ffee918        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
+                0x000000003ffee918                stack_thunk_save
  .bss.stack_thunk_top
-                0x000000003ffee92c        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
-                0x000000003ffee92c                stack_thunk_top
+                0x000000003ffee91c        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
+                0x000000003ffee91c                stack_thunk_top
  .bss.stack_thunk_ptr
-                0x000000003ffee930        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
-                0x000000003ffee930                stack_thunk_ptr
- .bss.Update    0x000000003ffee934       0xe4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Updater.cpp.o)
-                0x000000003ffee934                Update
+                0x000000003ffee920        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
+                0x000000003ffee920                stack_thunk_ptr
+ .bss.Update    0x000000003ffee924       0xe4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Updater.cpp.o)
+                0x000000003ffee924                Update
  .bss._ZL15spoof_init_data
-                0x000000003ffeea18        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_phy.cpp.o)
- *fill*         0x000000003ffeea19        0x3 
+                0x000000003ffeea08        0x1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_phy.cpp.o)
+ *fill*         0x000000003ffeea09        0x3 
  .bss._ZL14timer1_user_cb
-                0x000000003ffeea1c        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_timer.cpp.o)
+                0x000000003ffeea0c        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_timer.cpp.o)
  .bss._ZL10_pwmPeriod
-                0x000000003ffeea20        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
+                0x000000003ffeea10        0x4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
  .bss._ZL8wvfState
-                0x000000003ffeea24      0x200 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
+                0x000000003ffeea14      0x200 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
  .bss.phy_capture
-                0x000000003ffeec24        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
-                0x000000003ffeec24                phy_capture
+                0x000000003ffeec14        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffeec14                phy_capture
  .bss.pbuf_wrapper_head
-                0x000000003ffeec28        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffeec18        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
  .bss.netif_esp
-                0x000000003ffeec2c        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffeec1c        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
  .bss.netif_default
-                0x000000003ffeec34        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
-                0x000000003ffeec34                netif_default
+                0x000000003ffeec24        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+                0x000000003ffeec24                netif_default
  .bss.netif_enabled
-                0x000000003ffeec38        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
-                0x000000003ffeec38                netif_enabled
+                0x000000003ffeec28        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
+                0x000000003ffeec28                netif_enabled
  .bss.netif_git
-                0x000000003ffeec40       0x98 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
-                0x000000003ffeec40                netif_git
+                0x000000003ffeec30       0x98 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
+                0x000000003ffeec30                netif_git
  .bss.netif_num
-                0x000000003ffeecd8        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
- *fill*         0x000000003ffeecd9        0x3 
+                0x000000003ffeecc8        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
+ *fill*         0x000000003ffeecc9        0x3 
  .bss.netif_default_LWIP2
-                0x000000003ffeecdc        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
-                0x000000003ffeecdc                netif_default_LWIP2
+                0x000000003ffeeccc        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
+                0x000000003ffeeccc                netif_default_LWIP2
  .bss.netif_list
-                0x000000003ffeece0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
-                0x000000003ffeece0                netif_list
+                0x000000003ffeecd0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
+                0x000000003ffeecd0                netif_list
  .bss.pbuf_free_ooseq_pending
-                0x000000003ffeece4        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pbuf.o)
-                0x000000003ffeece4                pbuf_free_ooseq_pending
- *fill*         0x000000003ffeece5        0x3 
- .bss.raw_pcbs  0x000000003ffeece8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(raw.o)
+                0x000000003ffeecd4        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pbuf.o)
+                0x000000003ffeecd4                pbuf_free_ooseq_pending
+ *fill*         0x000000003ffeecd5        0x3 
+ .bss.raw_pcbs  0x000000003ffeecd8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(raw.o)
  .bss.tcp_timer_ctr
-                0x000000003ffeecec        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeecdc        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
  .bss.tcp_timer
-                0x000000003ffeeced        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeecdd        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
  .bss.tcp_active_pcbs_changed
-                0x000000003ffeecee        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
-                0x000000003ffeecee                tcp_active_pcbs_changed
- *fill*         0x000000003ffeecef        0x1 
+                0x000000003ffeecde        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeecde                tcp_active_pcbs_changed
+ *fill*         0x000000003ffeecdf        0x1 
  .bss.tcp_tw_pcbs
-                0x000000003ffeecf0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
-                0x000000003ffeecf0                tcp_tw_pcbs
+                0x000000003ffeece0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeece0                tcp_tw_pcbs
  .bss.tcp_active_pcbs
-                0x000000003ffeecf4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
-                0x000000003ffeecf4                tcp_active_pcbs
+                0x000000003ffeece4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeece4                tcp_active_pcbs
  .bss.tcp_listen_pcbs
-                0x000000003ffeecf8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
-                0x000000003ffeecf8                tcp_listen_pcbs
+                0x000000003ffeece8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeece8                tcp_listen_pcbs
  .bss.tcp_bound_pcbs
-                0x000000003ffeecfc        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
-                0x000000003ffeecfc                tcp_bound_pcbs
+                0x000000003ffeecec        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeecec                tcp_bound_pcbs
  .bss.tcp_ticks
-                0x000000003ffeed00        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
-                0x000000003ffeed00                tcp_ticks
+                0x000000003ffeecf0        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+                0x000000003ffeecf0                tcp_ticks
  .bss.tcp_input_pcb
-                0x000000003ffeed04        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
-                0x000000003ffeed04                tcp_input_pcb
+                0x000000003ffeecf4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+                0x000000003ffeecf4                tcp_input_pcb
  .bss.recv_data
-                0x000000003ffeed08        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+                0x000000003ffeecf8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
  .bss.recv_flags
-                0x000000003ffeed0c        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- .bss.flags     0x000000003ffeed0d        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- .bss.tcplen    0x000000003ffeed0e        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+                0x000000003ffeecfc        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ .bss.flags     0x000000003ffeecfd        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ .bss.tcplen    0x000000003ffeecfe        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
  .bss.recv_acked
-                0x000000003ffeed10        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- *fill*         0x000000003ffeed12        0x2 
- .bss.ackno     0x000000003ffeed14        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- .bss.seqno     0x000000003ffeed18        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+                0x000000003ffeed00        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ *fill*         0x000000003ffeed02        0x2 
+ .bss.ackno     0x000000003ffeed04        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ .bss.seqno     0x000000003ffeed08        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
  .bss.tcp_optidx
-                0x000000003ffeed1c        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- *fill*         0x000000003ffeed1e        0x2 
+                0x000000003ffeed0c        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ *fill*         0x000000003ffeed0e        0x2 
  .bss.tcphdr_opt2
-                0x000000003ffeed20        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+                0x000000003ffeed10        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
  .bss.tcphdr_opt1len
-                0x000000003ffeed24        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+                0x000000003ffeed14        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
  .bss.tcphdr_optlen
-                0x000000003ffeed26        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- .bss.tcphdr    0x000000003ffeed28        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- .bss.inseg     0x000000003ffeed2c       0x10 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+                0x000000003ffeed16        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ .bss.tcphdr    0x000000003ffeed18        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ .bss.inseg     0x000000003ffeed1c       0x10 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
  .bss.tcpip_tcp_timer_active
-                0x000000003ffeed3c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
+                0x000000003ffeed2c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
  .bss.current_timeout_due_time
-                0x000000003ffeed40        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
+                0x000000003ffeed30        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
  .bss.next_timeout
-                0x000000003ffeed44        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
- .bss.udp_pcbs  0x000000003ffeed48        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(udp.o)
-                0x000000003ffeed48                udp_pcbs
- .bss.xid$0     0x000000003ffeed4c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+                0x000000003ffeed34        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
+ .bss.udp_pcbs  0x000000003ffeed38        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(udp.o)
+                0x000000003ffeed38                udp_pcbs
+ .bss.xid$0     0x000000003ffeed3c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
  .bss.dhcp_pcb_refcount
-                0x000000003ffeed50        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
- *fill*         0x000000003ffeed51        0x3 
- .bss.dhcp_pcb  0x000000003ffeed54        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+                0x000000003ffeed40        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+ *fill*         0x000000003ffeed41        0x3 
+ .bss.dhcp_pcb  0x000000003ffeed44        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
  .bss.dhcp_rx_options_given
-                0x000000003ffeed58        0xb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
-                0x000000003ffeed58                dhcp_rx_options_given
- *fill*         0x000000003ffeed63        0x1 
+                0x000000003ffeed48        0xb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+                0x000000003ffeed48                dhcp_rx_options_given
+ *fill*         0x000000003ffeed53        0x1 
  .bss.dhcp_rx_options_val
-                0x000000003ffeed64       0x2c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
-                0x000000003ffeed64                dhcp_rx_options_val
+                0x000000003ffeed54       0x2c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+                0x000000003ffeed54                dhcp_rx_options_val
  .bss.etharp_cached_entry
-                0x000000003ffeed90        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
- *fill*         0x000000003ffeed91        0x3 
+                0x000000003ffeed80        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
+ *fill*         0x000000003ffeed81        0x3 
  .bss.arp_table
-                0x000000003ffeed94       0xf0 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
+                0x000000003ffeed84       0xf0 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
  .bss.allrouters
-                0x000000003ffeee84        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
+                0x000000003ffeee74        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
  .bss.allsystems
-                0x000000003ffeee88        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
+                0x000000003ffeee78        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
  .bss.napt_data
-                0x000000003ffeee8c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
-                0x000000003ffeee8c                napt_data
+                0x000000003ffeee7c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
+                0x000000003ffeee7c                napt_data
  .bss.ip4_default_multicast_netif
-                0x000000003ffeee90        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
- .bss.ip_id     0x000000003ffeee94        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
+                0x000000003ffeee80        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
+ .bss.ip_id     0x000000003ffeee84        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
  .bss.ip_reass_pbufcount
-                0x000000003ffeee96        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
+                0x000000003ffeee86        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
  .bss.reassdatagrams
-                0x000000003ffeee98        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
+                0x000000003ffeee88        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
  .bss.sntp_retry_timeout
-                0x000000003ffeee9c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+                0x000000003ffeee8c        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
  .bss.sntp_current_server
-                0x000000003ffeeea0        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+                0x000000003ffeee90        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
  .bss.sntp_set_servers_from_dhcp
-                0x000000003ffeeea1        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
- *fill*         0x000000003ffeeea2        0x2 
+                0x000000003ffeee91        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+ *fill*         0x000000003ffeee92        0x2 
  .bss.sntp_servers
-                0x000000003ffeeea4       0x24 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
- .bss.sntp_pcb  0x000000003ffeeec8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+                0x000000003ffeee94       0x24 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+ .bss.sntp_pcb  0x000000003ffeeeb8        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
  .bss.sntp_opmode
-                0x000000003ffeeecc        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
- *fill*         0x000000003ffeeecd        0x3 
+                0x000000003ffeeebc        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+ *fill*         0x000000003ffeeebd        0x3 
  .bss.dns_servers
-                0x000000003ffeeed0        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+                0x000000003ffeeec0        0x8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
  .bss.dns_requests
-                0x000000003ffeeed8       0x18 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+                0x000000003ffeeec8       0x18 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
  .bss.dns_table
-                0x000000003ffeeef0      0x1b0 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+                0x000000003ffeeee0      0x1b0 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
  .bss.dns_seqno
-                0x000000003ffef0a0        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
- *fill*         0x000000003ffef0a1        0x3 
- .bss.dns_pcbs  0x000000003ffef0a4        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
- .bss.dns_txid  0x000000003ffef0a8        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
- *fill*         0x000000003ffef0aa        0x2 
- .bss.ip_data   0x000000003ffef0ac       0x18 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip.o)
-                0x000000003ffef0ac                ip_data
- *fill*         0x000000003ffef0c4        0x4 
+                0x000000003ffef090        0x1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+ *fill*         0x000000003ffef091        0x3 
+ .bss.dns_pcbs  0x000000003ffef094        0x4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+ .bss.dns_txid  0x000000003ffef098        0x2 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+ *fill*         0x000000003ffef09a        0x2 
+ .bss.ip_data   0x000000003ffef09c       0x18 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip.o)
+                0x000000003ffef09c                ip_data
+ *fill*         0x000000003ffef0b4        0x4 
  .bss._ZGVZ18getNonOSDhcpServervE6server
-                0x000000003ffef0c8        0x8 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
+                0x000000003ffef0b8        0x8 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
  .bss._ZZ18getNonOSDhcpServervE6server
-                0x000000003ffef0d0       0x38 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
+                0x000000003ffef0c0       0x38 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
  .bss._ZL16_settimeofday_cb
-                0x000000003ffef108       0x10 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
+                0x000000003ffef0f8       0x10 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
  .bss._ZL11timeshift64
-                0x000000003ffef118        0x8 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
+                0x000000003ffef108        0x8 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
  *(.gnu.linkonce.b.*)
  *(COMMON)
-                0x000000003ffef120                . = ALIGN (0x8)
-                0x000000003ffef120                _bss_end = ABSOLUTE (.)
-                0x000000003ffef120                _heap_start = ABSOLUTE (.)
+                0x000000003ffef110                . = ALIGN (0x8)
+                0x000000003ffef110                _bss_end = ABSOLUTE (.)
+                0x000000003ffef110                _heap_start = ABSOLUTE (.)
 
 .lit4           0x0000000040106c9c        0x0
                 0x0000000040106c9c                _lit4_start = ABSOLUTE (.)
@@ -16332,217 +16332,217 @@ OUTPUT(/home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/Rece
  .debug_frame   0x0000000000009244      0x3e4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
  .debug_frame   0x0000000000009628       0x38 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_moddi3.o)
 
-.debug_info     0x0000000000000000    0xb9b18
+.debug_info     0x0000000000000000    0xb9b19
  .debug_info    0x0000000000000000     0x3996 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/sketch/ReceiveDemo_Advanced.ino.cpp.o
- .debug_info    0x0000000000003996     0x454c /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
- .debug_info    0x0000000000007ee2     0x4b00 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
- .debug_info    0x000000000000c9e2     0x6b4e /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Print.cpp.o)
- .debug_info    0x0000000000013530     0x596b /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Stream.cpp.o)
- .debug_info    0x0000000000018e9b     0xaaba /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(WString.cpp.o)
- .debug_info    0x0000000000023955     0x2e0f /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(abi.cpp.o)
- .debug_info    0x0000000000026764     0x5380 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
- .debug_info    0x000000000002bae4     0x19c4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
- .debug_info    0x000000000002d4a8     0x2ddc /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
- .debug_info    0x0000000000030284     0x3237 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
- .debug_info    0x00000000000334bb       0xa3 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(gdb_hooks.cpp.o)
- .debug_info    0x000000000003355e     0x18df /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
- .debug_info    0x0000000000034e3d     0x2b65 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(libc_replacements.cpp.o)
- .debug_info    0x00000000000379a2     0x41b9 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(uart.cpp.o)
- .debug_info    0x000000000003bb5b     0x3941 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(umm_malloc.cpp.o)
- .debug_info    0x000000000003f49c     0xa765 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Esp.cpp.o)
- .debug_info    0x0000000000049c01     0x5f22 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(FunctionalInterrupt.cpp.o)
- .debug_info    0x000000000004fb23     0x5743 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
- .debug_info    0x0000000000055266      0xaf0 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
- .debug_info    0x0000000000055d56     0xae0c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Updater.cpp.o)
- .debug_info    0x0000000000060b62       0x22 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont.S.o)
- .debug_info    0x0000000000060b84      0x368 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont_util.cpp.o)
- .debug_info    0x0000000000060eec      0x16c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_features.cpp.o)
- .debug_info    0x0000000000061058      0x37b /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_flash_quirks.cpp.o)
- .debug_info    0x00000000000613d3      0xa4e /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_phy.cpp.o)
- .debug_info    0x0000000000061e21      0xcf7 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_spi_utils.cpp.o)
- .debug_info    0x0000000000062b18     0x2baf /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_timer.cpp.o)
- .debug_info    0x00000000000656c7     0x5914 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
- .debug_info    0x000000000006afdb     0x135a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
- .debug_info    0x000000000006c335     0x16ac /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
- .debug_info    0x000000000006d9e1      0x871 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
- .debug_info    0x000000000006e252      0x42d /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(def.o)
- .debug_info    0x000000000006e67f      0x16b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(init.o)
- .debug_info    0x000000000006e7ea      0x27f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(mem.o)
- .debug_info    0x000000000006ea69      0x616 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
- .debug_info    0x000000000006f07f     0x1273 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
- .debug_info    0x00000000000702f2     0x2471 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pbuf.o)
- .debug_info    0x0000000000072763      0xf54 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(raw.o)
- .debug_info    0x00000000000736b7     0x2a86 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
- .debug_info    0x000000000007613d     0x239a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- .debug_info    0x00000000000784d7     0x25ee /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_out.o)
- .debug_info    0x000000000007aac5      0xe62 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
- .debug_info    0x000000000007b927     0x12ca /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(udp.o)
- .debug_info    0x000000000007cbf1      0xd62 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(autoip.o)
- .debug_info    0x000000000007d953     0x32e8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
- .debug_info    0x0000000000080c3b     0x168d /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
- .debug_info    0x00000000000822c8      0xb69 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(icmp.o)
- .debug_info    0x0000000000082e31     0x10c1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
- .debug_info    0x0000000000083ef2     0x30e5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
- .debug_info    0x0000000000086fd7      0x818 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
- .debug_info    0x00000000000877ef     0x11d5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
- .debug_info    0x00000000000889c4     0x1293 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
- .debug_info    0x0000000000089c57     0x230a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ppp.o)
- .debug_info    0x000000000008bf61     0x22eb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pppos.o)
- .debug_info    0x000000000008e24c     0x1687 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
- .debug_info    0x000000000008f8d3      0x85a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(inet_chksum.o)
- .debug_info    0x000000000009012d      0x578 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip.o)
- .debug_info    0x00000000000906a5      0x24e /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(magic.o)
- .debug_info    0x00000000000908f3      0x389 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_ops.o)
- .debug_info    0x0000000000090c7c     0x11eb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_terminate.o)
- .debug_info    0x0000000000091e67      0x86c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(new_handler.o)
- .debug_info    0x00000000000926d3      0x5e5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(functional.o)
- .debug_info    0x0000000000092cb8      0x88a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_op.o)
- .debug_info    0x0000000000093542      0x902 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_term_handler.o)
- .debug_info    0x0000000000093e44      0x115 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
- .debug_info    0x0000000000093f59     0x150d /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_float.o)
- .debug_info    0x0000000000095466     0x10d0 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_i.o)
- .debug_info    0x0000000000096536      0xefb /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfscanf_float.o)
- .debug_info    0x0000000000097431       0xce /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sf_nan.o)
- .debug_info    0x00000000000974ff      0xa20 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sprintf.o)
- .debug_info    0x0000000000097f1f     0x1de7 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtod.o)
- .debug_info    0x0000000000099d06      0xfca /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
- .debug_info    0x000000000009acd0      0xa22 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-vsnprintf.o)
- .debug_info    0x000000000009b6f2      0xae0 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(string_pgmspace.o)
- .debug_info    0x000000000009c1d2       0xb8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
- .debug_info    0x000000000009c28a     0x1900 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-dtoa.o)
- .debug_info    0x000000000009db8a      0x890 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-errno.o)
- .debug_info    0x000000000009e41a     0x10c7 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-findfp.o)
- .debug_info    0x000000000009f4e1     0x138a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-gethex.o)
- .debug_info    0x00000000000a086b      0x395 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-hexnan.o)
- .debug_info    0x00000000000a0c00      0x945 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
- .debug_info    0x00000000000a1545      0xbc2 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-lnumeric.o)
- .debug_info    0x00000000000a2107      0xcd9 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-locale.o)
- .debug_info    0x00000000000a2de0      0xbba /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-localeconv.o)
- .debug_info    0x00000000000a399a      0xc4a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mbtowc_r.o)
- .debug_info    0x00000000000a45e4     0x1f61 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mprec.o)
- .debug_info    0x00000000000a6545     0x137f /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-svfprintf.o)
- .debug_info    0x00000000000a78c4       0xd2 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-s_nan.o)
- .debug_info    0x00000000000a7996      0xc06 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-wctomb_r.o)
- .debug_info    0x00000000000a859c       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_modsi3.o)
- .debug_info    0x00000000000a85c2       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_ashrdi3.o)
- .debug_info    0x00000000000a85e8       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_divsf3.o)
- .debug_info    0x00000000000a860e       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpsf2.o)
- .debug_info    0x00000000000a8634       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixsfsi.o)
- .debug_info    0x00000000000a865a       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpdf2.o)
- .debug_info    0x00000000000a8680       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixdfdi.o)
- .debug_info    0x00000000000a86a6       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_floatdidf.o)
- .debug_info    0x00000000000a86cc     0x23c7 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(unwind-dw2-fde.o)
- .debug_info    0x00000000000aaa93     0x1d66 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
- .debug_info    0x00000000000ac7f9     0x3f8d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer.cpp.o)
- .debug_info    0x00000000000b0786      0xac6 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(aes_unwrap.cpp.o)
- .debug_info    0x00000000000b124c     0x85f1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
- .debug_info    0x00000000000b983d      0x2db /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_moddi3.o)
+ .debug_info    0x0000000000003996     0x454d /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+ .debug_info    0x0000000000007ee3     0x4b00 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
+ .debug_info    0x000000000000c9e3     0x6b4e /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Print.cpp.o)
+ .debug_info    0x0000000000013531     0x596b /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Stream.cpp.o)
+ .debug_info    0x0000000000018e9c     0xaaba /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(WString.cpp.o)
+ .debug_info    0x0000000000023956     0x2e0f /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(abi.cpp.o)
+ .debug_info    0x0000000000026765     0x5380 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+ .debug_info    0x000000000002bae5     0x19c4 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+ .debug_info    0x000000000002d4a9     0x2ddc /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
+ .debug_info    0x0000000000030285     0x3237 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
+ .debug_info    0x00000000000334bc       0xa3 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(gdb_hooks.cpp.o)
+ .debug_info    0x000000000003355f     0x18df /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
+ .debug_info    0x0000000000034e3e     0x2b65 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(libc_replacements.cpp.o)
+ .debug_info    0x00000000000379a3     0x41b9 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(uart.cpp.o)
+ .debug_info    0x000000000003bb5c     0x3941 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(umm_malloc.cpp.o)
+ .debug_info    0x000000000003f49d     0xa765 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Esp.cpp.o)
+ .debug_info    0x0000000000049c02     0x5f22 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(FunctionalInterrupt.cpp.o)
+ .debug_info    0x000000000004fb24     0x5743 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+ .debug_info    0x0000000000055267      0xaf0 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
+ .debug_info    0x0000000000055d57     0xae0c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Updater.cpp.o)
+ .debug_info    0x0000000000060b63       0x22 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont.S.o)
+ .debug_info    0x0000000000060b85      0x368 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont_util.cpp.o)
+ .debug_info    0x0000000000060eed      0x16c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_features.cpp.o)
+ .debug_info    0x0000000000061059      0x37b /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_flash_quirks.cpp.o)
+ .debug_info    0x00000000000613d4      0xa4e /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_phy.cpp.o)
+ .debug_info    0x0000000000061e22      0xcf7 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_spi_utils.cpp.o)
+ .debug_info    0x0000000000062b19     0x2baf /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_timer.cpp.o)
+ .debug_info    0x00000000000656c8     0x5914 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
+ .debug_info    0x000000000006afdc     0x135a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+ .debug_info    0x000000000006c336     0x16ac /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
+ .debug_info    0x000000000006d9e2      0x871 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
+ .debug_info    0x000000000006e253      0x42d /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(def.o)
+ .debug_info    0x000000000006e680      0x16b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(init.o)
+ .debug_info    0x000000000006e7eb      0x27f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(mem.o)
+ .debug_info    0x000000000006ea6a      0x616 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+ .debug_info    0x000000000006f080     0x1273 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
+ .debug_info    0x00000000000702f3     0x2471 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pbuf.o)
+ .debug_info    0x0000000000072764      0xf54 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(raw.o)
+ .debug_info    0x00000000000736b8     0x2a86 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+ .debug_info    0x000000000007613e     0x239a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ .debug_info    0x00000000000784d8     0x25ee /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_out.o)
+ .debug_info    0x000000000007aac6      0xe62 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
+ .debug_info    0x000000000007b928     0x12ca /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(udp.o)
+ .debug_info    0x000000000007cbf2      0xd62 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(autoip.o)
+ .debug_info    0x000000000007d954     0x32e8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+ .debug_info    0x0000000000080c3c     0x168d /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
+ .debug_info    0x00000000000822c9      0xb69 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(icmp.o)
+ .debug_info    0x0000000000082e32     0x10c1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
+ .debug_info    0x0000000000083ef3     0x30e5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
+ .debug_info    0x0000000000086fd8      0x818 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
+ .debug_info    0x00000000000877f0     0x11d5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
+ .debug_info    0x00000000000889c5     0x1293 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+ .debug_info    0x0000000000089c58     0x230a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ppp.o)
+ .debug_info    0x000000000008bf62     0x22eb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pppos.o)
+ .debug_info    0x000000000008e24d     0x1687 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+ .debug_info    0x000000000008f8d4      0x85a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(inet_chksum.o)
+ .debug_info    0x000000000009012e      0x578 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip.o)
+ .debug_info    0x00000000000906a6      0x24e /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(magic.o)
+ .debug_info    0x00000000000908f4      0x389 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_ops.o)
+ .debug_info    0x0000000000090c7d     0x11eb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_terminate.o)
+ .debug_info    0x0000000000091e68      0x86c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(new_handler.o)
+ .debug_info    0x00000000000926d4      0x5e5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(functional.o)
+ .debug_info    0x0000000000092cb9      0x88a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_op.o)
+ .debug_info    0x0000000000093543      0x902 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_term_handler.o)
+ .debug_info    0x0000000000093e45      0x115 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
+ .debug_info    0x0000000000093f5a     0x150d /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_float.o)
+ .debug_info    0x0000000000095467     0x10d0 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_i.o)
+ .debug_info    0x0000000000096537      0xefb /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfscanf_float.o)
+ .debug_info    0x0000000000097432       0xce /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sf_nan.o)
+ .debug_info    0x0000000000097500      0xa20 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sprintf.o)
+ .debug_info    0x0000000000097f20     0x1de7 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtod.o)
+ .debug_info    0x0000000000099d07      0xfca /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
+ .debug_info    0x000000000009acd1      0xa22 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-vsnprintf.o)
+ .debug_info    0x000000000009b6f3      0xae0 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(string_pgmspace.o)
+ .debug_info    0x000000000009c1d3       0xb8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
+ .debug_info    0x000000000009c28b     0x1900 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-dtoa.o)
+ .debug_info    0x000000000009db8b      0x890 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-errno.o)
+ .debug_info    0x000000000009e41b     0x10c7 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-findfp.o)
+ .debug_info    0x000000000009f4e2     0x138a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-gethex.o)
+ .debug_info    0x00000000000a086c      0x395 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-hexnan.o)
+ .debug_info    0x00000000000a0c01      0x945 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+ .debug_info    0x00000000000a1546      0xbc2 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-lnumeric.o)
+ .debug_info    0x00000000000a2108      0xcd9 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-locale.o)
+ .debug_info    0x00000000000a2de1      0xbba /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-localeconv.o)
+ .debug_info    0x00000000000a399b      0xc4a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mbtowc_r.o)
+ .debug_info    0x00000000000a45e5     0x1f61 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mprec.o)
+ .debug_info    0x00000000000a6546     0x137f /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-svfprintf.o)
+ .debug_info    0x00000000000a78c5       0xd2 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-s_nan.o)
+ .debug_info    0x00000000000a7997      0xc06 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-wctomb_r.o)
+ .debug_info    0x00000000000a859d       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_modsi3.o)
+ .debug_info    0x00000000000a85c3       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_ashrdi3.o)
+ .debug_info    0x00000000000a85e9       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_divsf3.o)
+ .debug_info    0x00000000000a860f       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpsf2.o)
+ .debug_info    0x00000000000a8635       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixsfsi.o)
+ .debug_info    0x00000000000a865b       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpdf2.o)
+ .debug_info    0x00000000000a8681       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixdfdi.o)
+ .debug_info    0x00000000000a86a7       0x26 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_floatdidf.o)
+ .debug_info    0x00000000000a86cd     0x23c7 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(unwind-dw2-fde.o)
+ .debug_info    0x00000000000aaa94     0x1d66 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
+ .debug_info    0x00000000000ac7fa     0x3f8d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer.cpp.o)
+ .debug_info    0x00000000000b0787      0xac6 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(aes_unwrap.cpp.o)
+ .debug_info    0x00000000000b124d     0x85f1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
+ .debug_info    0x00000000000b983e      0x2db /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_moddi3.o)
 
-.debug_abbrev   0x0000000000000000    0x198ea
+.debug_abbrev   0x0000000000000000    0x198d2
  .debug_abbrev  0x0000000000000000      0x6a4 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/sketch/ReceiveDemo_Advanced.ino.cpp.o
- .debug_abbrev  0x00000000000006a4      0x7bd /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
- .debug_abbrev  0x0000000000000e61      0x8df /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
- .debug_abbrev  0x0000000000001740      0x98a /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Print.cpp.o)
- .debug_abbrev  0x00000000000020ca      0x93d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Stream.cpp.o)
- .debug_abbrev  0x0000000000002a07      0x999 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(WString.cpp.o)
- .debug_abbrev  0x00000000000033a0      0x643 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(abi.cpp.o)
- .debug_abbrev  0x00000000000039e3      0xa5f /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
- .debug_abbrev  0x0000000000004442      0x620 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
- .debug_abbrev  0x0000000000004a62      0x600 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
- .debug_abbrev  0x0000000000005062      0x684 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
- .debug_abbrev  0x00000000000056e6       0x49 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(gdb_hooks.cpp.o)
- .debug_abbrev  0x000000000000572f      0x46f /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
- .debug_abbrev  0x0000000000005b9e      0x385 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(libc_replacements.cpp.o)
- .debug_abbrev  0x0000000000005f23      0x77e /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(uart.cpp.o)
- .debug_abbrev  0x00000000000066a1      0x6f1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(umm_malloc.cpp.o)
- .debug_abbrev  0x0000000000006d92      0xff2 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Esp.cpp.o)
- .debug_abbrev  0x0000000000007d84      0xaeb /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(FunctionalInterrupt.cpp.o)
- .debug_abbrev  0x000000000000886f      0xa78 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
- .debug_abbrev  0x00000000000092e7      0x30d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
- .debug_abbrev  0x00000000000095f4      0xf44 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Updater.cpp.o)
- .debug_abbrev  0x000000000000a538       0x12 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont.S.o)
- .debug_abbrev  0x000000000000a54a      0x1d1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont_util.cpp.o)
- .debug_abbrev  0x000000000000a71b      0x109 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_features.cpp.o)
- .debug_abbrev  0x000000000000a824      0x199 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_flash_quirks.cpp.o)
- .debug_abbrev  0x000000000000a9bd      0x2db /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_phy.cpp.o)
- .debug_abbrev  0x000000000000ac98      0x30d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_spi_utils.cpp.o)
- .debug_abbrev  0x000000000000afa5      0x4ae /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_timer.cpp.o)
- .debug_abbrev  0x000000000000b453      0xa77 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
- .debug_abbrev  0x000000000000beca      0x407 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
- .debug_abbrev  0x000000000000c2d1      0x474 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
- .debug_abbrev  0x000000000000c745      0x29c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
- .debug_abbrev  0x000000000000c9e1      0x13b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(def.o)
- .debug_abbrev  0x000000000000cb1c       0x88 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(init.o)
- .debug_abbrev  0x000000000000cba4      0x162 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(mem.o)
- .debug_abbrev  0x000000000000cd06      0x2bf /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
- .debug_abbrev  0x000000000000cfc5      0x416 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
- .debug_abbrev  0x000000000000d3db      0x4dd /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pbuf.o)
- .debug_abbrev  0x000000000000d8b8      0x380 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(raw.o)
- .debug_abbrev  0x000000000000dc38      0x4e4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
- .debug_abbrev  0x000000000000e11c      0x451 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
- .debug_abbrev  0x000000000000e56d      0x488 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_out.o)
- .debug_abbrev  0x000000000000e9f5      0x326 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
- .debug_abbrev  0x000000000000ed1b      0x3bc /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(udp.o)
- .debug_abbrev  0x000000000000f0d7      0x36f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(autoip.o)
- .debug_abbrev  0x000000000000f446      0x4b3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
- .debug_abbrev  0x000000000000f8f9      0x3fe /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
- .debug_abbrev  0x000000000000fcf7      0x2c6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(icmp.o)
- .debug_abbrev  0x000000000000ffbd      0x43b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
- .debug_abbrev  0x00000000000103f8      0x4eb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
- .debug_abbrev  0x00000000000108e3      0x293 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
- .debug_abbrev  0x0000000000010b76      0x390 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
- .debug_abbrev  0x0000000000010f06      0x394 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
- .debug_abbrev  0x000000000001129a      0x4c3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ppp.o)
- .debug_abbrev  0x000000000001175d      0x4f5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pppos.o)
- .debug_abbrev  0x0000000000011c52      0x3f8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
- .debug_abbrev  0x000000000001204a      0x236 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(inet_chksum.o)
- .debug_abbrev  0x0000000000012280      0x141 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip.o)
- .debug_abbrev  0x00000000000123c1      0x17a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(magic.o)
- .debug_abbrev  0x000000000001253b      0x237 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_ops.o)
- .debug_abbrev  0x0000000000012772      0x55f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_terminate.o)
- .debug_abbrev  0x0000000000012cd1      0x3fe /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(new_handler.o)
- .debug_abbrev  0x00000000000130cf      0x3c1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(functional.o)
- .debug_abbrev  0x0000000000013490      0x2ec /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_op.o)
- .debug_abbrev  0x000000000001377c      0x31f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_term_handler.o)
- .debug_abbrev  0x0000000000013a9b       0xaf /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
- .debug_abbrev  0x0000000000013b4a      0x2da /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_float.o)
- .debug_abbrev  0x0000000000013e24      0x2f3 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_i.o)
- .debug_abbrev  0x0000000000014117      0x2b9 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfscanf_float.o)
- .debug_abbrev  0x00000000000143d0       0x7b /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sf_nan.o)
- .debug_abbrev  0x000000000001444b      0x22d /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sprintf.o)
- .debug_abbrev  0x0000000000014678      0x46c /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtod.o)
- .debug_abbrev  0x0000000000014ae4      0x314 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
- .debug_abbrev  0x0000000000014df8      0x22f /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-vsnprintf.o)
- .debug_abbrev  0x0000000000015027      0x1f4 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(string_pgmspace.o)
- .debug_abbrev  0x000000000001521b       0x62 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
- .debug_abbrev  0x000000000001527d      0x305 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-dtoa.o)
- .debug_abbrev  0x0000000000015582      0x180 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-errno.o)
- .debug_abbrev  0x0000000000015702      0x39b /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-findfp.o)
- .debug_abbrev  0x0000000000015a9d      0x393 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-gethex.o)
- .debug_abbrev  0x0000000000015e30      0x15d /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-hexnan.o)
- .debug_abbrev  0x0000000000015f8d      0x17a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
- .debug_abbrev  0x0000000000016107      0x1dc /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-lnumeric.o)
- .debug_abbrev  0x00000000000162e3      0x2aa /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-locale.o)
- .debug_abbrev  0x000000000001658d      0x22c /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-localeconv.o)
- .debug_abbrev  0x00000000000167b9      0x21a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mbtowc_r.o)
- .debug_abbrev  0x00000000000169d3      0x3ee /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mprec.o)
- .debug_abbrev  0x0000000000016dc1      0x307 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-svfprintf.o)
- .debug_abbrev  0x00000000000170c8       0x7b /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-s_nan.o)
- .debug_abbrev  0x0000000000017143      0x213 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-wctomb_r.o)
- .debug_abbrev  0x0000000000017356       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_modsi3.o)
- .debug_abbrev  0x000000000001736a       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_ashrdi3.o)
- .debug_abbrev  0x000000000001737e       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_divsf3.o)
- .debug_abbrev  0x0000000000017392       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpsf2.o)
- .debug_abbrev  0x00000000000173a6       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixsfsi.o)
- .debug_abbrev  0x00000000000173ba       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpdf2.o)
- .debug_abbrev  0x00000000000173ce       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixdfdi.o)
- .debug_abbrev  0x00000000000173e2       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_floatdidf.o)
- .debug_abbrev  0x00000000000173f6      0x5a8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(unwind-dw2-fde.o)
- .debug_abbrev  0x000000000001799e      0x59c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
- .debug_abbrev  0x0000000000017f3a      0x81b /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer.cpp.o)
- .debug_abbrev  0x0000000000018755      0x2c3 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(aes_unwrap.cpp.o)
- .debug_abbrev  0x0000000000018a18      0xd6a /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
- .debug_abbrev  0x0000000000019782      0x168 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_moddi3.o)
+ .debug_abbrev  0x00000000000006a4      0x7a5 /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/libraries/rc-switch/RCSwitch.cpp.o
+ .debug_abbrev  0x0000000000000e49      0x8df /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(HardwareSerial.cpp.o)
+ .debug_abbrev  0x0000000000001728      0x98a /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Print.cpp.o)
+ .debug_abbrev  0x00000000000020b2      0x93d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Stream.cpp.o)
+ .debug_abbrev  0x00000000000029ef      0x999 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(WString.cpp.o)
+ .debug_abbrev  0x0000000000003388      0x643 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(abi.cpp.o)
+ .debug_abbrev  0x00000000000039cb      0xa5f /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_main.cpp.o)
+ .debug_abbrev  0x000000000000442a      0x620 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_postmortem.cpp.o)
+ .debug_abbrev  0x0000000000004a4a      0x600 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring.cpp.o)
+ .debug_abbrev  0x000000000000504a      0x684 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_wiring_digital.cpp.o)
+ .debug_abbrev  0x00000000000056ce       0x49 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(gdb_hooks.cpp.o)
+ .debug_abbrev  0x0000000000005717      0x46f /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(heap.cpp.o)
+ .debug_abbrev  0x0000000000005b86      0x385 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(libc_replacements.cpp.o)
+ .debug_abbrev  0x0000000000005f0b      0x77e /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(uart.cpp.o)
+ .debug_abbrev  0x0000000000006689      0x6f1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(umm_malloc.cpp.o)
+ .debug_abbrev  0x0000000000006d7a      0xff2 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Esp.cpp.o)
+ .debug_abbrev  0x0000000000007d6c      0xaeb /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(FunctionalInterrupt.cpp.o)
+ .debug_abbrev  0x0000000000008857      0xa78 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Schedule.cpp.o)
+ .debug_abbrev  0x00000000000092cf      0x30d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(StackThunk.cpp.o)
+ .debug_abbrev  0x00000000000095dc      0xf44 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(Updater.cpp.o)
+ .debug_abbrev  0x000000000000a520       0x12 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont.S.o)
+ .debug_abbrev  0x000000000000a532      0x1d1 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(cont_util.cpp.o)
+ .debug_abbrev  0x000000000000a703      0x109 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_features.cpp.o)
+ .debug_abbrev  0x000000000000a80c      0x199 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_flash_quirks.cpp.o)
+ .debug_abbrev  0x000000000000a9a5      0x2db /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_phy.cpp.o)
+ .debug_abbrev  0x000000000000ac80      0x30d /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_spi_utils.cpp.o)
+ .debug_abbrev  0x000000000000af8d      0x4ae /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_timer.cpp.o)
+ .debug_abbrev  0x000000000000b43b      0xa77 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(core_esp8266_waveform_pwm.cpp.o)
+ .debug_abbrev  0x000000000000beb2      0x407 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-esp.o)
+ .debug_abbrev  0x000000000000c2b9      0x474 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(lwip-git.o)
+ .debug_abbrev  0x000000000000c72d      0x29c /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ethernet.o)
+ .debug_abbrev  0x000000000000c9c9      0x13b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(def.o)
+ .debug_abbrev  0x000000000000cb04       0x88 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(init.o)
+ .debug_abbrev  0x000000000000cb8c      0x162 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(mem.o)
+ .debug_abbrev  0x000000000000ccee      0x2bf /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(memp.o)
+ .debug_abbrev  0x000000000000cfad      0x416 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(netif.o)
+ .debug_abbrev  0x000000000000d3c3      0x4dd /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pbuf.o)
+ .debug_abbrev  0x000000000000d8a0      0x380 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(raw.o)
+ .debug_abbrev  0x000000000000dc20      0x4e4 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp.o)
+ .debug_abbrev  0x000000000000e104      0x451 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_in.o)
+ .debug_abbrev  0x000000000000e555      0x488 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(tcp_out.o)
+ .debug_abbrev  0x000000000000e9dd      0x326 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(timeouts.o)
+ .debug_abbrev  0x000000000000ed03      0x3bc /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(udp.o)
+ .debug_abbrev  0x000000000000f0bf      0x36f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(autoip.o)
+ .debug_abbrev  0x000000000000f42e      0x4b3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dhcp.o)
+ .debug_abbrev  0x000000000000f8e1      0x3fe /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(etharp.o)
+ .debug_abbrev  0x000000000000fcdf      0x2c6 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(icmp.o)
+ .debug_abbrev  0x000000000000ffa5      0x43b /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(igmp.o)
+ .debug_abbrev  0x00000000000103e0      0x4eb /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4.o)
+ .debug_abbrev  0x00000000000108cb      0x293 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_addr.o)
+ .debug_abbrev  0x0000000000010b5e      0x390 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip4_frag.o)
+ .debug_abbrev  0x0000000000010eee      0x394 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(sntp.o)
+ .debug_abbrev  0x0000000000011282      0x4c3 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ppp.o)
+ .debug_abbrev  0x0000000000011745      0x4f5 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(pppos.o)
+ .debug_abbrev  0x0000000000011c3a      0x3f8 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(dns.o)
+ .debug_abbrev  0x0000000000012032      0x236 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(inet_chksum.o)
+ .debug_abbrev  0x0000000000012268      0x141 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(ip.o)
+ .debug_abbrev  0x00000000000123a9      0x17a /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/liblwip2-536-feat.a(magic.o)
+ .debug_abbrev  0x0000000000012523      0x237 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_ops.o)
+ .debug_abbrev  0x000000000001275a      0x55f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_terminate.o)
+ .debug_abbrev  0x0000000000012cb9      0x3fe /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(new_handler.o)
+ .debug_abbrev  0x00000000000130b7      0x3c1 /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(functional.o)
+ .debug_abbrev  0x0000000000013478      0x2ec /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(del_op.o)
+ .debug_abbrev  0x0000000000013764      0x31f /home/andre/.arduino15/packages/esp8266/hardware/esp8266/3.1.2/tools/sdk/lib/libstdc++.a(eh_term_handler.o)
+ .debug_abbrev  0x0000000000013a83       0xaf /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
+ .debug_abbrev  0x0000000000013b32      0x2da /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_float.o)
+ .debug_abbrev  0x0000000000013e0c      0x2f3 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfprintf_i.o)
+ .debug_abbrev  0x00000000000140ff      0x2b9 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-vfscanf_float.o)
+ .debug_abbrev  0x00000000000143b8       0x7b /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sf_nan.o)
+ .debug_abbrev  0x0000000000014433      0x22d /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sprintf.o)
+ .debug_abbrev  0x0000000000014660      0x46c /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtod.o)
+ .debug_abbrev  0x0000000000014acc      0x314 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
+ .debug_abbrev  0x0000000000014de0      0x22f /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-vsnprintf.o)
+ .debug_abbrev  0x000000000001500f      0x1f4 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(string_pgmspace.o)
+ .debug_abbrev  0x0000000000015203       0x62 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
+ .debug_abbrev  0x0000000000015265      0x305 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-dtoa.o)
+ .debug_abbrev  0x000000000001556a      0x180 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-errno.o)
+ .debug_abbrev  0x00000000000156ea      0x39b /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-findfp.o)
+ .debug_abbrev  0x0000000000015a85      0x393 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-gethex.o)
+ .debug_abbrev  0x0000000000015e18      0x15d /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gdtoa-hexnan.o)
+ .debug_abbrev  0x0000000000015f75      0x17a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+ .debug_abbrev  0x00000000000160ef      0x1dc /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-lnumeric.o)
+ .debug_abbrev  0x00000000000162cb      0x2aa /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-locale.o)
+ .debug_abbrev  0x0000000000016575      0x22c /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-localeconv.o)
+ .debug_abbrev  0x00000000000167a1      0x21a /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mbtowc_r.o)
+ .debug_abbrev  0x00000000000169bb      0x3ee /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mprec.o)
+ .debug_abbrev  0x0000000000016da9      0x307 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-nano-svfprintf.o)
+ .debug_abbrev  0x00000000000170b0       0x7b /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-s_nan.o)
+ .debug_abbrev  0x000000000001712b      0x213 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-wctomb_r.o)
+ .debug_abbrev  0x000000000001733e       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_modsi3.o)
+ .debug_abbrev  0x0000000000017352       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_ashrdi3.o)
+ .debug_abbrev  0x0000000000017366       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_divsf3.o)
+ .debug_abbrev  0x000000000001737a       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpsf2.o)
+ .debug_abbrev  0x000000000001738e       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixsfsi.o)
+ .debug_abbrev  0x00000000000173a2       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_cmpdf2.o)
+ .debug_abbrev  0x00000000000173b6       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_fixdfdi.o)
+ .debug_abbrev  0x00000000000173ca       0x14 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_floatdidf.o)
+ .debug_abbrev  0x00000000000173de      0x5a8 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(unwind-dw2-fde.o)
+ .debug_abbrev  0x0000000000017986      0x59c /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer-NonOS.cpp.o)
+ .debug_abbrev  0x0000000000017f22      0x81b /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(LwipDhcpServer.cpp.o)
+ .debug_abbrev  0x000000000001873d      0x2c3 /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(aes_unwrap.cpp.o)
+ .debug_abbrev  0x0000000000018a00      0xd6a /home/andre/.cache/arduino/cores/0847628a04a17058f95d28bff1d25a08/core.a(time.cpp.o)
+ .debug_abbrev  0x000000000001976a      0x168 /home/andre/.arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/bin/../lib/gcc/xtensa-lx106-elf/10.3.0/libgcc.a(_moddi3.o)
 
 .debug_loc      0x0000000000000000    0x3c3b4
  .debug_loc     0x0000000000000000      0x22a /home/andre/.cache/arduino/sketches/6B8555CFCDD73BAF97D8B96E6654B1DF/sketch/ReceiveDemo_Advanced.ino.cpp.o

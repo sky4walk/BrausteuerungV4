@@ -1,10 +1,12 @@
 //brauverein@andrebetz.de
+RESTAPI=false;
 itemsShown="both";
 wallThickness=2;
 bottomThickness=2;
 boxLength=41+2*wallThickness;
 boxWidth=28+2*wallThickness;
-boxHeight=39+2*bottomThickness;
+rf433mod = RESTAPI ? 5 : 0;
+boxHeight=34+2*bottomThickness + rf433mod ;    
 cornerRadius=5;
 lidThickness=2;
 lidClearance=0.2;

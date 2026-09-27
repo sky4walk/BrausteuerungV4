@@ -63,6 +63,8 @@
     .heizung-bar { background:var(--bg2); border:1px solid var(--border); border-radius:3px; padding:14px 20px; display:flex; align-items:center; gap:16px; margin-bottom:16px; }
     .heizung-dot { width:14px; height:14px; border-radius:50%; background:var(--text-d); transition:background 0.3s, box-shadow 0.3s; flex-shrink:0; }
     .heizung-dot.an { background:var(--red); box-shadow:0 0 10px rgba(192,80,74,0.6); }
+    .heizung-dot.kuehl { background:#4A90C8; box-shadow:0 0 10px rgba(74,144,200,0.6); }
+    .pill-kuehl { background:rgba(74,144,200,0.15); color:#6FB0E0; }
     .heizung-label { font-family:IBM Plex Mono,monospace; font-size:0.78rem; color:var(--text-d); flex:1; }
     .pid-bar-wrap { flex:2; background:rgba(0,0,0,0.4); border-radius:2px; height:8px; overflow:hidden; }
     .pid-bar { height:100%; background:var(--amber); transition:width 1s ease; }
@@ -223,7 +225,7 @@
 <body>
 
 <header>
-  <div class="logo"><a href="https://itzwieseltal.wordpress.com/2023/12/06/esp8266-brausteuerung/" target="_blank" style="text-decoration:none;color:inherit" title="BrewBrick Projektseite">BREW<span>// Brick</span></a><span style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;color:#2D6640;margin-left:8px;letter-spacing:0.05em">v4.2.0</span></div>
+  <div class="logo"><a href="https://itzwieseltal.wordpress.com/2023/12/06/esp8266-brausteuerung/" target="_blank" style="text-decoration:none;color:inherit" title="BrewBrick Projektseite">BREW<span>// Brick</span></a><span style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;color:#2D6640;margin-left:8px;letter-spacing:0.05em">v4.3.0</span></div>
   <div class="header-sep"></div>
   <div id="tsHeader" title="ThingSpeak" style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;color:var(--text-d);display:none"></div>
   <div id="wifiStatus">verbinde...</div>
@@ -269,6 +271,8 @@
     <div class="heizung-label" id="heizungLabel">Heizung aus</div>
     <div class="pid-bar-wrap"><div class="pid-bar" id="pidBar" style="width:0%"></div></div>
     <div class="pid-pct" id="pidPct">0%</div>
+    <div class="heizung-dot" id="kuehlDot" style="margin-left:8px"></div>
+    <div class="heizung-label" id="kuehlLabel" style="flex:0 0 auto">Kühlung aus</div>
   </div>
 
   <div id="sensorBanner" style="display:none;background:rgba(192,80,74,0.12);border:1px solid var(--red);border-radius:3px;padding:14px 20px;margin-bottom:16px">
@@ -312,6 +316,8 @@
     <button class="btn btn-red" id="btnStop" onclick="apiPost('/api/stop')" disabled>■ Stop</button>
     <button class="btn btn-ghost" onclick="apiPost('/api/heizung-test',{an:true})">🔥 Heizung Test AN</button>
     <button class="btn btn-ghost" onclick="apiPost('/api/heizung-test',{an:false})">❌ Test AUS</button>
+    <button class="btn btn-ghost" onclick="apiPost('/api/kuehlung-test',{an:true})">❄ Kühlung Test AN</button>
+    <button class="btn btn-ghost" onclick="apiPost('/api/kuehlung-test',{an:false})">❌ Test AUS</button>
     <button class="btn btn-ghost" onclick="rezeptLoeschen()" style="color:#C0504A;border-color:#5C2420">🗑 Rezept löschen</button>
   </div>
 
@@ -403,6 +409,31 @@
   </div>
   <p class="pw-hint">Ein Punkt wird geschrieben, wenn seit dem letzten mindestens das Intervall vergangen ist und sich die Temperatur um die Schwelle geändert hat (spätestens alle 60 s). Beim Brauen reichen 10 s / 0,5 °C; für Sprungantwort-Messungen in der PID-Werkstatt 5 s / 0,1 °C.</p>
 
+  <div class="section-title">❄ Kühlung</div>
+  <div class="config-grid">
+    <div class="form-group"><label class="form-label">Kühlgerät</label>
+      <select class="form-input" id="cfg_kuehlTyp" onchange="kuehlVorgaben()">
+        <option value="0">Kühlschrank / Truhe (Kompressor)</option>
+        <option value="1">Pumpe / Magnetventil (Glykol, Wasser)</option>
+      </select></div>
+    <div class="form-group"><label class="form-label">Hysterese (°C über Soll → EIN)</label><input type="number" class="form-input" id="cfg_kuehlHyst" value="0.5" min="0.1" max="10" step="0.1"></div>
+    <div class="form-group"><label class="form-label">Mindestlaufzeit (s)</label><input type="number" class="form-input" id="cfg_kuehlMinAn" value="120" min="0" max="3600" step="5"></div>
+    <div class="form-group"><label class="form-label">Mindestpause (s, Kompressorschutz)</label><input type="number" class="form-input" id="cfg_kuehlMinAus" value="300" min="0" max="3600" step="5"></div>
+  </div>
+  <div class="config-grid" id="kuehlRc">
+    <div class="form-group"><label class="form-label">433 MHz Code Kühlung EIN</label><input type="number" class="form-input" id="cfg_kRcOn" placeholder="z.B. 1631345"></div>
+    <div class="form-group"><label class="form-label">433 MHz Code Kühlung AUS</label><input type="number" class="form-input" id="cfg_kRcOff" placeholder="z.B. 1631344"></div>
+  </div>
+  <div class="config-grid" id="kuehlRest" style="display:none">
+    <div class="form-group"><label class="form-label">REST-URL Kühlung EIN</label><input type="text" class="form-input" id="cfg_kUrlOn" placeholder="http://192.168.x.x/rpc/Switch.Set?id=0&on=true"></div>
+    <div class="form-group"><label class="form-label">REST-URL Kühlung AUS</label><input type="text" class="form-input" id="cfg_kUrlOff" placeholder="http://192.168.x.x/rpc/Switch.Set?id=0&on=false"></div>
+  </div>
+  <p class="pw-hint">
+    Gekühlt wird in Rasten mit Modus „Kühlen“ oder „Heizen + Kühlen“ (im Rezept-Generator pro Rast einstellbar).
+    Die Kühlung schaltet EIN, sobald die Temperatur Soll + Hysterese übersteigt, und AUS, wenn Soll erreicht ist; bei „Beides“ ist die Heizung währenddessen gesperrt.
+    Protokoll, Pulslänge und Bits bzw. der Schaltmodus sind dieselben wie bei der Heizung. Stopp und Sensorfehler schalten sofort ab, ohne Sperrzeiten.
+  </p>
+
   <div class="section-title">☁ ThingSpeak — Fernüberwachung</div>
   <div class="config-grid">
     <div class="form-group">
@@ -420,7 +451,7 @@
     <div class="form-group"><label class="form-label">Sendeintervall (s, min. 15)</label><input type="number" class="form-input" id="cfg_tsIntervall" value="30" min="15" max="3600" step="5"></div>
   </div>
   <p class="pw-hint">
-    Feldbelegung im Kanal: <b>field1</b> Ist-Temp · <b>field2</b> Soll-Temp · <b>field3</b> PID % · <b>field4</b> Heizung 0/1 ·
+    Feldbelegung im Kanal: <b>field1</b> Ist-Temp · <b>field2</b> Soll-Temp · <b>field3</b> PID % · <b>field4</b> Aktor (0 aus, 1 Heizen, 2 Kühlen) ·
     <b>field5</b> Rast-Nr · <b>field6</b> Zustand (0 Stopp, 1 Aufheizen, 2 Rast, 3 Halt) · <b>field7</b> Gradient °C/min · <b>field8</b> Sensorfehler 0/1.
     Bei Sensorfehler wird field1 weggelassen. Der ESP sendet per HTTP (ohne TLS); im kostenlosen Konto sind höchstens alle 15 s Updates erlaubt.
   </p>
@@ -604,13 +635,15 @@
 
     const zi = d.zustand || 0;
     const zt = document.getElementById('zustandText');
-    zt.textContent = ZUSTAND_LABEL[zi] || '—';
+    zt.textContent = (zi === 1 && d.richtung < 0) ? 'Abkühlen' : (ZUSTAND_LABEL[zi] || '—');
     zt.style.color = ZUSTAND_COLOR[zi];
 
     document.getElementById('heizungDot').className   = 'heizung-dot' + (d.heizung ? ' an' : '');
     document.getElementById('heizungLabel').textContent = d.heizung ? 'Heizung EIN' : 'Heizung aus';
     document.getElementById('pidBar').style.width     = (d.pidOut||0) + '%';
     document.getElementById('pidPct').textContent     = Math.round(d.pidOut||0) + '%';
+    document.getElementById('kuehlDot').className     = 'heizung-dot' + (d.kuehlung ? ' kuehl' : '');
+    document.getElementById('kuehlLabel').textContent = d.kuehlung ? 'Kühlung EIN' : 'Kühlung aus';
 
     document.getElementById('btnStop').disabled = (zi === 0);
 
@@ -691,7 +724,13 @@
       <span class="rast-item-detail">${r.soll}°C · ${r.time} min</span>
       ${r.halt?'<span class="rast-pill pill-halt">HALT</span>':''}
       ${r.call?'<span class="rast-pill pill-call">CALL</span>':''}
+      ${modusPill(r.modus)}
     </div>`;
+  }
+  const MODUS_LABEL = ['Heizen', 'Kühlen', 'Heizen + Kühlen'];
+  function modusPill(m) {
+    return m === 1 ? '<span class="rast-pill pill-kuehl">❄ KÜHLEN</span>'
+         : m === 2 ? '<span class="rast-pill pill-kuehl">🔥❄ BEIDES</span>' : '';
   }
 
   function renderRastenListe() {
@@ -720,7 +759,8 @@
       minTemp: pF(g(el,'MinTemp'),-0.1), maxTemp: pF(g(el,'MaxTemp'),0.1),
       kp: pF(g(el,'Kp'),0), ki: pF(g(el,'Ki'),0), kd: pF(g(el,'Kd'),0),
       ownPid: pB(g(el,'OwnPid')), onPulse: pI(g(el,'OnTimePulse'),0), offPulse: pI(g(el,'OffTimePulse'),0),
-      maxGradient: pF(g(el,'MaxGradient'),0), info: g(el,'Info')
+      maxGradient: pF(g(el,'MaxGradient'),0), info: g(el,'Info'),
+      modus: Math.min(2, Math.max(0, pI(g(el,'Mode'),0)))
     }));
   }
 
@@ -729,7 +769,8 @@
     const aktiv = rasten.filter(r => r.on !== false).slice(0, 16).map(r => ({
       name: r.name, halt: !!r.halt, call: !!r.call, soll: +r.soll, time: +r.time,
       minTemp: isFinite(+r.minTemp) ? +r.minTemp : -0.1, maxTemp: isFinite(+r.maxTemp) ? +r.maxTemp : 0.1, ownPid: !!r.ownPid,
-      kp: +r.kp, ki: +r.ki, kd: +r.kd, maxGradient: +r.maxGradient, info: r.info || ''
+      kp: +r.kp, ki: +r.ki, kd: +r.kd, maxGradient: +r.maxGradient, info: r.info || '',
+      modus: Math.min(2, Math.max(0, parseInt(r.modus) || 0))
     }));
     if (!aktiv.length) return { error: 'Keine aktiven Rasten im Rezept' };
     const r = await fetch('/api/rezept', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ rasten: aktiv }) });
@@ -826,6 +867,14 @@
       document.getElementById('cfg_tsKey').value         = d.tsKey || '';
       document.getElementById('cfg_tsChannel').value     = d.tsChannel || '';
       document.getElementById('cfg_tsIntervall').value   = d.tsIntervall || 30;
+      document.getElementById('cfg_kuehlTyp').value    = d.kuehlTyp || 0;
+      document.getElementById('cfg_kuehlHyst').value   = d.kuehlHyst ?? 0.5;
+      document.getElementById('cfg_kuehlMinAn').value  = d.kuehlMinAn ?? 120;
+      document.getElementById('cfg_kuehlMinAus').value = d.kuehlMinAus ?? 300;
+      document.getElementById('cfg_kRcOn').value       = d.kRcOn  || '';
+      document.getElementById('cfg_kRcOff').value      = d.kRcOff || '';
+      document.getElementById('cfg_kUrlOn').value      = d.kUrlOn  || '';
+      document.getElementById('cfg_kUrlOff').value     = d.kUrlOff || '';
       tsLinkUpdate();
       tsStatusLaden();
       updateSchaltModus();
@@ -859,6 +908,14 @@
       tsKey:       document.getElementById('cfg_tsKey').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,''),
       tsChannel:   parseInt(document.getElementById('cfg_tsChannel').value)||0,
       tsIntervall: Math.min(3600, Math.max(15, parseInt(document.getElementById('cfg_tsIntervall').value)||30)),
+      kuehlTyp:    parseInt(document.getElementById('cfg_kuehlTyp').value)||0,
+      kuehlHyst:   parseFloat(document.getElementById('cfg_kuehlHyst').value)||0.5,
+      kuehlMinAn:  parseInt(document.getElementById('cfg_kuehlMinAn').value)||0,
+      kuehlMinAus: parseInt(document.getElementById('cfg_kuehlMinAus').value)||0,
+      kRcOn:       parseInt(document.getElementById('cfg_kRcOn').value)||0,
+      kRcOff:      parseInt(document.getElementById('cfg_kRcOff').value)||0,
+      kUrlOn:      document.getElementById('cfg_kUrlOn').value.trim(),
+      kUrlOff:     document.getElementById('cfg_kUrlOff').value.trim(),
     };
     for (let i = 0; i < REST_MAX; i++) data['restEn'+i] = restEnabled[i] || false;
     const j = await apiPost('/api/config', data);
@@ -917,8 +974,18 @@
     } catch(e) { el.textContent = '✗ Verbindungsfehler'; }
   }
 
+  // Vorgaben je Kühlgerät (nur beim Umschalten, Werte bleiben editierbar)
+  function kuehlVorgaben() {
+    const pumpe = document.getElementById('cfg_kuehlTyp').value === '1';
+    document.getElementById('cfg_kuehlHyst').value   = pumpe ? 0.3 : 0.5;
+    document.getElementById('cfg_kuehlMinAn').value  = pumpe ? 5   : 120;
+    document.getElementById('cfg_kuehlMinAus').value = pumpe ? 5   : 300;
+  }
+
   function updateSchaltModus() {
     const modus = parseInt(document.getElementById('cfg_schaltModus').value);
+    document.getElementById('kuehlRc').style.display   = modus === 1 ? 'none' : 'grid';
+    document.getElementById('kuehlRest').style.display = modus === 1 ? 'grid' : 'none';
     const restSection = document.getElementById('restSection');
     const rcSection = document.getElementById('rcSection');
     const rcSection2 = document.getElementById('rcSection2');
@@ -1329,7 +1396,7 @@
     name:'', on:true, halt:false, call:false,
     sollTemp:67, time:20, minTemp:-0.1, maxTemp:0.1,
     kp:0, ki:0, kd:0, onPulse:0, offPulse:0,
-    maxGradient:1.0, info:''
+    maxGradient:1.0, info:'', modus:0
   };
 
   function genSetManuell() { genManuelleBearbeitung = true; }
@@ -1385,6 +1452,7 @@
         onPulse:     0,
         offPulse:    0,
         maxGradient: r.maxGradient || 0,
+        modus:       r.modus || 0,
         info:        r.info || ''
       }));
       genManuelleBearbeitung = false;
@@ -1408,6 +1476,7 @@
     const r=genRasts.find(r=>r.id===id); if(!r) return;
     if(['on','halt','call'].includes(field)) r[field]=value;
     else if(['sollTemp','time','minTemp','maxTemp','kp','ki','kd','onPulse','offPulse','maxGradient'].includes(field)) r[field]=parseFloat(value)||0;
+    else if(field==='modus') { r.modus=parseInt(value)||0; genRenderRasts(); }
     else r[field]=value;
     genUpdateAll();
   }
@@ -1437,7 +1506,8 @@
     c.innerHTML=genRasts.map((r,idx)=>{
       const dispName = r.name || ('Rast '+(idx+1));
       const pills=(r.halt?'<span style="font-size:0.6rem;padding:2px 6px;border-radius:2px;background:rgba(212,136,42,0.15);color:#D4882A;font-family:IBM Plex Mono,monospace">HALT</span>':'')+
-                  (r.call?'<span style="font-size:0.6rem;padding:2px 6px;border-radius:2px;background:rgba(76,175,110,0.15);color:#4CAF6E;font-family:IBM Plex Mono,monospace">CALL</span>':'');
+                  (r.call?'<span style="font-size:0.6rem;padding:2px 6px;border-radius:2px;background:rgba(76,175,110,0.15);color:#4CAF6E;font-family:IBM Plex Mono,monospace">CALL</span>':'')+
+                  modusPill(r.modus);
       return `<div class="gen-rast-card ${r.on?'':'disabled'}" id="gen_card_${r.id}">
         <div class="gen-rast-header" onclick="genToggleCard(${r.id})">
           <span class="gen-rast-nr">${String(idx).padStart(2,'0')}</span>
@@ -1467,6 +1537,11 @@
           </div>
           <div class="gen-field"><label>Max. Gradient (°C/min)</label>
             <input type="number" step="0.1" min="0" value="${r.maxGradient}" oninput="genUpdateField(${r.id},'maxGradient',this.value)">
+          </div>
+          <div class="gen-field"><label>Modus</label>
+            <select class="form-input" style="background:#0F1410;font-size:0.82rem;padding:8px 10px" onchange="genUpdateField(${r.id},'modus',this.value)">
+              ${MODUS_LABEL.map((t,m)=>`<option value="${m}" ${(r.modus||0)===m?'selected':''}>${m===1?'❄ ':m===2?'🔥❄ ':'🔥 '}${t}</option>`).join('')}
+            </select>
           </div>
           <div class="gen-field" style="grid-column:1/-1;display:flex;gap:24px;flex-wrap:wrap;align-items:center;padding:4px 0">
             <div style="display:flex;align-items:center;gap:10px">
@@ -1519,7 +1594,7 @@
         <div class="gen-timeline-dot" style="${r.halt||r.call?'background:#D4882A;border-color:#D4882A':''}"></div>
         <div class="gen-timeline-content">
           <div class="gen-timeline-name">${genEsc(r.name)||'(Unbenannt)'}</div>
-          <div class="gen-timeline-detail">${r.sollTemp}°C · ${r.time} min${r.halt?' · HALT':''}${r.call?' · CALL':''}</div>
+          <div class="gen-timeline-detail">${r.sollTemp}°C · ${r.time} min${r.halt?' · HALT':''}${r.call?' · CALL':''}${r.modus===1?' · ❄':r.modus===2?' · 🔥❄':''}</div>
         </div>
       </div>`).join(''):'<div style="font-family:IBM Plex Mono,monospace;font-size:0.7rem;color:#5A7A5E">Noch keine Rasten.</div>';
     const name=document.getElementById('gen_recipeName').value||'Rezept';
@@ -1531,7 +1606,7 @@
 
   function genGetPadded() {
     const r=[...genRasts.map((r,i)=>({...r,nr:i}))];
-    while(r.length<16){const i=r.length;r.push({nr:i,name:'Rast'+(i+1),on:false,halt:false,call:false,sollTemp:0,time:0,minTemp:-0.1,maxTemp:0.1,kp:0,ki:0,kd:0,onPulse:0,offPulse:0,maxGradient:0,info:''});}
+    while(r.length<16){const i=r.length;r.push({nr:i,name:'Rast'+(i+1),on:false,halt:false,call:false,sollTemp:0,time:0,minTemp:-0.1,maxTemp:0.1,kp:0,ki:0,kd:0,onPulse:0,offPulse:0,maxGradient:0,modus:0,info:''});}
     return r.slice(0,16);
   }
 
@@ -1544,7 +1619,7 @@
     const x=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
     const rasts=genGetPadded();
     return `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\n<recipe AppDevice="mikroSikaru.de" AppName="BrewBrickApp" AppVersion="1.19">\n  <description>${x(name)}</description>\n`+
-      rasts.map(r=>`  <rast>\n    <Nr>${r.nr}</Nr>\n    <Name>${x(rname(r))}</Name>\n    <On>${b(r.on)}</On>\n    <Halt>${b(r.halt)}</Halt>\n    <Call>${b(r.call)}</Call>\n    <SollTemp>${f(r.sollTemp)}</SollTemp>\n    <Time>${r.time}</Time>\n    <MinTemp>${f(r.minTemp)}</MinTemp>\n    <MaxTemp>${f(r.maxTemp)}</MaxTemp>\n    <Kp>${f(r.kp)}</Kp>\n    <Ki>${f(r.ki)}</Ki>\n    <Kd>${f(r.kd)}</Kd>\n    <OwnPid>${r.kp>0?'true':'false'}</OwnPid>\n    <OnTimePulse>${r.onPulse}</OnTimePulse>\n    <OffTimePulse>${r.offPulse}</OffTimePulse>\n    <MaxGradient>${f(r.maxGradient)}</MaxGradient>\n    <Info>${x(r.info)}</Info>\n  </rast>`).join('\n')+'\n</recipe>';
+      rasts.map(r=>`  <rast>\n    <Nr>${r.nr}</Nr>\n    <Name>${x(rname(r))}</Name>\n    <On>${b(r.on)}</On>\n    <Halt>${b(r.halt)}</Halt>\n    <Call>${b(r.call)}</Call>\n    <SollTemp>${f(r.sollTemp)}</SollTemp>\n    <Time>${r.time}</Time>\n    <MinTemp>${f(r.minTemp)}</MinTemp>\n    <MaxTemp>${f(r.maxTemp)}</MaxTemp>\n    <Kp>${f(r.kp)}</Kp>\n    <Ki>${f(r.ki)}</Ki>\n    <Kd>${f(r.kd)}</Kd>\n    <OwnPid>${r.kp>0?'true':'false'}</OwnPid>\n    <OnTimePulse>${r.onPulse}</OnTimePulse>\n    <OffTimePulse>${r.offPulse}</OffTimePulse>\n    <MaxGradient>${f(r.maxGradient)}</MaxGradient>\n    <Mode>${r.modus||0}</Mode>\n    <Info>${x(r.info)}</Info>\n  </rast>`).join('\n')+'\n</recipe>';
   }
 
   function genDownloadBML() {
@@ -1644,6 +1719,7 @@
         kp: 0, ki: 0, kd: 0,
         onPulse: 0, offPulse: 0,
         maxGradient: 0,
+        modus: 0,
         info: ''
       };
     });
@@ -1694,7 +1770,8 @@
       logDaten = txt.split('\n').slice(1).map(z => z.trim().split(';'))
         .filter(f => f.length >= 5)
         .map(f => [parseInt(f[0]), Math.round(parseFloat(f[1])*100),
-                   Math.round(parseFloat(f[2])*100), parseInt(f[3]), parseInt(f[4])])
+                   Math.round(parseFloat(f[2])*100), parseInt(f[3]), parseInt(f[4]),
+                   f.length > 5 ? (parseInt(f[5]) || 0) : 0])
         .filter(p => !p.some(isNaN));
       zeichneChart();
     } catch(e) {}
@@ -1753,6 +1830,12 @@
     ctx.beginPath(); ctx.moveTo(xS(0), yS(minT));
     logDaten.forEach((p,i) => ctx.lineTo(xS(i), yS(minT + p[3]/100 * tR)));
     ctx.lineTo(xS(logDaten.length-1), yS(minT)); ctx.closePath(); ctx.fill();
+
+    // Kühlphasen als blaue Bänder
+    ctx.fillStyle = 'rgba(74,144,200,0.18)';
+    logDaten.forEach((p,i) => {
+      if (p[5] && i < logDaten.length - 1) ctx.fillRect(xS(i), pt, Math.max(1, xS(i+1) - xS(i)), cH);
+    });
 
     // Solltemperatur (gestrichelt amber)
     ctx.strokeStyle='rgba(212,136,42,0.5)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);

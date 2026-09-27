@@ -164,24 +164,4 @@ Decimal: 1631329 (24Bit) Binary: 000110001110010001100001 Tri-State: not applica
 Raw data: 9796,303,906,304,909,303,905,903,308,904,305,302,909,301,908,302,909,902,308,900,309,905,307,299,910,301,909,901,308,301,910,300,910,304,905,902,307,902,309,301,910,304,907,300,910,302,904,902,305,
 
 
-Brennstuhl EMpfaenger RCR CE1 1011 IP20 DE 3726 Sender RCT CE1 CR 3726
-A ON:
-Value: 462420691 Bits: 32 Delay: 701 Protocol: 2
-Value: 462420691 Bits: 32 Delay: 701 Protocol: 2
-Value: 1350987155 Bits: 32 Delay: 697 Protocol: 2
-Value: 1350987155 Bits: 32 Delay: 699 Protocol: 2
 
-const int BITS      = 32;
-const int PROTOCOL  = 2;
-const int PULSE_LEN = 700;
-
-// A ON
-const unsigned long CODE_A_ON_1 = 462420691;
-const unsigned long CODE_A_ON_2 = 1350987155;
-
-// A OFF
-const unsigned long CODE_A_OFF_1 = 149854355;
-const unsigned long CODE_A_OFF_2 = 3561711827;
-
-
-https://forum.arduino.cc/t/433-mhz-funksteckdosen-reagieren-nicht/1345611/10

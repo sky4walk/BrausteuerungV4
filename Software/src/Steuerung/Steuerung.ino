@@ -40,13 +40,19 @@
  * Reset (per /tools → Komplett-Reset):
  *   Löscht alle LittleFS Dateien → Werksreset
  *
- * Version: 4.2.0
+ * Version: 4.3.0
+ *
+ * 4.3.0: Kühlen. Jede Rast hat einen Modus (0 Heizen, 1 Kühlen, 2 Beides).
+ *        Kühlgerät (Kühlschrank oder Pumpe/Ventil) wird wie die Heizung per
+ *        433 MHz oder REST geschaltet, mit eigenen Codes/URLs, per Hysterese
+ *        und Mindest-Lauf-/Pausenzeit (Kompressorschutz).
+ *        Rezept-JSON-Puffer auf 8 KB (16 Rasten mit Info passten nicht in 4 KB).
  *
  * 4.2.0: ThingSpeak-Upload (Einstellungen → ThingSpeak), config.json-Puffer
  *        vergrößert (StaticJsonDocument<512>/<256> war für alle Keys zu klein)
  *
  * ThingSpeak Feldbelegung:
- *   field1 Ist-Temp °C   field2 Soll-Temp °C   field3 PID %      field4 Heizung 0/1
+ *   field1 Ist-Temp °C   field2 Soll-Temp °C   field3 PID %      field4 Aktor 0 aus/1 Heizen/2 Kühlen
  *   field5 Rast-Nr       field6 Zustand 0..3   field7 Gradient   field8 Sensorfehler 0/1
  *
  * API-Version 2 (index.html prüft "api" im Status):
@@ -375,6 +381,23 @@ unsigned long letztesSenden    = 0;        // Zeitstempel letztes RC-Signal
 unsigned long RC_REPEAT_MS     = 10000;  // Wiederholungsintervall in ms
 unsigned long RC_MIN_SCHALT_MS = 200;    // Mindest-Schaltzeit in ms (Relais-Schutz)
 
+// ── KÜHLUNG ──────────────────────────────────────────────────
+// Schaltet über denselben Weg wie die Heizung (schaltModus), aber mit
+// eigenen RC-Codes bzw. einem eigenen REST-URL-Paar. Geregelt wird per
+// Hysterese: EIN über Soll + kuehlHyst, AUS bei Erreichen von Soll.
+unsigned long kRcOn  = 0;
+unsigned long kRcOff = 0;
+char          kUrlOn[128]  = "";
+char          kUrlOff[128] = "";
+int           kuehlTyp      = 0;         // 0 Kühlschrank, 1 Pumpe/Ventil (nur Vorgabe in der UI)
+float         kuehlHyst     = 0.5f;      // °C über Soll → Kühlung EIN
+unsigned long kuehlMinAnMs  = 120000UL;  // Mindestlaufzeit
+unsigned long kuehlMinAusMs = 300000UL;  // Mindestpause (Kompressorschutz)
+bool          kuehlungAn    = false;
+bool          kuehlGeschaltet = false;   // schon einmal geschaltet? (vorher keine Sperrzeit)
+unsigned long kuehlLetzterWechsel = 0;
+unsigned long kuehlLetztesSenden  = 0;
+
 // ── SCHALT-MODUS & REST-STECKDOSEN ───────────────────────────
 #define MAX_REST 6
 int  schaltModus  = 0;   // 0 = RC433 Funk, 1 = REST-Steckdose
@@ -399,6 +422,7 @@ struct Rast {
   float minTemp, maxTemp;
   float kp, ki, kd;
   float maxGradient;
+  uint8_t modus;         // 0 = Heizen, 1 = Kühlen, 2 = Heizen + Kühlen
   char  info[128];
 };
 
@@ -406,7 +430,7 @@ Rast  rasten[MAX_RASTEN];
 int   rastAnzahl   = 0;
 uint16_t rezeptVersion = 1;   // wird bei jeder Rezeptänderung erhöht → Browser lädt neu
 #define API_VERSION 2
-#define FW_VERSION "4.2.0"
+#define FW_VERSION "4.3.0"
 int   aktiveRast   = -1;
 bool  wartendHalt  = false;
 
@@ -416,6 +440,7 @@ unsigned long rastDauerMs = 0;
 // ── ZUSTAND ──────────────────────────────────────────────────
 enum Zustand { GESTOPPT, AUFHEIZEN, RAST_LAEUFT, WARTEN_HALT };
 Zustand zustand = GESTOPPT;
+int8_t  rastRichtung = 1;   // +1 = auf Soll aufheizen, -1 = auf Soll abkühlen
 
 // ── TEMPERATURSENSOR ─────────────────────────────────────────
 float tempAktuell = 0.0;
@@ -482,7 +507,7 @@ void logStart() {
   logReset();
   logAktiv = true;
   File f = LittleFS.open("/log.csv", "w");
-  if (f) { f.println("Zeit_s;Temp_C;Soll_C;PID_Pct;Rast"); f.close(); }
+  if (f) { f.println("Zeit_s;Temp_C;Soll_C;PID_Pct;Rast;Kuehl"); f.close(); }
   Serial.println("[LOG] Flash-Log gestartet");
 }
 
@@ -505,10 +530,10 @@ void logPunkt() {
   unsigned long sek = (jetzt - logStartMs) / 1000UL;
   File f = LittleFS.open("/log.csv", "a");
   if (f) {
-    f.printf("%lu;%.2f;%.2f;%u;%d\n",
+    f.printf("%lu;%.2f;%.2f;%u;%d;%d\n",
       sek, tempAktuell, pidSetpoint,
       (uint8_t)constrain(pidOutput, 0, 100),
-      aktiveRast);
+      aktiveRast, kuehlungAn ? 1 : 0);
     f.close();
   }
 }
@@ -596,6 +621,41 @@ void heizungAus() {
   }
 }
 
+// ── KÜHLUNG SCHALTEN ─────────────────────────────────────────
+void kuehlSenden(bool an) {
+  if (schaltModus == 1) {
+    restCall(an ? kUrlOn : kUrlOff);
+  } else {
+    unsigned long code = an ? kRcOn : kRcOff;
+    if (code) rcSend(code);   // nicht konfiguriert → nichts senden
+  }
+}
+
+// Setzt den Kühlzustand unter Beachtung von Mindestlauf-/Pausenzeit.
+// erzwingen = Stopp, Sensorfehler, Test — ignoriert die Sperrzeiten.
+// Wiederholt das aktuelle Signal alle RC_REPEAT_MS (wie bei der Heizung).
+void kuehlungSetzen(bool an, bool erzwingen = false) {
+  unsigned long jetzt = millis();
+  if (an != kuehlungAn) {
+    if (!erzwingen && kuehlGeschaltet) {
+      unsigned long seit = jetzt - kuehlLetzterWechsel;
+      if (an  && seit < kuehlMinAusMs) return;   // Kompressor braucht Pause
+      if (!an && seit < kuehlMinAnMs)  return;   // Mindestlaufzeit
+    }
+    kuehlSenden(an);
+    kuehlungAn          = an;
+    kuehlGeschaltet     = true;
+    kuehlLetzterWechsel = jetzt;
+    kuehlLetztesSenden  = jetzt;
+    Serial.printf("[KUEHL] %s bei %.2f°C (Soll %.2f)\n", an ? "EIN" : "AUS", tempAktuell, pidSetpoint);
+    return;
+  }
+  if (jetzt - kuehlLetztesSenden >= RC_REPEAT_MS) {
+    kuehlSenden(an);
+    kuehlLetztesSenden = jetzt;
+  }
+}
+
 // ── THINGSPEAK ───────────────────────────────────────────────
 // Upload per HTTP (nicht HTTPS) — spart ~20 KB Heap für BearSSL.
 // Free-Account: min. 15 s zwischen zwei Updates pro Kanal.
@@ -637,7 +697,7 @@ bool thingSpeakSenden(bool erzwingen = false) {
   char url[320];
   int n = snprintf(url, sizeof(url),
     "http://api.thingspeak.com/update?api_key=%s&field2=%.1f&field3=%.0f&field4=%d&field5=%d&field6=%d&field8=%d",
-    tsKey, pidSetpoint, constrain(pidOutput, 0.0, 100.0), heizungAn ? 1 : 0,
+    tsKey, pidSetpoint, constrain(pidOutput, 0.0, 100.0), (heizungAn ? 1 : 0) | (kuehlungAn ? 2 : 0),
     aktiveRast, (int)zustand, sensorFehler ? 1 : 0);
   // Bei Sensorfehler Temperatur weglassen → Lücke im Chart statt veraltetem Wert
   if (!sensorFehler && n > 0 && n < (int)sizeof(url))
@@ -758,6 +818,14 @@ void configLaden() {
     tsChannel     = doc["tsChannel"] | 0UL;
     tsIntervallMs = constrain((int)(doc["tsIntervall"] | 30), 15, 3600) * 1000UL;
     tsNurBrauen   = doc["tsNurBrauen"] | true;
+    kRcOn         = doc["kRcOn"]  | 0UL;
+    kRcOff        = doc["kRcOff"] | 0UL;
+    strlcpy(kUrlOn,  doc["kUrlOn"]  | "", sizeof(kUrlOn));
+    strlcpy(kUrlOff, doc["kUrlOff"] | "", sizeof(kUrlOff));
+    kuehlTyp      = doc["kuehlTyp"]  | 0;
+    kuehlHyst     = constrain((float)(doc["kuehlHyst"] | 0.5f), 0.1f, 10.0f);
+    kuehlMinAnMs  = constrain((int)(doc["kuehlMinAn"]  | 120), 0, 3600) * 1000UL;
+    kuehlMinAusMs = constrain((int)(doc["kuehlMinAus"] | 300), 0, 3600) * 1000UL;
   }
   f.close();
   restDosenLaden();  // REST-Steckdosen aus separater Datei
@@ -808,6 +876,19 @@ void configSpeichern(const String& body) {
   doc["tsIntervall"] = (int)(tsIntervallMs / 1000);
   doc["tsNurBrauen"] = tsNurBrauen;
   tsLetzterVersuch = 0;   // neue Einstellungen → beim nächsten Loop sofort senden
+  kRcOn    = doc["kRcOn"]    | kRcOn;
+  kRcOff   = doc["kRcOff"]   | kRcOff;
+  if (doc.containsKey("kUrlOn"))  strlcpy(kUrlOn,  doc["kUrlOn"]  | "", sizeof(kUrlOn));
+  if (doc.containsKey("kUrlOff")) strlcpy(kUrlOff, doc["kUrlOff"] | "", sizeof(kUrlOff));
+  kuehlTyp = doc["kuehlTyp"] | kuehlTyp;
+  kuehlHyst     = constrain((float)(doc["kuehlHyst"] | kuehlHyst), 0.1f, 10.0f);
+  kuehlMinAnMs  = constrain((int)(doc["kuehlMinAn"]  | (int)(kuehlMinAnMs/1000)),  0, 3600) * 1000UL;
+  kuehlMinAusMs = constrain((int)(doc["kuehlMinAus"] | (int)(kuehlMinAusMs/1000)), 0, 3600) * 1000UL;
+  doc["kRcOn"] = kRcOn;  doc["kRcOff"] = kRcOff;
+  doc["kUrlOn"] = (const char*)kUrlOn;  doc["kUrlOff"] = (const char*)kUrlOff;
+  doc["kuehlTyp"] = kuehlTyp;  doc["kuehlHyst"] = kuehlHyst;
+  doc["kuehlMinAn"]  = (int)(kuehlMinAnMs / 1000);
+  doc["kuehlMinAus"] = (int)(kuehlMinAusMs / 1000);
   myPID.SetTunings(Kp, Ki, Kd);
   myPID.SetSampleTime(pidSampleMs);
   rcSwitch.setProtocol(rcProtocol);
@@ -920,6 +1001,7 @@ bool rezeptAusJson(JsonDocument& doc) {
     r.ki          = o["ki"]          | 0.0f;
     r.kd          = o["kd"]          | 0.0f;
     r.maxGradient = o["maxGradient"] | 0.0f;
+    r.modus       = constrain((int)(o["modus"] | 0), 0, 2);
     rastAnzahl++;
     yield();
   }
@@ -931,7 +1013,7 @@ bool rezeptLaden() {
   LittleFS.remove("/rezept.bml");  // Altlast aus Firmware < 4.1
   File f = LittleFS.open("/rezept.json", "r");
   if (!f) return false;
-  DynamicJsonDocument doc(4096);
+  DynamicJsonDocument doc(8192);
   bool ok = (deserializeJson(doc, f) == DeserializationError::Ok);
   f.close();
   if (!ok) { Serial.println("[REZEPT] rezept.json ungültig"); return false; }
@@ -940,7 +1022,7 @@ bool rezeptLaden() {
 
 // Speichert den Body 1:1 als /rezept.json und übernimmt ihn in den RAM
 bool rezeptSpeichern(const String& body) {
-  DynamicJsonDocument doc(4096);
+  DynamicJsonDocument doc(8192);
   if (deserializeJson(doc, body) != DeserializationError::Ok) return false;
   if (!rezeptAusJson(doc)) return false;
   File f = LittleFS.open("/rezept.json", "w");
@@ -954,6 +1036,7 @@ void rezeptLoeschen() {
   aktiveRast = -1;
   zustand    = GESTOPPT;
   heizungAus();
+  kuehlungSetzen(false, true);
   LittleFS.remove("/rezept.json");
   rezeptVersion++;
   Serial.println("[REZEPT] Gelöscht");
@@ -968,6 +1051,8 @@ void rastStarten(int nr) {
   Rast& r      = rasten[nr];
   pidSetpoint  = r.sollTemp;
   rastDauerMs  = (unsigned long)(r.time * 60.0f * 1000.0f);
+  // Kühlen → warten bis Soll unterschritten; Beides → Richtung nach Starttemperatur
+  rastRichtung = (r.modus == 1 || (r.modus == 2 && tempAktuell > r.sollTemp)) ? -1 : 1;
   // Rast-spezifische PID-Parameter wenn ownPid gesetzt
   if (r.ownPid) myPID.SetTunings(r.kp, r.ki, r.kd);
   else          myPID.SetTunings(Kp, Ki, Kd);
@@ -994,6 +1079,7 @@ void naechsteRast() {
     zustand    = GESTOPPT;
     aktiveRast = -1;
     heizungAus();
+    kuehlungSetzen(false, true);
     logAktiv   = false;  // Log stoppen nach letzter Rast
     buzzerRuf(5);
     Serial.println("[INFO] Brauprogramm abgeschlossen!");
@@ -1048,16 +1134,38 @@ void heizungRegeln() {
     pidOutput = 0;
     myPID.SetMode(MANUAL);
     heizungAus();
+    kuehlungSetzen(false, true);
     return;
   }
   if (zustand == GESTOPPT) {
-    // Auch im Stopp-Zustand alle 30s AUS senden
+    // Auch im Stopp-Zustand regelmäßig AUS senden (Test-Schaltungen fallen so nach RC_REPEAT_MS zurück)
     unsigned long jetzt = millis();
     if (jetzt - letztesSenden >= RC_REPEAT_MS) {
       schalteAus();
       heizungAn     = false;
       letztesSenden = jetzt;
     }
+    if (jetzt - kuehlLetztesSenden >= RC_REPEAT_MS) {
+      kuehlSenden(false);
+      kuehlungAn         = false;
+      kuehlLetztesSenden = jetzt;
+    }
+    return;
+  }
+  // ── Kühlung (Hysterese) ─────────────────────────────────
+  uint8_t modus = (aktiveRast >= 0 && aktiveRast < rastAnzahl) ? rasten[aktiveRast].modus : 0;
+  if (modus >= 1) {
+    if      (pidInput > pidSetpoint + kuehlHyst) kuehlungSetzen(true);
+    else if (pidInput <= pidSetpoint)            kuehlungSetzen(false);
+    else                                         kuehlungSetzen(kuehlungAn);  // Totzone: halten
+  } else {
+    kuehlungSetzen(false, true);
+  }
+  // Nur Kühlen, oder Kühlung läuft gerade → Heizung sicher aus
+  if (modus == 1 || kuehlungAn) {
+    pidOutput = 0;
+    myPID.SetMode(MANUAL);
+    heizungAus();
     return;
   }
   // ── Temperaturregelung ─────────────────────────────────
@@ -1119,7 +1227,9 @@ void brauLogik() {
 
   // ── AUFHEIZEN: Warte bis Solltemperatur erreicht ──────────
   if (zustand == AUFHEIZEN) {
-    if (tempAktuell >= pidSetpoint) {
+    bool erreicht = (rastRichtung > 0) ? (tempAktuell >= pidSetpoint)
+                                       : (tempAktuell <= pidSetpoint);
+    if (erreicht) {
       // Temperatur erreicht → Timer sofort starten
       zustand     = RAST_LAEUFT;
       rastStartMs = jetzt;
@@ -1164,7 +1274,7 @@ void brauLogik() {
 // separat unter /api/rezept; "rezeptVersion" sagt dem Browser,
 // wann er sie neu laden muss.
 void apiStatus() {
-  StaticJsonDocument<640> doc;
+  StaticJsonDocument<768> doc;
   doc["api"]          = API_VERSION;
   doc["rezeptVersion"] = rezeptVersion;
   doc["temp"]       = tempAktuell;
@@ -1172,6 +1282,8 @@ void apiStatus() {
   doc["gradient"]   = tempGradient;
   doc["pidOut"]     = pidOutput;
   doc["heizung"]    = heizungAn;
+  doc["kuehlung"]   = kuehlungAn;
+  doc["richtung"]   = rastRichtung;
   doc["zustand"]    = (int)zustand;
   doc["rast"]       = aktiveRast;
   doc["rastAnzahl"] = rastAnzahl;
@@ -1185,6 +1297,7 @@ void apiStatus() {
     doc["rastInfo"]  = r.info;
     doc["rastSoll"]  = r.sollTemp;
     doc["rastDauer"] = r.time;
+    doc["rastModus"] = r.modus;
     if (zustand == RAST_LAEUFT) {
       unsigned long verg   = (millis() - rastStartMs) / 1000;
       unsigned long gesamt = rastDauerMs / 1000;
@@ -1200,7 +1313,7 @@ void apiStatus() {
 
 // ── API: REZEPT ──────────────────────────────────────────────
 void apiRezeptGet() {
-  DynamicJsonDocument doc(4096);
+  DynamicJsonDocument doc(8192);
   doc["version"] = rezeptVersion;
   JsonArray liste = doc.createNestedArray("rasten");
   for (int i = 0; i < rastAnzahl; i++) {
@@ -1216,6 +1329,7 @@ void apiRezeptGet() {
     o["ki"]          = rasten[i].ki;
     o["kd"]          = rasten[i].kd;
     o["maxGradient"] = rasten[i].maxGradient;
+    o["modus"]       = rasten[i].modus;
     o["minTemp"]     = rasten[i].minTemp;
     o["maxTemp"]     = rasten[i].maxTemp;
     o["info"]        = rasten[i].info;
@@ -1334,6 +1448,7 @@ void apiStop() {
   zustand    = GESTOPPT;
   aktiveRast = -1;
   heizungAus();
+  kuehlungSetzen(false, true);
   logAktiv   = false;  // Log stoppen
   logStartMs = 0;      // Nächster Start → neues Log
   Serial.println("[LOG] Log gestoppt");
@@ -1389,6 +1504,14 @@ void apiConfigGet() {
   doc["tsChannel"]   = tsChannel;
   doc["tsIntervall"] = (int)(tsIntervallMs / 1000);
   doc["tsNurBrauen"] = tsNurBrauen;
+  doc["kRcOn"]       = kRcOn;
+  doc["kRcOff"]      = kRcOff;
+  doc["kUrlOn"]      = (const char*)kUrlOn;
+  doc["kUrlOff"]     = (const char*)kUrlOff;
+  doc["kuehlTyp"]    = kuehlTyp;
+  doc["kuehlHyst"]   = kuehlHyst;
+  doc["kuehlMinAn"]  = (int)(kuehlMinAnMs / 1000);
+  doc["kuehlMinAus"] = (int)(kuehlMinAusMs / 1000);
   String json;
   serializeJson(doc, json);
   server.send(200, "application/json", json);
@@ -1427,6 +1550,15 @@ void apiConfigPost() {
   Serial.printf("[HTTP] POST /api/config — Client: %s\n",
     server.client().remoteIP().toString().c_str());
   configSpeichern(server.arg("plain"));
+  server.send(200, "application/json", "{\"ok\":true}");
+}
+
+void apiKuehlungTest() {
+  if (server.hasArg("plain")) {
+    StaticJsonDocument<64> doc;
+    deserializeJson(doc, server.arg("plain"));
+    kuehlungSetzen(doc["an"] | false, true);
+  }
   server.send(200, "application/json", "{\"ok\":true}");
 }
 
@@ -1679,6 +1811,7 @@ void setup() {
   server.on("/api/config",       HTTP_GET,  apiConfigGet);
   server.on("/api/config",       HTTP_POST, apiConfigPost);
   server.on("/api/heizung-test", HTTP_POST, apiHeizungTest);
+  server.on("/api/kuehlung-test", HTTP_POST, apiKuehlungTest);
   server.on("/api/rezept",       HTTP_GET,  apiRezeptGet);
   server.on("/api/rezept",       HTTP_POST, apiRezeptPost);
   server.on("/api/rest",         HTTP_GET,  apiRestGet);
