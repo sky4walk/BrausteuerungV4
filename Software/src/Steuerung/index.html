@@ -119,6 +119,21 @@
     .form-input { background:rgba(0,0,0,0.4); border:1px solid var(--border); color:var(--text-b); font-family:IBM Plex Mono,monospace; font-size:0.88rem; padding:9px 12px; border-radius:2px; outline:none; transition:border-color 0.15s; -moz-appearance:textfield; width:100%; }
     .form-input::-webkit-outer-spin-button, .form-input::-webkit-inner-spin-button { -webkit-appearance:none; }
     .form-input:focus { border-color:var(--green-d); box-shadow:0 0 0 2px rgba(76,175,110,0.12); }
+    .pw-kw { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin:14px 0; }
+    .pw-kw div { background:rgba(0,0,0,0.35); border:1px solid var(--border); border-radius:2px; padding:10px 12px; }
+    .pw-kw b { display:block; font-family:IBM Plex Mono,monospace; font-size:1.2rem; font-weight:600; color:var(--text-b); }
+    .pw-kw span { font-family:IBM Plex Mono,monospace; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-d); }
+    .pw-table { width:100%; border-collapse:collapse; font-family:IBM Plex Mono,monospace; font-size:0.82rem; margin-bottom:14px; }
+    .pw-table th, .pw-table td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--border); }
+    .pw-table th { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-d); font-weight:500; }
+    .pw-table tr.empf td { background:rgba(76,175,110,0.08); color:var(--text-b); }
+    .pw-empf { padding:12px 14px; background:rgba(0,0,0,0.35); border-left:3px solid var(--green); border-radius:2px; font-size:0.85rem; line-height:1.6; margin-bottom:14px; }
+    .pw-empf.warn { border-color:var(--amber); }
+    .pw-empf p { margin:4px 0; }
+    .pw-hint { font-family:IBM Plex Mono,monospace; font-size:0.7rem; color:var(--text-d); line-height:1.6; margin:-6px 0 14px; }
+    #pwChart { width:100%; height:300px; display:block; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:2px; margin-bottom:6px; }
+    .pw-legend { display:flex; flex-wrap:wrap; gap:14px; font-family:IBM Plex Mono,monospace; font-size:0.65rem; color:var(--text-d); margin-bottom:16px; }
+    .pw-legend i { display:inline-block; width:16px; height:3px; vertical-align:middle; margin-right:6px; }
     .section-title { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.1em; color:var(--green); padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:14px; margin-top:4px; }
 
     .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--bg3); border:1px solid var(--green-d); color:var(--green-b); font-family:IBM Plex Mono,monospace; font-size:0.78rem; padding:10px 24px; border-radius:2px; opacity:0; transition:all 0.3s; z-index:999; pointer-events:none; white-space:nowrap; }
@@ -208,8 +223,9 @@
 <body>
 
 <header>
-  <div class="logo"><a href="https://itzwieseltal.wordpress.com/2023/12/06/esp8266-brausteuerung/" target="_blank" style="text-decoration:none;color:inherit" title="BrewBrick Projektseite">BREW<span>// Brick</span></a><span style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;color:#2D6640;margin-left:8px;letter-spacing:0.05em">v4.0.0</span></div>
+  <div class="logo"><a href="https://itzwieseltal.wordpress.com/2023/12/06/esp8266-brausteuerung/" target="_blank" style="text-decoration:none;color:inherit" title="BrewBrick Projektseite">BREW<span>// Brick</span></a><span style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;color:#2D6640;margin-left:8px;letter-spacing:0.05em">v4.2.0</span></div>
   <div class="header-sep"></div>
+  <div id="tsHeader" title="ThingSpeak" style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;color:var(--text-d);display:none"></div>
   <div id="wifiStatus">verbinde...</div>
 </header>
 
@@ -217,6 +233,7 @@
   <div class="tab active" onclick="showTab('steuerung',this)">Steuerung</div>
   <div class="tab" onclick="showTab('generator',this)">📝 Rezept Erstellen</div>
   <div class="tab" onclick="showTab('config',this)">Einstellungen</div>
+  <div class="tab" onclick="showTab('pid',this)">🔧 PID-Werkstatt</div>
   <a href="/tools" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#C8DCC8'" onmouseout="this.style.color='#5A7A5E'">⚙ Tools</a>
   <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/bml-generator.html" target="_blank" style="display:none" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">📝 Rezept Erstellen</a>
   <a href="https://sky4walk.github.io/SmallCircuits/SmallHtml/braurechner.html" target="_blank" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:#5A7A5E;text-decoration:none;padding:12px 16px;border-bottom:2px solid transparent;display:inline-block;transition:color 0.15s" onmouseover="this.style.color='#D4882A'" onmouseout="this.style.color='#5A7A5E'">🧮 Rechner</a>
@@ -372,10 +389,45 @@
     <div class="form-group"><label class="form-label">Ki (Integral)</label><input type="number" class="form-input" id="cfg_Ki" value="0.05" step="0.01"></div>
     <div class="form-group"><label class="form-label">Kd (Differential)</label><input type="number" class="form-input" id="cfg_Kd" value="10.0" step="0.1"></div>
     <div class="form-group"><label class="form-label">PID-Fenster (Sekunden)</label><input type="number" class="form-input" id="cfg_pidFenster" value="30" min="5" max="120" step="5"></div>
+    <div class="form-group"><label class="form-label">PID Sample-Time (ms, Rechentakt)</label><input type="number" class="form-input" id="cfg_pidSample" value="2000" min="100" max="30000" step="100"></div>
     <div class="form-group"><label class="form-label">PID Schwellwert (°C unter Soll → 100%)</label><input type="number" class="form-input" id="cfg_pidSchwelle" value="5.0" min="0" max="50" step="0.5"></div>
     <div class="form-group"><label class="form-label">PID Überschreitung (°C über Soll → AUS, 0=aus)</label><input type="number" class="form-input" id="cfg_pidUeberschreitung" value="0.5" min="0" max="10" step="0.1"></div>
     <div class="form-group"><label class="form-label">RC Wiederholung (Sekunden)</label><input type="number" class="form-input" id="cfg_rcRepeat" value="10" min="5" max="60" step="1"></div>
     <div class="form-group"><label class="form-label">Relais Mindest-Schaltzeit (ms)</label><input type="number" class="form-input" id="cfg_rcMinSchalt" value="200" min="0" max="5000" step="100"></div>
+  </div>
+
+  <div class="section-title">Temperaturlog</div>
+  <div class="config-grid">
+    <div class="form-group"><label class="form-label">Log-Intervall (s, Mindestabstand)</label><input type="number" class="form-input" id="cfg_logIntervall" value="10" min="2" max="600" step="1"></div>
+    <div class="form-group"><label class="form-label">Log-Schwelle (°C Änderung)</label><input type="number" class="form-input" id="cfg_logDelta" value="0.5" min="0.05" max="5" step="0.05"></div>
+  </div>
+  <p class="pw-hint">Ein Punkt wird geschrieben, wenn seit dem letzten mindestens das Intervall vergangen ist und sich die Temperatur um die Schwelle geändert hat (spätestens alle 60 s). Beim Brauen reichen 10 s / 0,5 °C; für Sprungantwort-Messungen in der PID-Werkstatt 5 s / 0,1 °C.</p>
+
+  <div class="section-title">☁ ThingSpeak — Fernüberwachung</div>
+  <div class="config-grid">
+    <div class="form-group">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:4px">
+        <input type="checkbox" id="cfg_tsAktiv" style="width:auto">
+        <span class="form-label" style="margin:0">Übertragung aktiv</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:8px">
+        <input type="checkbox" id="cfg_tsNurBrauen" style="width:auto" checked>
+        <span class="form-label" style="margin:0">Nur senden, während ein Rezept läuft</span>
+      </label>
+    </div>
+    <div class="form-group"><label class="form-label">Write API Key</label><input type="text" class="form-input" id="cfg_tsKey" maxlength="16" autocomplete="off" spellcheck="false" placeholder="16 Zeichen, A–Z / 0–9" style="text-transform:uppercase"></div>
+    <div class="form-group"><label class="form-label">Channel ID (optional, für den Link)</label><input type="number" class="form-input" id="cfg_tsChannel" placeholder="z.B. 1234567" oninput="tsLinkUpdate()"></div>
+    <div class="form-group"><label class="form-label">Sendeintervall (s, min. 15)</label><input type="number" class="form-input" id="cfg_tsIntervall" value="30" min="15" max="3600" step="5"></div>
+  </div>
+  <p class="pw-hint">
+    Feldbelegung im Kanal: <b>field1</b> Ist-Temp · <b>field2</b> Soll-Temp · <b>field3</b> PID % · <b>field4</b> Heizung 0/1 ·
+    <b>field5</b> Rast-Nr · <b>field6</b> Zustand (0 Stopp, 1 Aufheizen, 2 Rast, 3 Halt) · <b>field7</b> Gradient °C/min · <b>field8</b> Sensorfehler 0/1.
+    Bei Sensorfehler wird field1 weggelassen. Der ESP sendet per HTTP (ohne TLS); im kostenlosen Konto sind höchstens alle 15 s Updates erlaubt.
+  </p>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px">
+    <button class="btn btn-ghost" onclick="tsTest()">📡 Speichern &amp; Test senden</button>
+    <a id="tsLink" href="#" target="_blank" rel="noopener" class="btn btn-ghost" style="display:none;text-decoration:none">Kanal öffnen ↗</a>
+    <span id="tsStatus" style="font-family:IBM Plex Mono,monospace;font-size:0.72rem;color:var(--text-d)"></span>
   </div>
 
   <div class="btn-row">
@@ -390,6 +442,96 @@
     Die angezeigte Dezimalzahl beim Drücken der Fernbedienung als Code oben eintragen.
   </p>
   </div>
+</div>
+
+<div class="panel" id="tab-pid">
+  <div class="section-title">Anlage</div>
+  <div class="config-grid">
+    <div class="form-group"><label class="form-label">Heizleistung (W)</label><input type="number" class="form-input pw-in" id="pw_leistung" value="3000" step="50"></div>
+    <div class="form-group"><label class="form-label">Wassermenge (l)</label><input type="number" class="form-input pw-in" id="pw_volumen" value="25" step="1"></div>
+    <div class="form-group"><label class="form-label">Sensorposition</label>
+      <select class="form-input pw-in" id="pw_sensor">
+        <option value="30">Im Wasser, nahe am Heizelement</option>
+        <option value="50" selected>Im Wasser, Tauchhülse / Mitte</option>
+        <option value="90">Im Wasser, weit vom Heizelement</option>
+        <option value="150">Außen am Kessel / Boden</option>
+      </select></div>
+    <div class="form-group"><label class="form-label">Durchmischung</label>
+      <select class="form-input pw-in" id="pw_ruehren">
+        <option value="1.0" selected>Rührwerk läuft dauerhaft</option>
+        <option value="1.6">Gelegentlich von Hand</option>
+        <option value="2.5">Kein Rühren</option>
+      </select></div>
+  </div>
+  <p class="pw-hint">Ohne Messung werden Steigung und Totzeit hieraus geschätzt. PID-Fenster und Schwelle kommen aus den Einstellungen.</p>
+
+  <div class="section-title">Regelung</div>
+  <div class="config-grid">
+    <div class="form-group"><label class="form-label">Regelungsziel</label>
+      <select class="form-input pw-in" id="pw_ziel">
+        <option value="2">Kein Überschwingen — auch wenn es länger dauert</option>
+        <option value="1" selected>Ausgewogen</option>
+        <option value="0.5">Zügig anfahren — kleines Überschwingen ok</option>
+      </select></div>
+    <div class="form-group"><label class="form-label">Sensorauflösung (°C)</label>
+      <select class="form-input pw-in" id="pw_aufloesung">
+        <option value="0.0625" selected>DS18B20, 12 Bit (0,0625)</option>
+        <option value="0.125">DS18B20, 11 Bit (0,125)</option>
+        <option value="0.01">PT100 / gefiltert (0,01)</option>
+      </select></div>
+    <div class="form-group"><label class="form-label">Fenster / Schwelle / Sample-Time (aus Einstellungen)</label><input type="text" class="form-input" id="pw_cfgInfo" value="–" readonly></div>
+  </div>
+
+  <div class="section-title">Sprungantwort</div>
+  <p class="pw-hint">
+    Aufnahme: Kessel wie beim Brauen füllen und rühren, auf ~40 °C bringen, Log zurücksetzen, ein Rezept mit Soll 90 °C starten
+    (Schwelle sorgt für 100 %), nach 10–15 Minuten linearem Anstieg stoppen und weitere 5–10 Minuten loggen (Nachlauf).
+    Dann hier auswerten. Handwerte überschreiben die Messung.
+  </p>
+  <p class="pw-hint" id="pw_logHinweis" style="color:var(--amber)"></p>
+  <div class="btn-row">
+    <button class="btn btn-green" onclick="pwLogVomEsp()">📈 Aktuelles Log auswerten</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('pw_datei').click()">CSV-Datei laden</button>
+    <input type="file" id="pw_datei" accept=".csv,.txt" style="display:none" onchange="pwDatei(this)">
+    <button class="btn btn-ghost" onclick="pwBeispiel()">Beispiel</button>
+  </div>
+  <div class="config-grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="form-group"><label class="form-label">Totzeit (s)</label><input type="number" class="form-input pw-in" id="pw_mL" placeholder="aus Messung" step="1"></div>
+    <div class="form-group"><label class="form-label">Steigung bei 100 % (°C/min)</label><input type="number" class="form-input pw-in" id="pw_mR" placeholder="aus Messung" step="0.05"></div>
+    <div class="form-group"><label class="form-label">Nachlauf (°C)</label><input type="number" class="form-input pw-in" id="pw_mN" placeholder="aus Messung" step="0.1"></div>
+  </div>
+  <p class="pw-hint" id="pw_quelle">Noch keine Messung — Schätzung aus Anlagendaten.</p>
+  <canvas id="pwChart" width="800" height="300"></canvas>
+  <div class="pw-legend">
+    <span><i style="background:var(--amber)"></i>Temperatur</span>
+    <span><i style="background:var(--green-b)"></i>Tangente</span>
+    <span><i style="background:var(--text-d)"></i>Heizung an / aus</span>
+    <span><i style="background:var(--red)"></i>Totzeit</span>
+  </div>
+  <div class="pw-kw">
+    <div><b id="pw_kwL">–</b><span>Totzeit</span></div>
+    <div><b id="pw_kwR">–</b><span>Steigung 100 %</span></div>
+    <div><b id="pw_kwN">–</b><span>Nachlauf</span></div>
+    <div><b id="pw_kwLeff">–</b><span>Wirksame Totzeit</span></div>
+  </div>
+
+  <div class="section-title">Reglerparameter</div>
+  <table class="pw-table">
+    <thead><tr><th>Verfahren</th><th>Kp</th><th>Ki</th><th>Kd</th><th>Charakter</th></tr></thead>
+    <tbody id="pw_tab"></tbody>
+  </table>
+  <div class="pw-empf" id="pw_empf"></div>
+  <div class="config-grid" style="grid-template-columns:2fr 1fr;align-items:end">
+    <div class="form-group"><label class="form-label">Übernehmen für</label>
+      <select class="form-input" id="pw_ziel_rast"><option value="global">Globale Standardwerte (Einstellungen)</option></select></div>
+    <div class="form-group"><button class="btn btn-green" style="width:100%" onclick="pwUebernehmen()">💾 Übernehmen</button></div>
+  </div>
+  <p class="pw-hint">Eigene Werte pro Rast lohnen sich, wenn sich die Strecke unterscheidet — z. B. andere Wassermenge beim Kochen als beim Maischen, oder wenn eine Rast bewusst zügiger angefahren werden soll. Rasten mit eigenen Werten (OwnPid) ignorieren die globalen Standardwerte.</p>
+  <p class="pw-hint">
+    Rechnung: Kessel = Integrator mit Totzeit (k′ = Steigung/60/100 °C pro s und %). Zur gemessenen Totzeit kommt das halbe PID-Fenster.
+    SIMC: Kp = 1/(k′·(τc+θ)), Ti = 4(τc+θ), Td = θ/2 mit τc = 2θ / θ / θ/2 je nach Ziel. Ziegler-Nichols und Cohen-Coon zum Vergleich.
+    Umrechnung auf die Arduino-PID-Library: Ki = Kp/Ti, Kd = Kp·Td. Kd wird so gedeckelt, dass ein Sensorschritt pro Sample-Time höchstens 10 % Ausgangssprung erzeugt.
+  </p>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -408,6 +550,7 @@
     panel.classList.add('active');
     el.classList.add('active');
     if (id === 'config') configLaden();
+    if (id === 'pid') pwInit();
     if (id === 'steuerung') { ladeLog(); setTimeout(zeichneChart, 100); }
     if (id === 'generator') {
       if (!genManuelleBearbeitung) genLadeVonEsp();
@@ -585,7 +728,7 @@
   async function rezeptAnEsp(rasten) {
     const aktiv = rasten.filter(r => r.on !== false).slice(0, 16).map(r => ({
       name: r.name, halt: !!r.halt, call: !!r.call, soll: +r.soll, time: +r.time,
-      minTemp: +r.minTemp, maxTemp: +r.maxTemp, ownPid: !!r.ownPid,
+      minTemp: isFinite(+r.minTemp) ? +r.minTemp : -0.1, maxTemp: isFinite(+r.maxTemp) ? +r.maxTemp : 0.1, ownPid: !!r.ownPid,
       kp: +r.kp, ki: +r.ki, kd: +r.kd, maxGradient: +r.maxGradient, info: r.info || ''
     }));
     if (!aktiv.length) return { error: 'Keine aktiven Rasten im Rezept' };
@@ -669,12 +812,22 @@
       document.getElementById('cfg_Ki').value      = d.Ki  || 0.05;
       document.getElementById('cfg_Kd').value         = d.Kd  || 10.0;
       document.getElementById('cfg_pidFenster').value  = d.pidFenster  || 30;
+      document.getElementById('cfg_pidSample').value   = d.pidSample   || 2000;
+      document.getElementById('cfg_logIntervall').value = d.logIntervall || 10;
+      document.getElementById('cfg_logDelta').value     = d.logDelta     || 0.5;
       document.getElementById('cfg_pidSchwelle').value         = d.pidSchwelle        || 5.0;
       document.getElementById('cfg_pidUeberschreitung').value  = d.pidUeberschreitung || 0.5;
       document.getElementById('cfg_rcRepeat').value     = d.rcRepeat     || 10;
       document.getElementById('cfg_rcMinSchalt').value  = d.rcMinSchalt  || 200;
       document.getElementById('cfg_schaltModus').value  = d.schaltModus  || 0;
       document.getElementById('cfg_restStrikt200').checked = d.restStrikt200 || false;
+      document.getElementById('cfg_tsAktiv').checked     = !!d.tsAktiv;
+      document.getElementById('cfg_tsNurBrauen').checked = d.tsNurBrauen !== false;
+      document.getElementById('cfg_tsKey').value         = d.tsKey || '';
+      document.getElementById('cfg_tsChannel').value     = d.tsChannel || '';
+      document.getElementById('cfg_tsIntervall').value   = d.tsIntervall || 30;
+      tsLinkUpdate();
+      tsStatusLaden();
       updateSchaltModus();
       await restLaden();
     } catch(e) { showToast('Config Ladefehler', true); }
@@ -692,17 +845,76 @@
       Ki: parseFloat(document.getElementById('cfg_Ki').value)||0.05,
       Kd:         parseFloat(document.getElementById('cfg_Kd').value)||10.0,
       pidFenster:  parseInt(document.getElementById('cfg_pidFenster').value)||30,
+      pidSample:   parseInt(document.getElementById('cfg_pidSample').value)||2000,
+      logIntervall: parseInt(document.getElementById('cfg_logIntervall').value)||10,
+      logDelta:     parseFloat(document.getElementById('cfg_logDelta').value)||0.5,
       pidSchwelle:        parseFloat(document.getElementById('cfg_pidSchwelle').value)||5.0,
       pidUeberschreitung: parseFloat(document.getElementById('cfg_pidUeberschreitung').value)||0.5,
       rcRepeat:     parseInt(document.getElementById('cfg_rcRepeat').value)||10,
       rcMinSchalt:  parseInt(document.getElementById('cfg_rcMinSchalt').value)||200,
       schaltModus:  parseInt(document.getElementById('cfg_schaltModus').value)||0,
       restStrikt200: document.getElementById('cfg_restStrikt200').checked,
+      tsAktiv:     document.getElementById('cfg_tsAktiv').checked,
+      tsNurBrauen: document.getElementById('cfg_tsNurBrauen').checked,
+      tsKey:       document.getElementById('cfg_tsKey').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,''),
+      tsChannel:   parseInt(document.getElementById('cfg_tsChannel').value)||0,
+      tsIntervall: Math.min(3600, Math.max(15, parseInt(document.getElementById('cfg_tsIntervall').value)||30)),
     };
     for (let i = 0; i < REST_MAX; i++) data['restEn'+i] = restEnabled[i] || false;
     const j = await apiPost('/api/config', data);
     await restSpeichern();
     if (j && j.ok) showToast('✓ Gespeichert');
+  }
+
+  // ── THINGSPEAK ───────────────────────────────────────────
+  function tsLinkUpdate() {
+    const id = parseInt(document.getElementById('cfg_tsChannel').value) || 0;
+    const a = document.getElementById('tsLink');
+    a.style.display = id ? 'inline-block' : 'none';
+    a.href = 'https://thingspeak.mathworks.com/channels/' + id;
+  }
+
+  function tsStatusText(d) {
+    if (!d.aktiv) return 'deaktiviert' + (d.entry > 0 ? ' · letzter Eintrag ' + d.entry : '');
+    let t = d.status || '';
+    if (d.alter >= 0) t += ' · vor ' + (d.alter < 120 ? d.alter + ' s' : Math.round(d.alter/60) + ' min');
+    if (d.fehler > 0) t += ' · ' + d.fehler + ' Fehler in Folge';
+    return t;
+  }
+
+  function tsStatusZeigen(d) {
+    const el = document.getElementById('tsStatus');
+    el.textContent = tsStatusText(d);
+    el.style.color = d.fehler > 0 ? 'var(--amber)' : (d.aktiv && d.entry > 0 ? 'var(--green-b)' : 'var(--text-d)');
+    const h = document.getElementById('tsHeader');
+    if (h) {
+      h.style.display = d.aktiv ? 'block' : 'none';
+      h.textContent = '☁ ' + (d.fehler > 0 ? '✗' : d.entry > 0 ? '✓' : '…');
+      h.style.color = d.fehler > 0 ? 'var(--amber)' : 'var(--text-d)';
+      h.title = 'ThingSpeak: ' + tsStatusText(d);
+    }
+  }
+
+  async function tsStatusLaden() {
+    try {
+      const r = await fetch('/api/thingspeak');
+      if (!r.ok || !(r.headers.get('content-type')||'').includes('json')) return;
+      tsStatusZeigen(await r.json());
+    } catch(e) {}
+  }
+
+  async function tsTest() {
+    const key = document.getElementById('cfg_tsKey').value.trim();
+    if (key.length < 8) { showToast('Bitte zuerst den Write API Key eintragen', true); return; }
+    await configSpeichern();
+    const el = document.getElementById('tsStatus');
+    el.style.color = 'var(--text-d)'; el.textContent = '⏳ sende...';
+    try {
+      const r = await fetch('/api/thingspeak/test', { method:'POST' });
+      const d = await r.json();
+      tsStatusZeigen(d);
+      showToast(d.ok ? '✓ ThingSpeak: Eintrag ' + d.entry : '✗ ThingSpeak: ' + (d.error||'Fehler'), !d.ok);
+    } catch(e) { el.textContent = '✗ Verbindungsfehler'; }
   }
 
   function updateSchaltModus() {
@@ -859,6 +1071,252 @@
     if (audioCtx.state === 'suspended') audioCtx.resume();
   }, { once: false });
 
+
+  // ══════════════════════════════════════════════════════════
+  // PID-WERKSTATT — Reglerparameter aus der Sprungantwort
+  // ══════════════════════════════════════════════════════════
+  let pwCsv = null, pwAnalyse = null, pwEmpfehlung = null, pwCfg = { fenster: 30, schwelle: 5, sample: 2000, logIntervall: 10, logDelta: 0.5 }, pwInitDone = false;
+  const pwNum = id => parseFloat(document.getElementById('pw_' + id).value);
+  const pwFmt = (v, n=1) => isFinite(v) ? v.toLocaleString('de-DE', {minimumFractionDigits:n, maximumFractionDigits:n}) : '–';
+
+  async function pwInit() {
+    try {
+      const r = await fetch('/api/config');
+      if (r.ok && (r.headers.get('content-type')||'').includes('json')) {
+        const d = await r.json();
+        pwCfg = { fenster: d.pidFenster || 30, schwelle: d.pidSchwelle || 5, sample: d.pidSample || 2000, logIntervall: d.logIntervall || 10, logDelta: d.logDelta || 0.5 };
+      }
+    } catch(e) {}
+    document.getElementById('pw_cfgInfo').value = pwCfg.fenster + ' s / ' + pwFmt(pwCfg.schwelle,1) + ' °C / ' + pwCfg.sample + ' ms';
+    const lh = document.getElementById('pw_logHinweis');
+    if (lh) lh.textContent = (pwCfg.logIntervall > 5 || pwCfg.logDelta > 0.1)
+      ? `Aktuell loggt der ESP alle ${pwCfg.logIntervall} s bei ${pwFmt(pwCfg.logDelta,2)} °C Änderung — für eine saubere Sprungantwort vor der Messung in den Einstellungen auf 5 s / 0,1 °C stellen.`
+      : `Log-Einstellungen (${pwCfg.logIntervall} s / ${pwFmt(pwCfg.logDelta,2)} °C) sind für eine Sprungantwort geeignet.`;
+    if (!pwInitDone) {
+      pwInitDone = true;
+      document.querySelectorAll('.pw-in').forEach(el => el.addEventListener('input', pwRender));
+      window.addEventListener('resize', () => { if (document.getElementById('tab-pid').classList.contains('active')) pwRender(); });
+    }
+    pwZielListe();
+    pwRender();
+  }
+
+  function pwZielListe() {
+    const sel = document.getElementById('pw_ziel_rast'), alt = sel.value;
+    let html = '<option value="global">Globale Standardwerte (Einstellungen)</option>';
+    if (rezeptCache.rasten.length) {
+      html += '<option value="alle">Alle Rasten des geladenen Rezepts</option>';
+      html += rezeptCache.rasten.map(r => `<option value="rast:${r.nr}">Rast ${String(r.nr).padStart(2,'0')} — ${esc(r.name)} (${r.soll} °C${r.ownPid ? ', eigene Werte' : ''})</option>`).join('');
+    }
+    if (genRasts.length) html += '<option value="generator">Rezept im Generator (alle Rasten)</option>';
+    sel.innerHTML = html;
+    if ([...sel.options].some(o => o.value === alt)) sel.value = alt;
+  }
+
+  function pwParseCSV(txt) {
+    const daten = [];
+    for (const z of txt.split(/\r?\n/)) {
+      const f = z.trim().split(/[;,\t]/);
+      if (f.length < 4) continue;
+      const t = parseFloat(f[0]), temp = parseFloat(f[1]), pid = parseFloat(f[3]);
+      if ([t, temp, pid].some(isNaN)) continue;
+      daten.push({ t, temp, pid });
+    }
+    if (daten.length < 10) throw new Error('Zu wenige Log-Zeilen für eine Auswertung');
+    return daten.sort((a, b) => a.t - b.t);
+  }
+
+  function pwAuswerten(d) {
+    let iOn = -1;
+    for (let i = 1; i < d.length; i++) if (d[i].pid >= 80 && d[i-1].pid <= 20) { iOn = i; break; }
+    if (iOn < 0 && d[0].pid >= 80) iOn = 0;
+    if (iOn < 0) throw new Error('Kein Einschaltsprung gefunden (PID ≤20 % → ≥80 %)');
+    const tOn = d[iOn].t, tempStart = d[iOn].temp;
+    let iOff = -1;
+    for (let i = iOn + 1; i < d.length; i++) if (d[i].pid <= 20 && d[i-1].pid >= 80) { iOff = i; break; }
+    const tOff = iOff >= 0 ? d[iOff].t : d[d.length-1].t;
+    const heiz = d.filter(p => p.t >= tOn && p.t <= tOff);
+    if (heiz.length < 6) throw new Error('Heizabschnitt zu kurz (mindestens ~1 Minute)');
+    let best = { slope: 0, a: 0 };
+    // Regressionsfenster: 90 s, bei grober Log-Auflösung so breit, dass ~6 Punkte hineinfallen
+    const mittlAbstand = (heiz[heiz.length-1].t - heiz[0].t) / (heiz.length - 1);
+    const FENSTER = Math.max(90, mittlAbstand * 6);
+    for (let i = 0; i < heiz.length; i++) {
+      const seg = heiz.filter(p => p.t >= heiz[i].t && p.t <= heiz[i].t + FENSTER);
+      if (seg.length < 4) continue;
+      const n = seg.length, sx = seg.reduce((s,p)=>s+p.t,0), sy = seg.reduce((s,p)=>s+p.temp,0);
+      const sxx = seg.reduce((s,p)=>s+p.t*p.t,0), sxy = seg.reduce((s,p)=>s+p.t*p.temp,0);
+      const den = n*sxx - sx*sx; if (!den) continue;
+      const slope = (n*sxy - sx*sy)/den;
+      if (slope > best.slope) best = { slope, a: (sy - slope*sx)/n };
+    }
+    if (best.slope <= 0) throw new Error('Temperatur steigt im Heizabschnitt nicht');
+    const R = best.slope * 60;
+    const L = Math.max(0, (tempStart - best.a) / best.slope - tOn);
+    let N = null;
+    if (iOff >= 0) {
+      const nach = d.filter(p => p.t >= tOff);
+      if (nach[nach.length-1].t - tOff >= 120) N = Math.max(0, Math.max(...nach.map(p => p.temp)) - d[iOff].temp);
+    }
+    return { tOn, tOff, tempStart, L, R, N, tangente: best };
+  }
+
+  function pwSchaetzung() {
+    const R = pwNum('leistung') * 0.85 / (4186 * pwNum('volumen')) * 60;
+    const L = parseFloat(document.getElementById('pw_sensor').value) * parseFloat(document.getElementById('pw_ruehren').value);
+    return { L, R, N: R * L / 60 * 0.6 };
+  }
+
+  function pwKennwerte() {
+    let k, quelle;
+    if (pwAnalyse) { k = { L: pwAnalyse.L, R: pwAnalyse.R, N: pwAnalyse.N }; quelle = 'Messung'; }
+    else { k = pwSchaetzung(); quelle = 'Schätzung aus Anlagendaten'; }
+    const mL = pwNum('mL'), mR = pwNum('mR'), mN = pwNum('mN');
+    if (isFinite(mL)) { k.L = mL; quelle = 'Handwerte'; }
+    if (isFinite(mR)) { k.R = mR; quelle = 'Handwerte'; }
+    if (isFinite(mN)) k.N = mN;
+    k.nGeschaetzt = (k.N === null || !isFinite(k.N));
+    if (k.nGeschaetzt) k.N = k.R * k.L / 60 * 0.6;
+    k.quelle = quelle;
+    return k;
+  }
+
+  function pwRegler(k) {
+    const sample = pwCfg.sample / 1000, aufl = parseFloat(document.getElementById('pw_aufloesung').value);
+    const zielF = parseFloat(document.getElementById('pw_ziel').value);
+    const theta = k.L + pwCfg.fenster / 2, kS = k.R / 60 / 100, kdMax = 10 / (aufl / sample);
+    const mk = (name, Kp, Ti, Td, charakter, empf=false) => ({ name, Kp, Ki: Kp/Ti, Kd: Math.min(Kp*Td, kdMax), KdRoh: Kp*Td, charakter, empf });
+    const tc = zielF * theta;
+    const zielName = {2:'sehr robust, kein Überschwingen', 1:'ausgewogen', 0.5:'zügig, leichtes Überschwingen möglich'}[zielF];
+    const liste = [
+      mk('SIMC (Skogestad)', 1/(kS*(tc+theta)), 4*(tc+theta), theta/2, zielName, true),
+      mk('Ziegler-Nichols',  1.2/(kS*theta),     2*theta,      theta/2, 'aggressiv, deutliches Überschwingen'),
+      mk('Cohen-Coon',       1.35/(kS*theta),    2.5*theta,    0.37*theta, 'aggressiv, etwas gedämpfter'),
+    ];
+    const zuwachs = k.R * theta / 60 + k.N;
+    return { liste, theta, kdMax, zuwachs, schwelleEmpf: Math.max(2, Math.ceil(zuwachs*1.5*2)/2), aufheiz: 27 / k.R };
+  }
+
+  function pwRender() {
+    const k = pwKennwerte(), r = pwRegler(k);
+    document.getElementById('pw_quelle').textContent = 'Kennwerte: ' + k.quelle + (pwAnalyse && k.quelle === 'Messung' && pwAnalyse.N === null ? ' (Nachlauf geschätzt — nach dem Stopp zu kurz geloggt)' : '');
+    document.getElementById('pw_kwL').textContent = pwFmt(k.L,0) + ' s';
+    document.getElementById('pw_kwR').textContent = pwFmt(k.R,2) + ' °C/min';
+    document.getElementById('pw_kwN').textContent = pwFmt(k.N,1) + ' °C';
+    document.getElementById('pw_kwLeff').textContent = pwFmt(r.theta,0) + ' s';
+    document.getElementById('pw_tab').innerHTML = r.liste.map(p => `<tr class="${p.empf?'empf':''}"><td>${p.empf?'★ ':''}${p.name}</td><td>${pwFmt(p.Kp,1)}</td><td>${pwFmt(p.Ki,3)}</td><td>${pwFmt(p.Kd,1)}${p.KdRoh > p.Kd+0.05 ? ' ▾' : ''}</td><td style="color:var(--text-d)">${p.charakter}</td></tr>`).join('');
+    const e = r.liste[0]; pwEmpfehlung = e;
+    const schwelleOk = pwCfg.schwelle >= r.schwelleEmpf, dGedeckelt = e.KdRoh > e.Kd + 0.05;
+    const el = document.getElementById('pw_empf');
+    el.className = 'pw-empf' + (schwelleOk ? '' : ' warn');
+    el.innerHTML = `<p><b>Empfehlung: Kp ${pwFmt(e.Kp,1)} · Ki ${pwFmt(e.Ki,3)} · Kd ${pwFmt(e.Kd,1)}</b> (SIMC, ${e.charakter})</p>
+      <p>${schwelleOk
+        ? `PID-Schwelle ${pwFmt(pwCfg.schwelle,1)} °C passt — nach dem Umschalten von 100 % kommen rechnerisch noch etwa ${pwFmt(r.zuwachs,1)} °C nach.`
+        : `PID-Schwelle auf mindestens <b>${pwFmt(r.schwelleEmpf,1)} °C</b> erhöhen: nach dem Umschalten von 100 % steigt die Temperatur durch Totzeit und Nachlauf noch um etwa ${pwFmt(r.zuwachs,1)} °C — bei ${pwFmt(pwCfg.schwelle,1)} °C ist Überschwingen vorprogrammiert, egal welche PID-Werte. Wird beim Übernehmen mit gesetzt.`}</p>
+      ${dGedeckelt ? `<p style="color:var(--text-d)">Kd gedeckelt (Textbuch ${pwFmt(e.KdRoh,0)}) — mit ${pwCfg.sample} ms Sample-Time würde ein Sensorschritt sonst ${pwFmt(e.KdRoh*parseFloat(document.getElementById('pw_aufloesung').value)/(pwCfg.sample/1000),0)} % Ausgangssprung erzeugen. Eine längere Sample-Time in den Einstellungen macht den D-Anteil nutzbarer.</p>` : ''}
+      <p style="color:var(--text-d)">Orientierung: 40 → 67 °C dauert bei ${pwFmt(k.R,2)} °C/min etwa ${pwFmt(r.aufheiz,0)} min.</p>`;
+    pwZeichne(k, r);
+  }
+
+  function pwZeichne(k) {
+    const cv = document.getElementById('pwChart'), ctx = cv.getContext('2d');
+    const dpr = window.devicePixelRatio || 1, w = cv.clientWidth || 800, h = 300;
+    cv.width = w * dpr; cv.height = h * dpr; ctx.scale(dpr, dpr);
+    const pl = 44, pr = 12, pt = 14, pb = 26;
+    let d = pwCsv, tOn, tOff, tempStart, tang;
+    if (d) ({tOn, tOff, tempStart, tangente: tang} = pwAnalyse);
+    else {
+      tempStart = 40; tOn = 60; tOff = 660; d = [];
+      for (let t = 0; t <= tOff + 300; t += 10) {
+        let temp = tempStart;
+        if (t > tOn + k.L) temp += k.R/60 * (Math.min(t, tOff + k.L) - tOn - k.L);
+        if (t > tOff + k.L) temp += k.N * (1 - Math.exp(-(t - tOff - k.L)/90));
+        d.push({ t, temp });
+      }
+      tang = { slope: k.R/60, a: tempStart - k.R/60*(tOn + k.L) };
+    }
+    const t0 = d[0].t, t1 = d[d.length-1].t, temps = d.map(p => p.temp);
+    const yMin = Math.floor(Math.min(...temps) - 1), yMax = Math.ceil(Math.max(...temps) + 1);
+    const xs = t => pl + (t - t0)/(t1 - t0 || 1)*(w - pl - pr), ys = v => pt + (yMax - v)/(yMax - yMin || 1)*(h - pt - pb);
+    const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = css('--border'); ctx.fillStyle = css('--text-d'); ctx.font = '10px IBM Plex Mono, monospace'; ctx.lineWidth = 1;
+    const yStep = (yMax - yMin) > 20 ? 5 : (yMax - yMin) > 8 ? 2 : 1;
+    for (let v = Math.ceil(yMin/yStep)*yStep; v <= yMax; v += yStep) { ctx.beginPath(); ctx.moveTo(pl, ys(v)); ctx.lineTo(w - pr, ys(v)); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(v + '°', pl - 6, ys(v) + 4); }
+    const xStep = (t1 - t0) > 1800 ? 300 : (t1 - t0) > 600 ? 120 : 60;
+    for (let t = Math.ceil(t0/xStep)*xStep; t <= t1; t += xStep) { ctx.beginPath(); ctx.moveTo(xs(t), pt); ctx.lineTo(xs(t), h - pb); ctx.stroke(); ctx.textAlign = 'center'; ctx.fillText(Math.round(t/60) + ' min', xs(t), h - 9); }
+    ctx.strokeStyle = css('--text-d'); ctx.setLineDash([4,4]);
+    for (const t of [tOn, tOff]) { ctx.beginPath(); ctx.moveTo(xs(t), pt); ctx.lineTo(xs(t), h - pb); ctx.stroke(); }
+    ctx.setLineDash([]); ctx.textAlign = 'left'; ctx.fillText('an', xs(tOn) + 4, pt + 10); if (tOff < t1) ctx.fillText('aus', xs(tOff) + 4, pt + 10);
+    ctx.strokeStyle = css('--red'); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(xs(tOn), ys(tempStart)); ctx.lineTo(xs(tOn + k.L), ys(tempStart)); ctx.stroke();
+    ctx.strokeStyle = css('--green-b'); ctx.lineWidth = 1.5;
+    const tA = tOn + k.L, tB = Math.min(tOff, t1);
+    ctx.beginPath(); ctx.moveTo(xs(tA), ys(tang.a + tang.slope*tA)); ctx.lineTo(xs(tB), ys(tang.a + tang.slope*tB)); ctx.stroke();
+    ctx.strokeStyle = css('--amber'); ctx.lineWidth = 2; ctx.beginPath();
+    d.forEach((p, i) => i ? ctx.lineTo(xs(p.t), ys(p.temp)) : ctx.moveTo(xs(p.t), ys(p.temp))); ctx.stroke();
+  }
+
+  function pwCsvLaden(txt, name) {
+    try {
+      pwCsv = pwParseCSV(txt); pwAnalyse = pwAuswerten(pwCsv);
+      showToast('✓ ' + name + ' — ' + pwCsv.length + ' Punkte, Heizphase ' + pwFmt((pwAnalyse.tOff - pwAnalyse.tOn)/60,0) + ' min');
+    } catch(e) { pwCsv = null; pwAnalyse = null; showToast(e.message, true); }
+    pwRender();
+  }
+  async function pwLogVomEsp() {
+    try {
+      const r = await fetch('/api/log/download');
+      if (r.status === 404) { showToast('Kein Log auf dem ESP vorhanden', true); return; }
+      pwCsvLaden(await r.text(), 'ESP-Log');
+    } catch(e) { showToast('Verbindungsfehler', true); }
+  }
+  function pwDatei(input) { const f = input.files[0]; if (f) f.text().then(t => pwCsvLaden(t, f.name)); input.value = ''; }
+  function pwBeispiel() {
+    const L = 48, R = 1.45, N = 0.9, z = ['Zeit_s;Temp_C;Soll_C;PID_Pct;Rast'];
+    for (let t = 0; t <= 1260; t += 10) {
+      let temp = 40;
+      if (t > 60 + L)  temp += R/60 * (Math.min(t, 780 + L) - 60 - L);
+      if (t > 780 + L) temp += N * (1 - Math.exp(-(t - 780 - L)/90));
+      z.push(`${t};${(temp + (Math.random()-0.5)*0.06).toFixed(2)};90.0;${t >= 60 && t < 780 ? 100 : 0};0`);
+    }
+    pwCsvLaden(z.join('\n'), 'Beispiel 3 kW / 25 l');
+  }
+  async function pwUebernehmen() {
+    if (!pwEmpfehlung) return;
+    const e = pwEmpfehlung, r = pwRegler(pwKennwerte());
+    const ziel = document.getElementById('pw_ziel_rast').value;
+    const werte = `Kp ${pwFmt(e.Kp,1)}, Ki ${pwFmt(e.Ki,3)}, Kd ${pwFmt(e.Kd,1)}`;
+    const setze = rast => Object.assign(rast, { ownPid: true, kp: +e.Kp.toFixed(1), ki: +e.Ki.toFixed(3), kd: +e.Kd.toFixed(1) });
+
+    if (ziel === 'generator') {
+      if (!confirm(werte + ' für alle ' + genRasts.length + ' Rasten im Generator setzen (OwnPid an)?')) return;
+      genRasts.forEach(setze); genSetManuell(); genRenderRasts(); genUpdateAll();
+      showToast('✓ PID-Werte im Generator gesetzt — dort „Übernehmen“ nicht vergessen');
+      return;
+    }
+    if (ziel === 'alle' || ziel.startsWith('rast:')) {
+      const nr = ziel === 'alle' ? -1 : parseInt(ziel.slice(5));
+      const rasten = rezeptCache.rasten.map(x => ({ ...x }));
+      const treffer = rasten.filter(x => nr < 0 || x.nr === nr);
+      if (!treffer.length) { showToast('Rast nicht gefunden', true); return; }
+      if (!confirm(werte + (nr < 0 ? ' für alle ' + treffer.length + ' Rasten' : ' für Rast ' + nr + ' (' + treffer[0].name + ')') + ' im Rezept auf dem ESP speichern (OwnPid an)?')) return;
+      treffer.forEach(setze);
+      const j = await rezeptAnEsp(rasten);   // ESP lehnt ab, solange ein Brauvorgang läuft
+      if (j.ok) { showToast('✓ Rezept mit PID-Werten gespeichert'); await ladeRezept(); pwZielListe(); }
+      else showToast(j.error || 'Fehler beim Speichern', true);
+      return;
+    }
+    const schwelleNeu = Math.max(pwCfg.schwelle, r.schwelleEmpf);
+    if (!confirm(`Kp ${pwFmt(e.Kp,1)}, Ki ${pwFmt(e.Ki,3)}, Kd ${pwFmt(e.Kd,1)}` + (schwelleNeu > pwCfg.schwelle ? `, PID-Schwelle ${pwFmt(schwelleNeu,1)} °C` : '') + ' als globale Werte speichern?')) return;
+    await configLaden();   // aktuelle Werte holen, damit nichts anderes überschrieben wird
+    document.getElementById('cfg_Kp').value = e.Kp.toFixed(1);
+    document.getElementById('cfg_Ki').value = e.Ki.toFixed(3);
+    document.getElementById('cfg_Kd').value = e.Kd.toFixed(1);
+    document.getElementById('cfg_pidSchwelle').value = schwelleNeu.toFixed(1);
+    await configSpeichern();
+    pwCfg.schwelle = schwelleNeu;
+    pwRender();
+  }
 
   // ══════════════════════════════════════════════════════════
   // BML GENERATOR
@@ -1322,6 +1780,8 @@
 
   ladeLog();
   setInterval(ladeLog, 10000);
+  tsStatusLaden();
+  setInterval(tsStatusLaden, 15000);
 
 </script>
 

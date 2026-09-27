@@ -40,7 +40,14 @@
  * Reset (per /tools → Komplett-Reset):
  *   Löscht alle LittleFS Dateien → Werksreset
  *
- * Version: 4.1.0
+ * Version: 4.2.0
+ *
+ * 4.2.0: ThingSpeak-Upload (Einstellungen → ThingSpeak), config.json-Puffer
+ *        vergrößert (StaticJsonDocument<512>/<256> war für alle Keys zu klein)
+ *
+ * ThingSpeak Feldbelegung:
+ *   field1 Ist-Temp °C   field2 Soll-Temp °C   field3 PID %      field4 Heizung 0/1
+ *   field5 Rast-Nr       field6 Zustand 0..3   field7 Gradient   field8 Sensorfehler 0/1
  *
  * API-Version 2 (index.html prüft "api" im Status):
  *   - BML wird im Browser geparst → POST /api/rezept (JSON)
@@ -353,6 +360,7 @@ double pidUeberschreitung = 0.5;  // °C über Soll → Notabschaltung
 PID myPID(&pidInput, &pidOutput, &pidSetpoint, Kp, Ki, Kd, DIRECT);
 
 unsigned long PID_WINDOW_MS = 30000;  // konfigurierbar über Web-UI (in ms)
+unsigned int  pidSampleMs   = 2000;   // PID-Rechentakt, konfigurierbar (100..30000 ms)
 unsigned long pidWindowStart = 0;
 
 // ── RCSWITCH ─────────────────────────────────────────────────
@@ -398,6 +406,7 @@ Rast  rasten[MAX_RASTEN];
 int   rastAnzahl   = 0;
 uint16_t rezeptVersion = 1;   // wird bei jeder Rezeptänderung erhöht → Browser lädt neu
 #define API_VERSION 2
+#define FW_VERSION "4.2.0"
 int   aktiveRast   = -1;
 bool  wartendHalt  = false;
 
@@ -417,9 +426,11 @@ unsigned long letztesTempRead = 0;
 const unsigned long TEMP_INTERVAL = 2000;
 
 // ── FLASH LOG ────────────────────────────────────────────────
-#define LOG_INTERVAL     10000UL   // ms: Mindest-Abstand zwischen Punkten
+// Mindestabstand und Temperaturschwelle sind konfigurierbar (config.json:
+// logIntervall in s, logDelta in °C) — für Sprungantwort-Messungen z.B. 5 s / 0.1 °C.
+unsigned long logIntervallMs  = 10000UL;  // ms: Mindest-Abstand zwischen Punkten (2..600 s)
+float         logDeltaC       = 0.5f;     // °C: Schwellwert für Speicherung (0.05..5)
 #define LOG_MAX_INTERVAL 60000UL   // ms: Spätestens alle 60s loggen
-#define LOG_TEMP_DELTA   0.5f      // °C: Schwellwert für Speicherung
 #define LOG_RAST_CHANGE  true      // bei Rast-Wechsel immer loggen
 unsigned long logStartMs   = 0;
 unsigned long letzterLogMs    = 0;
@@ -479,12 +490,12 @@ void logPunkt() {
   if (!logAktiv) return;
   unsigned long jetzt = millis();
   // Mindestabstand zwischen Punkten
-  if (jetzt - letzterLogMs < LOG_INTERVAL) return;
+  if (jetzt - letzterLogMs < logIntervallMs) return;
   // Speichern wenn:
-  //   - Temperatur sich um mindestens LOG_TEMP_DELTA geändert hat
+  //   - Temperatur sich um mindestens logDeltaC geändert hat
   //   - Rast gewechselt hat
   //   - Spätestens nach LOG_MAX_INTERVAL
-  bool aenderung = fabs(tempAktuell - letzteLogTemp) >= LOG_TEMP_DELTA;
+  bool aenderung = fabs(tempAktuell - letzteLogTemp) >= logDeltaC;
   bool rastWechsel = (aktiveRast != letzteLogRast);
   bool timeout = (jetzt - letzterLogMs >= LOG_MAX_INTERVAL);
   if (!aenderung && !rastWechsel && !timeout) return;
@@ -585,6 +596,83 @@ void heizungAus() {
   }
 }
 
+// ── THINGSPEAK ───────────────────────────────────────────────
+// Upload per HTTP (nicht HTTPS) — spart ~20 KB Heap für BearSSL.
+// Free-Account: min. 15 s zwischen zwei Updates pro Kanal.
+bool          tsAktiv        = false;
+char          tsKey[24]      = "";        // Write API Key (16 Zeichen)
+unsigned long tsChannel      = 0;         // nur für den Link in der Web-UI
+unsigned long tsIntervallMs  = 30000UL;   // 15..3600 s
+bool          tsNurBrauen    = true;      // nur senden während ein Rezept läuft
+unsigned long tsLetzterVersuch = 0;
+unsigned long tsLetzterErfolg  = 0;
+long          tsLetzteEntry    = -1;      // Entry-ID der letzten erfolgreichen Übertragung
+uint16_t      tsFehler         = 0;       // Fehler in Folge
+char          tsStatus[64]     = "noch nicht gesendet";
+
+// Nur A-Z / 0-9 übernehmen — Key landet ungeschützt in der URL
+void tsKeySetzen(const char* k) {
+  size_t j = 0;
+  for (size_t i = 0; k && k[i] && j < sizeof(tsKey) - 1; i++) {
+    char c = k[i];
+    if (c >= 'a' && c <= 'z') c -= 32;
+    if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) tsKey[j++] = c;
+  }
+  tsKey[j] = 0;
+}
+
+// Sendet einen Datensatz. erzwingen = Test-Button (ignoriert Intervall/nurBrauen).
+bool thingSpeakSenden(bool erzwingen = false) {
+  if (apModus) return false;
+  if (!erzwingen) {
+    if (!tsAktiv || strlen(tsKey) < 8) return false;
+    if (tsNurBrauen && zustand == GESTOPPT) return false;
+    if (tsLetzterVersuch != 0 && millis() - tsLetzterVersuch < tsIntervallMs) return false;
+  }
+  tsLetzterVersuch = millis();
+  if (strlen(tsKey) < 8) { strlcpy(tsStatus, "kein gültiger Write API Key", sizeof(tsStatus)); return false; }
+  if (WiFi.status() != WL_CONNECTED) {
+    tsFehler++; strlcpy(tsStatus, "kein WLAN", sizeof(tsStatus)); return false;
+  }
+  char url[320];
+  int n = snprintf(url, sizeof(url),
+    "http://api.thingspeak.com/update?api_key=%s&field2=%.1f&field3=%.0f&field4=%d&field5=%d&field6=%d&field8=%d",
+    tsKey, pidSetpoint, constrain(pidOutput, 0.0, 100.0), heizungAn ? 1 : 0,
+    aktiveRast, (int)zustand, sensorFehler ? 1 : 0);
+  // Bei Sensorfehler Temperatur weglassen → Lücke im Chart statt veraltetem Wert
+  if (!sensorFehler && n > 0 && n < (int)sizeof(url))
+    snprintf(url + n, sizeof(url) - n, "&field1=%.2f&field7=%.2f", tempAktuell, tempGradient);
+
+  WiFiClient client;
+  HTTPClient http;
+  http.setTimeout(3000);
+  bool ok = false;
+  if (http.begin(client, url)) {
+    int code = http.GET();
+    if (code == 200) {
+      long entry = http.getString().toInt();
+      if (entry > 0) {
+        ok = true;
+        tsLetzteEntry = entry;
+        tsLetzterErfolg = millis();
+        snprintf(tsStatus, sizeof(tsStatus), "OK — Eintrag %ld", entry);
+      } else {
+        // ThingSpeak antwortet mit "0": falscher Key oder schneller als 15 s
+        strlcpy(tsStatus, "abgelehnt (0) — Key falsch oder < 15 s seit letztem Update", sizeof(tsStatus));
+      }
+    } else {
+      snprintf(tsStatus, sizeof(tsStatus), "HTTP-Fehler %d", code);
+    }
+    http.end();
+  } else {
+    strlcpy(tsStatus, "Verbindung fehlgeschlagen", sizeof(tsStatus));
+  }
+  tsFehler = ok ? 0 : tsFehler + 1;
+  Serial.printf("[TS] %s\n", tsStatus);
+  yield();
+  return ok;
+}
+
 // ── REST-STECKDOSEN ──────────────────────────────────────────
 void restDosenLaden() {
   // Defaults
@@ -639,7 +727,7 @@ void restDosenSpeichern(const String& body) {
 void configLaden() {
   File f = LittleFS.open("/config.json", "r");
   if (!f) return;
-  StaticJsonDocument<512> doc;
+  DynamicJsonDocument doc(2048);
   if (deserializeJson(doc, f) == DeserializationError::Ok) {
     rcCodeOn         = doc["rcOn"]    | 0UL;
     rcCodeOff        = doc["rcOff"]   | 0UL;
@@ -651,6 +739,9 @@ void configLaden() {
     Ki               = doc["Ki"]        | 0.5;
     Kd               = doc["Kd"]        | 1.0;
     PID_WINDOW_MS      = (doc["pidFenster"]   | 30)  * 1000UL;
+    pidSampleMs        = constrain((int)(doc["pidSample"] | 2000), 100, 30000);
+    logIntervallMs     = constrain((int)(doc["logIntervall"] | 10), 2, 600) * 1000UL;
+    logDeltaC          = constrain((float)(doc["logDelta"] | 0.5f), 0.05f, 5.0f);
     pidSchwellwert     = doc["pidSchwelle"]   | 5.0;
     pidUeberschreitung = doc["pidUeberschreitung"] | 0.5;
     RC_REPEAT_MS       = (doc["rcRepeat"]     | 10)  * 1000UL;
@@ -662,6 +753,11 @@ void configLaden() {
       snprintf(key, sizeof(key), "restEn%d", i);
       restEnabled[i] = doc[key] | (i == 0);
     }
+    tsAktiv       = doc["tsAktiv"]   | false;
+    tsKeySetzen(doc["tsKey"] | "");
+    tsChannel     = doc["tsChannel"] | 0UL;
+    tsIntervallMs = constrain((int)(doc["tsIntervall"] | 30), 15, 3600) * 1000UL;
+    tsNurBrauen   = doc["tsNurBrauen"] | true;
   }
   f.close();
   restDosenLaden();  // REST-Steckdosen aus separater Datei
@@ -674,7 +770,7 @@ void configLaden() {
 }
 
 void configSpeichern(const String& body) {
-  StaticJsonDocument<512> doc;
+  DynamicJsonDocument doc(2048);
   if (deserializeJson(doc, body) != DeserializationError::Ok) return;
   rcCodeOn         = doc["rcOn"]    | rcCodeOn;
   rcCodeOff        = doc["rcOff"]   | rcCodeOff;
@@ -686,6 +782,9 @@ void configSpeichern(const String& body) {
   Ki            = doc["Ki"]        | Ki;
   Kd            = doc["Kd"]        | Kd;
   PID_WINDOW_MS    = (doc["pidFenster"]  | (int)(PID_WINDOW_MS/1000)) * 1000UL;
+  pidSampleMs      = constrain((int)(doc["pidSample"] | (int)pidSampleMs), 100, 30000);
+  logIntervallMs   = constrain((int)(doc["logIntervall"] | (int)(logIntervallMs/1000)), 2, 600) * 1000UL;
+  logDeltaC        = constrain((float)(doc["logDelta"] | logDeltaC), 0.05f, 5.0f);
   pidSchwellwert     = doc["pidSchwelle"]        | pidSchwellwert;
   pidUeberschreitung = doc["pidUeberschreitung"] | pidUeberschreitung;
   RC_REPEAT_MS     = (doc["rcRepeat"]    | (int)(RC_REPEAT_MS/1000)) * 1000UL;
@@ -697,7 +796,20 @@ void configSpeichern(const String& body) {
     snprintf(key, sizeof(key), "restEn%d", i);
     if (doc.containsKey(key)) restEnabled[i] = doc[key];
   }
+  tsAktiv     = doc["tsAktiv"]     | tsAktiv;
+  tsNurBrauen = doc["tsNurBrauen"] | tsNurBrauen;
+  tsChannel   = doc["tsChannel"]   | tsChannel;
+  tsIntervallMs = constrain((int)(doc["tsIntervall"] | (int)(tsIntervallMs/1000)), 15, 3600) * 1000UL;
+  if (doc.containsKey("tsKey")) tsKeySetzen(doc["tsKey"] | "");
+  // bereinigte/vollständige Werte persistieren (Browser schickt evtl. nicht alle)
+  doc["tsAktiv"]     = tsAktiv;
+  doc["tsKey"]       = (const char*)tsKey;
+  doc["tsChannel"]   = tsChannel;
+  doc["tsIntervall"] = (int)(tsIntervallMs / 1000);
+  doc["tsNurBrauen"] = tsNurBrauen;
+  tsLetzterVersuch = 0;   // neue Einstellungen → beim nächsten Loop sofort senden
   myPID.SetTunings(Kp, Ki, Kd);
+  myPID.SetSampleTime(pidSampleMs);
   rcSwitch.setProtocol(rcProtocol);
   rcSwitch.setPulseLength(rcPulse);
   rcSwitch.setRepeatTransmit(rcWiederholungen);
@@ -1104,6 +1216,8 @@ void apiRezeptGet() {
     o["ki"]          = rasten[i].ki;
     o["kd"]          = rasten[i].kd;
     o["maxGradient"] = rasten[i].maxGradient;
+    o["minTemp"]     = rasten[i].minTemp;
+    o["maxTemp"]     = rasten[i].maxTemp;
     o["info"]        = rasten[i].info;
     yield();
   }
@@ -1245,7 +1359,7 @@ void apiWeiter() {
 
 // ── API: CONFIG ──────────────────────────────────────────────
 void apiConfigGet() {
-  StaticJsonDocument<256> doc;
+  DynamicJsonDocument doc(2048);
   doc["rcOn"]    = rcCodeOn;
   doc["rcOff"]   = rcCodeOff;
   doc["rcProto"] = rcProtocol;
@@ -1256,6 +1370,9 @@ void apiConfigGet() {
   doc["Ki"]         = Ki;
   doc["Kd"]         = Kd;
   doc["pidFenster"]   = (int)(PID_WINDOW_MS / 1000);
+  doc["pidSample"]    = pidSampleMs;
+  doc["logIntervall"] = (int)(logIntervallMs / 1000);
+  doc["logDelta"]     = logDeltaC;
   doc["pidSchwelle"]        = pidSchwellwert;
   doc["pidUeberschreitung"] = pidUeberschreitung;
   doc["rcRepeat"]     = (int)(RC_REPEAT_MS / 1000);
@@ -1267,6 +1384,40 @@ void apiConfigGet() {
     snprintf(key, sizeof(key), "restEn%d", i);
     doc[key] = restEnabled[i];
   }
+  doc["tsAktiv"]     = tsAktiv;
+  doc["tsKey"]       = (const char*)tsKey;
+  doc["tsChannel"]   = tsChannel;
+  doc["tsIntervall"] = (int)(tsIntervallMs / 1000);
+  doc["tsNurBrauen"] = tsNurBrauen;
+  String json;
+  serializeJson(doc, json);
+  server.send(200, "application/json", json);
+}
+
+// ── API: THINGSPEAK ──────────────────────────────────────────
+void tsStatusJson(JsonDocument& doc) {
+  doc["aktiv"]    = tsAktiv;
+  doc["status"]   = (const char*)tsStatus;
+  doc["entry"]    = tsLetzteEntry;
+  doc["fehler"]   = tsFehler;
+  doc["alter"]    = tsLetzterErfolg ? (long)((millis() - tsLetzterErfolg) / 1000) : -1;
+  doc["channel"]  = tsChannel;
+}
+
+void apiThingSpeakGet() {
+  StaticJsonDocument<384> doc;
+  tsStatusJson(doc);
+  String json;
+  serializeJson(doc, json);
+  server.send(200, "application/json", json);
+}
+
+void apiThingSpeakTest() {
+  bool ok = thingSpeakSenden(true);
+  StaticJsonDocument<384> doc;
+  doc["ok"] = ok;
+  tsStatusJson(doc);
+  if (!ok) doc["error"] = (const char*)tsStatus;
   String json;
   serializeJson(doc, json);
   server.send(200, "application/json", json);
@@ -1325,7 +1476,7 @@ void apiRestPost() {
       if (doc.containsKey(key)) restEnabled[i] = doc[key];
     }
     // In config.json persistieren
-    StaticJsonDocument<768> cfg;
+    DynamicJsonDocument cfg(2048);
     File cf = LittleFS.open("/config.json", "r");
     if (cf) { deserializeJson(cfg, cf); cf.close(); }
     cfg["schaltModus"]   = schaltModus;
@@ -1448,7 +1599,7 @@ void setup() {
 
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0, 100);
-  myPID.SetSampleTime(2000);
+  myPID.SetSampleTime(pidSampleMs);   // aus config.json, Standard 2000 ms
 
   // ── WLAN ────────────────────────────────────────────────
   WiFi.hostname(HOSTNAME);
@@ -1533,6 +1684,8 @@ void setup() {
   server.on("/api/rest",         HTTP_GET,  apiRestGet);
   server.on("/api/rest",         HTTP_POST, apiRestPost);
   server.on("/api/rest/test",    HTTP_POST, apiRestTest);
+  server.on("/api/thingspeak",      HTTP_GET,  apiThingSpeakGet);
+  server.on("/api/thingspeak/test", HTTP_POST, apiThingSpeakTest);
   server.on("/api/log/reset",       HTTP_POST, apiLogReset);
   server.on("/api/log/download",    HTTP_GET,  apiLogDownload);
   server.on("/api/settings/backup", HTTP_GET,  apiSettingsBackup);
@@ -1577,7 +1730,7 @@ void setup() {
     doc["sketchSize"]    = ESP.getSketchSize();
     doc["freeSketch"]    = ESP.getFreeSketchSpace();
     doc["uptime"]        = millis() / 1000;
-    doc["version"]       = "4.1.0";
+    doc["version"]       = FW_VERSION;
     doc["api"]           = API_VERSION;
     doc["ip"]            = WiFi.localIP().toString();
     doc["hostname"]      = HOSTNAME;
@@ -1617,6 +1770,7 @@ void loop() {
   heizungRegeln();
   brauLogik();
   ledUpdate();
+  thingSpeakSenden();
   // Temperatur alle 30s ins Serial loggen
   if (millis() - letztesTempLog >= 30000) {
     letztesTempLog = millis();
